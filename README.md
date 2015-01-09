@@ -1,6 +1,8 @@
 # traffic-sign-detection
 Real-time traffic sign detection using Gielis curves
 
+## System & dependencies
+
 System requirements:
 
 * Ubuntu 14.04
@@ -8,7 +10,7 @@ System requirements:
 * Eigen 3.x
 * OpenCV 2.x
 
-## Qt library
+### Qt library
 
 To install the full Qt SDK
 
@@ -16,15 +18,32 @@ To install the full Qt SDK
 
 The version available in Ubuntu 14.04 repositories is Qt 4.8.5
 
-## Eigen Library
+### Eigen Library
 
 `sudo apt-get install libeigen3-dev`
 
 The version available in Ubuntu 14.04 repositories is Eigen 3.2.0
 
-## OpenCV Library
+### OpenCV Library
 
 `sudo apt-get install libopencv-dev`
 
 The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
 
+## Compilation
+
+*Create a binary folder:
+
+`mkdir bin`
+
+*Move to the created folder:
+
+`cd bin`
+
+*Create the `MakeFile` via qmake:
+
+`qmake-qt4 ../`
+
+*Compile the code to generate the executable:
+
+`make`

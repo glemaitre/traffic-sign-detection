@@ -47,7 +47,7 @@ namespace colorconversion {
   cv::Mat convert_rgb_to_ihls(cv::Mat rgb_image) {
     
     // Check the that the image has three channels
-    cv::assert(rgb_image.channels() == 3);
+    CV_Assert(rgb_image.channels() == 3);
 
     // Create the output image
     cv::Mat ihls_image(rgb_image.rows, rgb_image.cols, CV_8UC3);

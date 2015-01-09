@@ -22,7 +22,7 @@ namespace colorconversion {
   // Theta computation
   inline float retrieve_theta(unsigned int r, unsigned int g, unsigned int b) { return acos((r - (g * 0.5) - (b * 0.5)) / sqrtf((r * r) + (g * g) + (b * b) - (r * g) - (r * b) - (g * b))); }
   // Hue computation -- H = θ if B <= G -- H = 2 * pi − θ if B > G
-  inline float retrieve_normalised_hue(unsigned int r, unsigned int g, unsigned int b) { return (v <= g) ? (retrieve_theta(r, g, b) * 255 / (2 * M_PI)) : (((2 * M_PI) - retrieve_theta(r, g, b)) * 255 / (2 * M_PI)); }
+  inline float retrieve_normalised_hue(unsigned int r, unsigned int g, unsigned int b) { return (b <= g) ? (retrieve_theta(r, g, b) * 255 / (2 * M_PI)) : (((2 * M_PI) - retrieve_theta(r, g, b)) * 255 / (2 * M_PI)); }
   // Luminance computation -- L = 0.210R + 0.715G + 0.072B
   inline float retrieve_luminance(unsigned int r, unsigned int g, unsigned int b) { return (0.210f * r) + (0.715f * g) + (0.072f * b); }
   // Saturation computation -- S = max(R, G, B) − min(R, G, B)

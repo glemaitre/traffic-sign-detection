@@ -6,8 +6,8 @@
 #include <opencv2/opencv.hpp>
 
 // our own code
-#include "ihls.h"
-#include "nhs.h"
+#include "segmentation.h"
+#include "colorConversion.h"
 
 int main(int argc, char *argv[]) {
 
@@ -21,32 +21,32 @@ int main(int argc, char *argv[]) {
   }
 
   // Read the input image - convert char* to string
-  std::string inputFilename(argv[1]);
+  std::string input_filename(argv[1]);
 
   // Read the input image
-  cv::Mat inputImage = cv::imread(inputFilename);
+  cv::Mat input_image = cv::imread(input_filename);
 
   // Check that the image has been opened 
-  if (!inputImage.data) {
+  if (!input_image.data) {
     std::cout << "Error to read the image. Check ''cv::imread'' function of OpenCV" << std::endl;
+    return -1;
   }
   // Check that the image read is a 3 channels image
-  cv::asset(inputImage.channels() == 3)
+  CV_Assert(input_image.channels() == 3);
 
   // Conversion of the rgb image in ihls color space
-  cv::Mat ihlsImage = convert_rgb_to_ihls(inputImage);
+    cv::Mat ihls_image = colorconversion::convert_rgb_to_ihls(input_image);
 
+  // Segmentation of the IHLS and more precisely of the normalised hue channel 
   // ONE PARAMETER TO CONSIDER - COLOR OF THE TRAFFIC SIGN TO DETECT - RED VS BLUE
-  int nhsMode = 0; // nhsMode == 0 -> red segmentation / nhsMode == 1 -> blue segmentation
-
-  // Segmentation of the image based on the hue
-  cv::Mat nhsImage = convert_ihls_to_nhs(ihlsImage, nhsMode);
+  int nhs_mode = 0; // nhs_mode == 0 -> red segmentation / nhs_mode == 1 -> blue segmentation
+  cv::Mat nhs_image_seg = segmentation::seg_norm_hue(ihls_image, nhs_mode);
   
-  
-    // First we have to convert the bgr image into log chromatic values
-    std::vector< cv::Mat >  = rgb2logRB(originalImage);
+  // Conversion from RGB to logarithmic chromatic red and blue
+  std::vector< cv::Mat > log_image = colorconversion::rgb_to_log_rb(input_image);
 
-    // Then make the segmentation of the log image
+  // Segmentation of the log chromatic image
+  cv::Mat log_image_seg = segmentation::seg_log_chromatic(log_image);
 
 
   return 0;
