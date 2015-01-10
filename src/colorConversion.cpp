@@ -42,7 +42,6 @@ namespace colorconversion {
     return logChromaticImg;
   }
 
-
   // Conversion from RGB to IHLS
   cv::Mat convert_rgb_to_ihls(cv::Mat rgb_image) {
     

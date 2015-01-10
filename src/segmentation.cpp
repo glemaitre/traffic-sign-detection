@@ -6,7 +6,7 @@ namespace segmentation {
    * Segmentation of logarithmic chromatic image
    */
   cv::Mat seg_log_chromatic(std::vector< cv::Mat > log_image) {
-
+    
     // Segment the image using the pre-defined threshold in the header of this file
 
     // Allocation of the original image

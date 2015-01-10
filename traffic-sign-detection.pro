@@ -5,12 +5,14 @@ QT        -= gui
 # Header files
 INCLUDES  += ./src/segmentation.h \
              ./src/colorConversion.h \
+             ./src/imageProcessing.h \
              ./src/math_utils.h
 
 # Source files
 SOURCES   += ./src/main.cpp \
              ./src/segmentation.cpp \
-             ./src/colorConversion.cpp
+             ./src/colorConversion.cpp \
+             ./src/imageProcessing.cpp
 
 # Configuration via pkg-config
 CONFIG += link_pkgconfig
