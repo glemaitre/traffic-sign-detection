@@ -71,11 +71,32 @@ int main(int argc, char *argv[]) {
    * Extract candidates (i.e., contours) and remove inconsistent candidates
    */
 
-  std::vector< std::vector< cv::Point > > contours = imageprocessing::contours_extraction(bin_image);
-  
+  std::vector< std::vector< cv::Point > > distorted_contours = imageprocessing::contours_extraction(bin_image);
+
+  /*
+   * Correct the distortion for each contour
+   */
+
+  // Initialisation of the variables which will be returned after the distortion. These variables are linked with the transformation applied to correct the distortion
+  std::vector< cv::Mat > rotation_matrix(distorted_contours.size());
+  std::vector< cv::Mat > scaling_matrix(distorted_contours.size());
+  std::vector< cv::Mat > translation_matrix(distorted_contours.size());
+  for (unsigned int contour_idx = 0; contour_idx < distorted_contours.size(); contour_idx++) {
+    rotation_matrix[contour_idx] = cv::Mat::zeros(3, 3, CV_64F);
+    scaling_matrix[contour_idx] = cv::Mat::zeros(3, 3, CV_64F);
+    translation_matrix[contour_idx] = cv::Mat::zeros(3, 3, CV_64F);
+  }
+
+  std::vector< std::vector< cv::Point2f > > undistorted_contours = imageprocessing::correction_distortion (distorted_contours, rotation_matrix, scaling_matrix, translation_matrix);
+
+  std::vector<double> factor_vector(undistorted_contours.size());
+  std::vector< std::vector< cv::Point2f > > normalised_contours = imageprocessing::normalise_all_contours(undistorted_contours, factor_vector);
+  std::vector< std::vector< cv::Point2f > > denormalised_contours = imageprocessing::denormalise_all_contours(normalised_contours, factor_vector);
+
+
   cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
   cv::Scalar color(255,255,255);
-  cv::drawContours(output_image, contours, -1, color, 0, 8);
+  cv::drawContours(output_image, distorted_contours, -1, color, 0, 8);
   cv::namedWindow("Window", CV_WINDOW_AUTOSIZE);
   cv::imshow("Window", output_image);
   cv::waitKey(0);

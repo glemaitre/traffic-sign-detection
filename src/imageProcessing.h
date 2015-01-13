@@ -22,6 +22,30 @@ namespace imageprocessing {
   // Function to extract the contour with some denoising step
   std::vector< std::vector< cv::Point > > contours_extraction(cv::Mat bin_image);
 
+  // Function to make forward transformation
+  std::vector< cv::Point2f > forward_transformation_contour(std::vector < cv::Point > contour, cv::Mat rotation_matrix, cv::Mat scaling_matrix, cv::Mat translation_matrix);
+
+  // Function to make inverse transformation
+  std::vector< cv::Point2f > inverse_transformation_contour(std::vector < cv::Point > contour, cv::Mat rotation_matrix, cv::Mat scaling_matrix, cv::Mat translation_matrix);
+
+  // Fuction to remove the distortion of each contour
+  std::vector< std::vector < cv::Point2f > > correction_distortion (std::vector< std::vector < cv::Point > > contours, std::vector< cv::Mat > &rotation_matrix, std::vector< cv::Mat > &scaling_matrix, std::vector< cv::Mat > &translation_matrix);
+  
+  // Function to find normalisation factor
+  double find_normalisation_factor(std::vector < cv::Point2f > contour);
+
+  // Function to normalize a contour
+  std::vector< cv::Point2f > normalise_contour(std::vector < cv::Point2f > contour, double &factor);
+
+  // Function to normalise a vector of contours
+  std::vector< std::vector< cv::Point2f > > normalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > &factor_vector);
+
+  // Function to denormalize a contour
+  std::vector< cv::Point2f > denormalise_contour(std::vector < cv::Point2f > contour, double factor);
+  
+  // Function to denormalise a vector of contours
+  std::vector< std::vector< cv::Point2f > > denormalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > factor_vector);
+
 }
 
 #endif // IMAGEPROCESSING_H
