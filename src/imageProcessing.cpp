@@ -171,8 +171,8 @@ namespace imageprocessing {
     return contours_thresholding(hull_contours, contours);
   }
 
-  // Function to make forward transformation
-  std::vector< cv::Point2f > forward_transformation_contour(std::vector < cv::Point > contour, cv::Mat rotation_matrix, cv::Mat scaling_matrix, cv::Mat translation_matrix) {
+  // Function to make forward transformation -- INPUT CV::POINT
+  std::vector< cv::Point2f > forward_transformation_contour(std::vector < cv::Point > contour, const cv::Mat &translation_matrix, const cv::Mat &rotation_matrix, const cv::Mat &scaling_matrix) {
 
     // Calculate the affine transformation using the rotation, scaling and translation matrices
     cv::Mat transform_matrix = cv::Mat::zeros(3, 3, CV_64F);
@@ -183,8 +183,8 @@ namespace imageprocessing {
     cv::Mat tmp_original_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
     cv::Mat tmp_transformed_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
-      tmp_original_contour.at<double>(0, contour_point_idx) = contour[contour_point_idx].x;
-      tmp_original_contour.at<double>(1, contour_point_idx) = contour[contour_point_idx].y;
+      tmp_original_contour.at<double>(0, contour_point_idx) = (double) contour[contour_point_idx].x;
+      tmp_original_contour.at<double>(1, contour_point_idx) = (double) contour[contour_point_idx].y;
       tmp_original_contour.at<double>(2, contour_point_idx) = 1.0;
     }
     // Transform all contour points
@@ -200,8 +200,37 @@ namespace imageprocessing {
     return transformed_contour;
   }
 
-  // Function to make inverse transformation
-  std::vector< cv::Point2f > inverse_transformation_contour(std::vector < cv::Point > contour, cv::Mat rotation_matrix, cv::Mat scaling_matrix, cv::Mat translation_matrix) {
+    // Function to make forward transformation -- INPUT CV::POINT2F
+  std::vector< cv::Point2f > forward_transformation_contour(std::vector < cv::Point2f > contour, const cv::Mat &translation_matrix, const cv::Mat &rotation_matrix, const cv::Mat &scaling_matrix) {
+
+    // Calculate the affine transformation using the rotation, scaling and translation matrices
+    cv::Mat transform_matrix = cv::Mat::zeros(3, 3, CV_64F);
+    transform_matrix = rotation_matrix * scaling_matrix * translation_matrix;
+
+    // Transform all the points of the current contour
+    // Transform the 2D Point into homogeneous coordinates using cv::Mat
+    cv::Mat tmp_original_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
+    cv::Mat tmp_transformed_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
+      tmp_original_contour.at<double>(0, contour_point_idx) = (double) contour[contour_point_idx].x;
+      tmp_original_contour.at<double>(1, contour_point_idx) = (double) contour[contour_point_idx].y;
+      tmp_original_contour.at<double>(2, contour_point_idx) = 1.0;
+    }
+    // Transform all contour points
+    tmp_transformed_contour = transform_matrix * tmp_original_contour;
+
+    // Convert back into a vector
+    std::vector< cv::Point2f > transformed_contour(contour.size());
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
+      transformed_contour[contour_point_idx].x = tmp_transformed_contour.at<double>(0, contour_point_idx);
+      transformed_contour[contour_point_idx].y = tmp_transformed_contour.at<double>(1, contour_point_idx);
+    }
+
+    return transformed_contour;
+  }
+
+  // Function to make inverse transformation -- INPUT CV::POINT
+  std::vector< cv::Point2f > inverse_transformation_contour(std::vector < cv::Point > contour, const cv::Mat &translation_matrix, const cv::Mat &rotation_matrix, const cv::Mat &scaling_matrix) {
 
     // Calculate the affine transformation using the rotation, scaling and translation matrices
     cv::Mat transform_matrix = cv::Mat::zeros(3, 3, CV_64F);
@@ -213,8 +242,38 @@ namespace imageprocessing {
     cv::Mat tmp_original_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
     cv::Mat tmp_transformed_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
-      tmp_original_contour.at<double>(0, contour_point_idx) = contour[contour_point_idx].x;
-      tmp_original_contour.at<double>(1, contour_point_idx) = contour[contour_point_idx].y;
+      tmp_original_contour.at<double>(0, contour_point_idx) = (double) contour[contour_point_idx].x;
+      tmp_original_contour.at<double>(1, contour_point_idx) = (double) contour[contour_point_idx].y;
+      tmp_original_contour.at<double>(2, contour_point_idx) = 1.0;
+    }
+    // Transform all contour points
+    tmp_transformed_contour = transform_matrix * tmp_original_contour;
+
+    // Convert back into a vector
+    std::vector< cv::Point2f > transformed_contour(contour.size());
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
+      transformed_contour[contour_point_idx].x = tmp_transformed_contour.at<double>(0, contour_point_idx);
+      transformed_contour[contour_point_idx].y = tmp_transformed_contour.at<double>(1, contour_point_idx);
+    }
+
+    return transformed_contour;
+  }
+
+  // Function to make inverse transformation -- INPUT CV::POINT2F
+  std::vector< cv::Point2f > inverse_transformation_contour(std::vector < cv::Point2f > contour, const cv::Mat &translation_matrix, const cv::Mat &rotation_matrix, const cv::Mat &scaling_matrix) {
+
+    // Calculate the affine transformation using the rotation, scaling and translation matrices
+    cv::Mat transform_matrix = cv::Mat::zeros(3, 3, CV_64F);
+    transform_matrix = rotation_matrix * scaling_matrix * translation_matrix;
+    transform_matrix = transform_matrix.inv();
+
+    // Transform all the points of the current contour
+    // Transform the 2D Point into homogeneous coordinates using cv::Mat
+    cv::Mat tmp_original_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
+    cv::Mat tmp_transformed_contour = cv::Mat::zeros(3, contour.size(), CV_64F);
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
+      tmp_original_contour.at<double>(0, contour_point_idx) = (double) contour[contour_point_idx].x;
+      tmp_original_contour.at<double>(1, contour_point_idx) = (double) contour[contour_point_idx].y;
       tmp_original_contour.at<double>(2, contour_point_idx) = 1.0;
     }
     // Transform all contour points
@@ -231,7 +290,7 @@ namespace imageprocessing {
   }
 
   // Function to correct the distortion of the contours
-  std::vector< std::vector < cv::Point2f > > correction_distortion (std::vector< std::vector < cv::Point > > contours, std::vector< cv::Mat > &rotation_matrix, std::vector< cv::Mat > &scaling_matrix, std::vector< cv::Mat > &translation_matrix) {
+  std::vector< std::vector < cv::Point2f > > correction_distortion (std::vector< std::vector < cv::Point > > contours, std::vector< cv::Mat > &translation_matrix, std::vector< cv::Mat > &rotation_matrix, std::vector< cv::Mat > &scaling_matrix) {
 
     // Allocation of the ouput -- The type is not anymore integer but float
     std::vector< std::vector< cv::Point2f > > undistorted_contours(contours.size());
@@ -258,7 +317,7 @@ namespace imageprocessing {
       // Compute the object orientation in order to determine the rotation matrix
       double contour_orientation;
       if (mu11p != 0) 
-        contour_orientation = 0.5 * atan((2 * mu11p) / (mu20p - mu02p));
+        contour_orientation = 0.5 * std::atan((2 * mu11p) / (mu20p - mu02p));
       else
 	contour_orientation = 0.0;
 
@@ -274,108 +333,29 @@ namespace imageprocessing {
       cv::eigen(covariance_matrix, eigen_value_matrix, eigen_vector_matrix);
 
       // Create the rotation matrix
-      rotation_matrix[contour_idx].at<double>(0, 0) = cos(contour_orientation);
-      rotation_matrix[contour_idx].at<double>(0, 1) = - sin(contour_orientation);
-      rotation_matrix[contour_idx].at<double>(1, 0) = sin(contour_orientation);
-      rotation_matrix[contour_idx].at<double>(1, 1) = cos(contour_orientation);
-      rotation_matrix[contour_idx].at<double>(2, 2) = 1.00;
+      rotation_matrix[contour_idx].at<double>(0, 0) = std::cos(contour_orientation);
+      rotation_matrix[contour_idx].at<double>(0, 1) = - std::sin(contour_orientation);
+      rotation_matrix[contour_idx].at<double>(1, 0) = std::sin(contour_orientation);
+      rotation_matrix[contour_idx].at<double>(1, 1) = std::cos(contour_orientation);
 
       // Create the scaling matrix
       if (contour_moments.mu20 > contour_moments.mu02) {
-        scaling_matrix[contour_idx].at<double>(0, 0) = pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / sqrt(eigen_value_matrix.at<double>(0, 0));
-	scaling_matrix[contour_idx].at<double>(1, 1) = pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / sqrt(eigen_value_matrix.at<double>(1, 0));
+        scaling_matrix[contour_idx].at<double>(0, 0) = std::pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / std::sqrt(eigen_value_matrix.at<double>(0, 0));
+	scaling_matrix[contour_idx].at<double>(1, 1) = std::pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / std::sqrt(eigen_value_matrix.at<double>(1, 0));
       }
       else {
-        scaling_matrix[contour_idx].at<double>(0, 0) = pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / sqrt(eigen_value_matrix.at<double>(1, 0));
-        scaling_matrix[contour_idx].at<double>(1, 1) = pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / sqrt(eigen_value_matrix.at<double>(0, 0));
+        scaling_matrix[contour_idx].at<double>(0, 0) = std::pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / std::sqrt(eigen_value_matrix.at<double>(1, 0));
+        scaling_matrix[contour_idx].at<double>(1, 1) = std::pow(eigen_value_matrix.at<double>(0, 0) * eigen_value_matrix.at<double>(1, 0), 0.25) / std::sqrt(eigen_value_matrix.at<double>(0, 0));
       }
-      scaling_matrix[contour_idx].at<double>(2, 2) = 1.00;
 
       // Create the translation matrix
-      translation_matrix[contour_idx].at<double>(0, 0) = 1.00;
-      translation_matrix[contour_idx].at<double>(1, 1) = 1.00;
       translation_matrix[contour_idx].at<double>(0, 2) = - xbar;
       translation_matrix[contour_idx].at<double>(1, 2) = - ybar;
-      translation_matrix[contour_idx].at<double>(2, 2) = 1.00;
-
+      
       // Transform the contour using the previous found transformation
-      undistorted_contours[contour_idx] = forward_transformation_contour(contours[contour_idx], rotation_matrix[contour_idx], scaling_matrix[contour_idx], translation_matrix[contour_idx]);
-
+      undistorted_contours[contour_idx] = forward_transformation_contour(contours[contour_idx], translation_matrix[contour_idx], rotation_matrix[contour_idx], scaling_matrix[contour_idx]);
     }
     return undistorted_contours;
-  }
-
-  // Function to find normalisation factor
-  double find_normalisation_factor(std::vector < cv::Point2f > contour) {
-
-    // No method is available to find the max coordinate
-    cv::Mat contour_x = cv::Mat::zeros(1, contour.size(), CV_32F);
-    cv::Mat contour_y = cv::Mat::zeros(1, contour.size(), CV_32F);
-    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
-      contour_x.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].x);
-      contour_y.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].y);
-    }
-    
-    double max_x, max_y;
-    cv::minMaxIdx(contour_x, NULL, &max_x, NULL, NULL);
-    cv::minMaxIdx(contour_y, NULL, &max_y, NULL, NULL);
-    
-    return std::max(max_x, max_y);
-  }
-
-  // Function to normalize a contour
-  std::vector< cv::Point2f > normalise_contour(std::vector < cv::Point2f > contour, double &factor) {
-    
-    // Find the normalisation factor
-    factor = find_normalisation_factor(contour);
-
-    // Initilisation of the output
-    std::vector< cv::Point2f > output_contour(contour.size());
-
-    // Make the normalisation
-    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      output_contour[contour_point_idx] = contour[contour_point_idx] * (1 / factor);
-
-    return output_contour;
-  }
-
-  // Function to normalise a vector of contours
-  std::vector< std::vector< cv::Point2f > > normalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > &factor_vector) {
-    
-    // Allocate the output contours
-    std::vector< std::vector< cv::Point2f > > output_contours(contours.size());
-
-    // For each contour
-    for (unsigned int contour_idx = 0; contour_idx < contours.size(); contour_idx++)
-      output_contours[contour_idx] = normalise_contour(contours[contour_idx], factor_vector[contour_idx]);
-
-    return output_contours;
-  }
-
-  // Function to denormalize a contour
-  std::vector< cv::Point2f > denormalise_contour(std::vector < cv::Point2f > contour, double factor) {
-    
-    // Initilisation of the output
-    std::vector< cv::Point2f > output_contour(contour.size());
-
-    // Make the normalisation
-    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      output_contour[contour_point_idx] = contour[contour_point_idx] * factor;
-
-    return output_contour;
-  }
-
-  // Function to denormalise a vector of contours
-  std::vector< std::vector< cv::Point2f > > denormalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > factor_vector) {
-    
-    // Allocate the output contours
-    std::vector< std::vector< cv::Point2f > > output_contours(contours.size());
-
-    // For each contour
-    for (unsigned int contour_idx = 0; contour_idx < contours.size(); contour_idx++)
-      output_contours[contour_idx] = denormalise_contour(contours[contour_idx], factor_vector[contour_idx]);
-
-    return output_contours;
   }
 
 }

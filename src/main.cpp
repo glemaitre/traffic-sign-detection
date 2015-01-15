@@ -9,6 +9,7 @@
 #include "segmentation.h"
 #include "colorConversion.h"
 #include "imageProcessing.h"
+#include "smartOptimisation.h"
 
 int main(int argc, char *argv[]) {
 
@@ -82,17 +83,20 @@ int main(int argc, char *argv[]) {
   std::vector< cv::Mat > scaling_matrix(distorted_contours.size());
   std::vector< cv::Mat > translation_matrix(distorted_contours.size());
   for (unsigned int contour_idx = 0; contour_idx < distorted_contours.size(); contour_idx++) {
-    rotation_matrix[contour_idx] = cv::Mat::zeros(3, 3, CV_64F);
-    scaling_matrix[contour_idx] = cv::Mat::zeros(3, 3, CV_64F);
-    translation_matrix[contour_idx] = cv::Mat::zeros(3, 3, CV_64F);
+    rotation_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_64F);
+    scaling_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_64F);
+    translation_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_64F);
   }
 
-  std::vector< std::vector< cv::Point2f > > undistorted_contours = imageprocessing::correction_distortion (distorted_contours, rotation_matrix, scaling_matrix, translation_matrix);
+  // Correct the distortion 
+  std::vector< std::vector< cv::Point2f > > undistorted_contours = imageprocessing::correction_distortion (distorted_contours, translation_matrix, rotation_matrix, scaling_matrix);
 
+  // Normalise the contours to be inside a unit circle
   std::vector<double> factor_vector(undistorted_contours.size());
-  std::vector< std::vector< cv::Point2f > > normalised_contours = imageprocessing::normalise_all_contours(undistorted_contours, factor_vector);
-  std::vector< std::vector< cv::Point2f > > denormalised_contours = imageprocessing::denormalise_all_contours(normalised_contours, factor_vector);
+  std::vector< std::vector< cv::Point2f > > normalised_contours = initoptimisation::normalise_all_contours(undistorted_contours, factor_vector);
 
+  // Check the center mass for a contour
+  cv::Point2f dum = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
 
   cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
   cv::Scalar color(255,255,255);
