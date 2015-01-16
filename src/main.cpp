@@ -21,6 +21,8 @@
 // stl library
 #include <string>
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 // OpenCV library
 #include <opencv2/opencv.hpp>
@@ -41,6 +43,10 @@ int main(int argc, char *argv[]) {
 
     return -1;
   }
+
+  // Clock for measuring the elapsed time
+  std::chrono::time_point<std::chrono::system_clock> start, end;
+  start = std::chrono::system_clock::now();
 
   // Read the input image - convert char* to string
   std::string input_filename(argv[1]);
@@ -126,14 +132,21 @@ int main(int argc, char *argv[]) {
   // Check the center mass for a contour
   cv::Point2f dum = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
 
-  std::cout << dum << std::endl;
+  // std::cout << dum << std::endl;
 
-  cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
-  cv::Scalar color(255,255,255);
-  cv::drawContours(output_image, distorted_contours, -1, color, 0, 8);
-  cv::namedWindow("Window", CV_WINDOW_AUTOSIZE);
-  cv::imshow("Window", output_image);
-  cv::waitKey(0);
+  // cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
+  // cv::Scalar color(255,255,255);
+  // cv::drawContours(output_image, distorted_contours, -1, color, 0, 8);
+  // cv::namedWindow("Window", CV_WINDOW_AUTOSIZE);
+  // cv::imshow("Window", output_image);
+  // cv::waitKey(0);
+
+  end = std::chrono::system_clock::now();
+  std::chrono::duration<double> elapsed_seconds = end-start;
+  std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+ 
+  std::cout << "Finished computation at " << std::ctime(&end_time)
+	    << "Elapsed time: " << elapsed_seconds.count()*1000 << "ms\n";
 
   return 0;
 }

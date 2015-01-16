@@ -34,6 +34,9 @@ SOURCES   += ./src/main.cpp \
              ./src/smartOptimisation.cpp \
              ./src/imageProcessing.cpp
 
+# Support c++11
+QMAKE_CXXFLAGS += -std=c++11
+
 # Configuration via pkg-config
 CONFIG += link_pkgconfig
 
