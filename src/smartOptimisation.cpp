@@ -29,7 +29,7 @@
 namespace initoptimisation {
 
   // Function to find normalisation factor
-  double find_normalisation_factor(std::vector < cv::Point2f > contour) {
+  double find_normalisation_factor(const std::vector < cv::Point2f >& contour) {
 
     // No method is available to find the max coordinate
     cv::Mat contour_x = cv::Mat::zeros(1, contour.size(), CV_32F);
@@ -47,62 +47,96 @@ namespace initoptimisation {
   }
 
   // Function to normalize a contour
-  std::vector< cv::Point2f > normalise_contour(std::vector < cv::Point2f > contour, double &factor) {
+  void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, double& factor) {
     
     // Find the normalisation factor
     factor = find_normalisation_factor(contour);
 
     // Initilisation of the output
-    std::vector< cv::Point2f > output_contour(contour.size());
+    if(!output_contour.empty()) {
+      output_contour.erase(output_contour.begin(), output_contour.end());
+      output_contour.resize(contour.size());
+    }
+    else
+      output_contour.resize(contour.size());
 
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      output_contour[contour_point_idx] = contour[contour_point_idx] * (1 / factor);
+      output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / (float) factor);
+  
+  }
 
-    return output_contour;
+  
+  // Function to normalize a contour with a given factor
+  void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
+    
+    // Initilisation of the output
+    if(!output_contour.empty()) {
+      output_contour.erase(output_contour.begin(), output_contour.end());
+      output_contour.resize(contour.size());
+    }
+    else
+      output_contour.resize(contour.size());
+
+    // Make the normalisation
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
+      output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / factor);
+
   }
 
   // Function to normalise a vector of contours
-  std::vector< std::vector< cv::Point2f > > normalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > &factor_vector) {
+  void normalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, std::vector< double >& factor_vector) {
     
     // Allocate the output contours
-    std::vector< std::vector< cv::Point2f > > output_contours(contours.size());
+    if(!output_contours.empty()) {
+      output_contours.erase(output_contours.begin(), output_contours.end());
+      output_contours.resize(contours.size());
+    }
+    else
+      output_contours.resize(contours.size());
 
     // For each contour
     for (unsigned int contour_idx = 0; contour_idx < contours.size(); contour_idx++)
-      output_contours[contour_idx] = normalise_contour(contours[contour_idx], factor_vector[contour_idx]);
+      normalise_contour(contours[contour_idx], output_contours[contour_idx], factor_vector[contour_idx]);
 
-    return output_contours;
   }
 
   // Function to denormalize a contour
-  std::vector< cv::Point2f > denormalise_contour(std::vector < cv::Point2f > contour, double factor) {
+  void denormalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
     
     // Initilisation of the output
-    std::vector< cv::Point2f > output_contour(contour.size());
+    if(!output_contour.empty()) {
+      output_contour.erase(output_contour.begin(), output_contour.end());
+      output_contour.resize(contour.size());
+    }
+    else
+      output_contour.resize(contour.size());
 
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
       output_contour[contour_point_idx] = contour[contour_point_idx] * factor;
 
-    return output_contour;
   }
 
   // Function to denormalise a vector of contours
-  std::vector< std::vector< cv::Point2f > > denormalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > factor_vector) {
+  void denormalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, const std::vector< double >& factor_vector) {
     
     // Allocate the output contours
-    std::vector< std::vector< cv::Point2f > > output_contours(contours.size());
+    if(!output_contours.empty()) {
+      output_contours.erase(output_contours.begin(), output_contours.end());
+      output_contours.resize(contours.size());
+    }
+    else
+      output_contours.resize(contours.size());
 
     // For each contour
     for (unsigned int contour_idx = 0; contour_idx < contours.size(); contour_idx++)
-      output_contours[contour_idx] = denormalise_contour(contours[contour_idx], factor_vector[contour_idx]);
+      denormalise_contour(contours[contour_idx], output_contours[contour_idx], factor_vector[contour_idx]);
 
-    return output_contours;
   }
 
   // Function to estimate the radius for a contour - THE CONTOUR NEEDS TO BE DENORMALIZED
-  int radius_estimation(std::vector< cv::Point2f > contour) { 
+  int radius_estimation(const std::vector< cv::Point2f >& contour) { 
     
     double radius = 0;
     // Add the distance of each contour point
@@ -113,10 +147,8 @@ namespace initoptimisation {
   }
 
   // Function to extract a ROI from one image with border copy if the ROI is too large
-  cv::Mat roi_extraction(cv::Mat original_image, cv::Rect roi) {
+  void roi_extraction(const cv::Mat& original_image, const cv::Rect& roi, cv::Mat& output_image) {
 
-    // Allocate the ouput image
-    cv::Mat output_image;
     // No padding needed
     if ((roi.x > 0) && ((roi.x + roi.width) < original_image.cols) &&
 	(roi.y > 0) && ((roi.y + roi.height) < original_image.rows) )
@@ -156,12 +188,10 @@ namespace initoptimisation {
       // Pad the image
       cv::copyMakeBorder(within_image, output_image, top, bottom, left, right, cv::BORDER_REPLICATE);
     }
-    
-    return output_image;
   }
 
   // Function to return max and min in x and y of contours
-  void extract_min_max(std::vector< cv::Point2f > contour, double &min_y, double &min_x, double &max_x, double &max_y) { 
+  void extract_min_max(const std::vector< cv::Point2f >& contour, double &min_y, double &min_x, double &max_x, double &max_y) { 
     // Find the minimum coordinate around the supposed target
     // No method is available to find the max coordinate
     cv::Mat contour_x = cv::Mat::zeros(1, contour.size(), CV_32F);
@@ -175,30 +205,26 @@ namespace initoptimisation {
   }
 
   // Function to define the ROI dimension around a target by a given factor
-  cv::Rect roi_dimension_definition(double min_y, double min_x, double max_x, double max_y, double factor) {
+  void roi_dimension_definition(const double& min_y, const double& min_x, const double& max_x, const double& max_y, const double& factor, cv::Rect& roi_dimension) {
     
     // Create a RoI
-    cv::Rect roi_dimension;
     roi_dimension.height = (int) ceil(factor * (max_y - min_y));
     roi_dimension.width = (int)  ceil(factor * (max_x - min_x));
-    roi_dimension.x = (int) ceil(min_x + (1 - factor) * ((max_x - min_x) * 0.5));
-    roi_dimension.y = (int) ceil(min_y + (1 - factor) * ((max_y - min_y) * 0.5));
+    roi_dimension.x = (int) ceil(min_x + (1.00 - factor) * ((max_x - min_x) * 0.5));
+    roi_dimension.y = (int) ceil(min_y + (1.00 - factor) * ((max_y - min_y) * 0.5));
 
-    return roi_dimension;
   }
 
   // Function to convert the RGB to float gray
-  cv::Mat rgb_to_float_gray(cv::Mat original_image) {
+  void rgb_to_float_gray(const cv::Mat& original_image, cv::Mat& gray_image_float) {
 
     // The roi image has to be converted in RGB for further processing
     cv::Mat gray_image;
     cv::cvtColor(original_image, gray_image, CV_RGB2GRAY);
 
     // Convert the image into float
-    cv::Mat gray_image_float;
     gray_image.convertTo(gray_image_float, CV_32F); 
 
-    return gray_image_float;
   }
 
   // Function which threshold the gradient image based on the magnitude image
@@ -221,7 +247,7 @@ namespace initoptimisation {
   }
 
   // Function to determine the angles from the gradient images
-  void orientations_from_gradient(cv::Mat gradient_x, cv::Mat gradient_y, int edges_number, cv::Mat &gradient_vp_x, cv::Mat &gradient_vp_y, cv::Mat &gradient_bar_x, cv::Mat &gradient_bar_y) {
+  void orientations_from_gradient(const cv::Mat& gradient_x, const cv::Mat& gradient_y, const int& edges_number, cv::Mat &gradient_vp_x, cv::Mat &gradient_vp_y, cv::Mat &gradient_bar_x, cv::Mat &gradient_bar_y) {
 
     // Allocation of the diffrent gradients
     cv::Mat gradient_gp_radian = cv::Mat(gradient_x.size(), CV_32F);
@@ -272,7 +298,7 @@ namespace initoptimisation {
   }
 
   // Function to round a matrix
-  cv::Mat round_matrix(cv::Mat original_matrix) {
+  cv::Mat round_matrix(const cv::Mat& original_matrix) {
     
     // Allocate the ouput
     cv::Mat result(original_matrix.size(), CV_32F);
@@ -289,7 +315,7 @@ namespace initoptimisation {
   }
 
   // Function to determine mass center by voting
-  cv::Point2f mass_center_by_voting(cv::Mat magnitude_image, cv::Mat gradient_x, cv::Mat gradient_y, cv::Mat gradient_bar_x, cv::Mat gradient_bar_y, cv::Mat gradient_vp_x, cv::Mat gradient_vp_y, float radius, int edges_number) {
+  cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat& gradient_x, const cv::Mat& gradient_y, const cv::Mat& gradient_bar_x, const cv::Mat& gradient_bar_y, const cv::Mat& gradient_vp_x, const cv::Mat& gradient_vp_y, const float& radius, const int& edges_number) {
 
     // Create all the possible combination of coordinate 
     cv::Mat coord_x = cv::Mat(magnitude_image.size(), CV_32F);
@@ -519,13 +545,14 @@ namespace initoptimisation {
   }
 
   // Function to discover the mass center using the radial symmetry detector
-  cv::Point2f radial_symmetry_detector(cv::Mat roi_image, int radius, int edges_number) {
+  cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius, const int& edges_number) {
     
     /*
      * Conversion to write data type
      */
 
-    cv::Mat gray_image_float = rgb_to_float_gray(roi_image);
+    cv::Mat gray_image_float;
+    rgb_to_float_gray(roi_image, gray_image_float);
    
     // Apply a Gaussian filtering
     cv::Mat blurred_image;
@@ -566,11 +593,12 @@ namespace initoptimisation {
     cv::Mat gradient_vp_x, gradient_vp_y, gradient_bar_x, gradient_bar_y;
     orientations_from_gradient(gradient_x, gradient_y, edges_number, gradient_vp_x, gradient_vp_y, gradient_bar_x, gradient_bar_y);
     
-    return mass_center_by_voting(magnitude_image, gradient_x, gradient_y, gradient_bar_x, gradient_bar_y, gradient_vp_x, gradient_vp_y, (float) radius, edges_number);
+    float radius_float = (float) radius;
+    return mass_center_by_voting(magnitude_image, gradient_x, gradient_y, gradient_bar_x, gradient_bar_y, gradient_vp_x, gradient_vp_y, radius_float, edges_number);
   }
   
   // Function to discover an approximation of the mass center for each contour using a voting method for a given contour
-  cv::Point2f mass_center_discovery(cv::Mat original_image, cv::Mat translation_matrix, cv::Mat rotation_matrix, cv::Mat scaling_matrix, std::vector< cv::Point2f > contour, double factor, int type_traffic_sign) {
+  cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& translation_matrix, const cv::Mat& rotation_matrix, const cv::Mat& scaling_matrix, const std::vector< cv::Point2f >& contour, const double& factor, const int& type_traffic_sign) {
 
     // Compute the transformation necessary to warp the original image
     cv::Mat transform_warping = translation_matrix.inv() * rotation_matrix * scaling_matrix * translation_matrix;
@@ -580,26 +608,30 @@ namespace initoptimisation {
     cv::warpPerspective(original_image, warp_image, transform_warping, original_image.size(), cv::INTER_CUBIC, cv::BORDER_REPLICATE);
 
     // We need to denormalise the contour using the normalisation factor
-    std::vector< cv::Point2f > denormalised_contour = denormalise_contour(contour, factor);
+    std::vector< cv::Point2f > denormalised_contour;
+    denormalise_contour(contour, denormalised_contour, factor);
 
     // Estimate the radius given a contour
     int radius_contour = radius_estimation(denormalised_contour);
 
     // We need to inverse the translation
-    std::vector< cv::Point2f > denormalised_contour_no_translation = imageprocessing::inverse_transformation_contour(denormalised_contour, translation_matrix);
+    std::vector< cv::Point2f > denormalised_contour_no_translation;
+    imageprocessing::inverse_transformation_contour(denormalised_contour, denormalised_contour_no_translation, translation_matrix);
 
     // Find the minimum coordinate around the supposed target
     double min_y, min_x, max_y, max_x;
     extract_min_max(denormalised_contour_no_translation, min_y, min_x, max_x, max_y);
 
     // Define a ROI around the supposed target
-    cv::Rect roi_dimension = roi_dimension_definition(min_y, min_x, max_x, max_y, 2.0);
+    cv::Rect roi_dimension;
+    roi_dimension_definition(min_y, min_x, max_x, max_y, 2.0, roi_dimension);
 
     // ROI extraction
-    cv::Mat roi_image = roi_extraction(warp_image, roi_dimension);
+    cv::Mat roi_image;
+    roi_extraction(warp_image, roi_dimension, roi_image);
 
     // The main function need to know how many edges each traffic sign as
-    int edges_number;
+    int edges_number = 0;
     switch (type_traffic_sign) {
     case 0:
       edges_number = 3;
@@ -618,7 +650,27 @@ namespace initoptimisation {
       break;
     }
 
-    return radial_symmetry_detector(roi_image, radius_contour, edges_number);
+    cv::Point2f mass_center = radial_symmetry_detector(roi_image, radius_contour, edges_number);
+    cv::Point2f roi_offset(roi_dimension.x, roi_dimension.y);
+    mass_center += roi_offset;
+
+    // We have to translate back and normalise this coordinates
+    // Apply the translation matrix back
+    std::vector< cv::Point2f > mass_center_vector;
+    mass_center_vector.push_back(mass_center);
+   
+    // We need to inverse the translation
+    std::vector< cv::Point2f > mass_center_vector_no_translation;
+    imageprocessing::forward_transformation_contour(mass_center_vector, mass_center_vector_no_translation, translation_matrix);
+
+    // Normalise the center
+    std::vector< cv::Point2f > normalised_mass_center;
+    normalise_contour_fixed_factor(mass_center_vector_no_translation, normalised_mass_center, factor);
+
+    // Return only the center
+    return normalised_mass_center[0];
   }
+
+  // Function to compute the rotation offset for future initialisation
 
 }

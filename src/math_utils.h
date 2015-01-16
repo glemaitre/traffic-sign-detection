@@ -21,13 +21,41 @@
 #ifndef MATH_UTILS_H_
 #define MATH_UTILS_H_
 
+// OpenCV library
+#include <opencv2/opencv.hpp>
+
 namespace mathutils {
 
   // Maximum between three values
-  inline unsigned int get_maximum(unsigned int r, unsigned int g, unsigned int b) { return (r >= g) ? ((r >= b) ? r : b) : ((g >= b) ? g : b); }
+  inline unsigned int get_maximum(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (r >= g) ? ((r >= b) ? r : b) : ((g >= b) ? g : b); }
 
   // Minimum between three values
-  inline unsigned int get_minimum(unsigned int r, unsigned int g, unsigned int b) { return (r <= g) ? ((r <= b) ? r : b) : ((g <= b) ? g : b); }
+  inline unsigned int get_minimum(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (r <= g) ? ((r <= b) ? r : b) : ((g <= b) ? g : b); }
+
+}
+
+namespace cv {
+  
+  //////////////////////////////// PointPolar_ ////////////////////////////////
+  /*!
+    template 2D polar point class.
+    The class defines a point in 2D polar space. Data type of the point coordinates is specified
+    as a template parameter. There are a few shorter aliases available for user convenience.
+  */
+  template<typename _Tp> class PointPolar_ {
+  public:
+    typedef _Tp value_type;
+    // various constructors
+    PointPolar_() { phi = 0; theta = 0; }
+    PointPolar_(_Tp _phi, _Tp _theta) { phi = _phi; theta = _theta; }
+       
+    _Tp phi, theta; //< the point coordinates
+  };
+
+typedef PointPolar_<int> PointPolar2i;
+typedef PointPolar2i PointPolar;
+typedef PointPolar_<float> PointPolar2f;
+typedef PointPolar_<double> PointPolar2d;
   
 }
 

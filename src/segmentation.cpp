@@ -25,31 +25,29 @@ namespace segmentation {
   /*
    * Segmentation of logarithmic chromatic image
    */
-  cv::Mat seg_log_chromatic(std::vector< cv::Mat > log_image) {
+  void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_image_seg) {
     
     // Segment the image using the pre-defined threshold in the header of this file
 
     // Allocation of the original image
-    cv::Mat log_image_seg = cv::Mat::zeros(log_image[0].rows, log_image[0].cols, CV_8UC1);
+    log_image_seg.create(log_image[0].size(), CV_8UC1);
     
     // Make the segmentation by simple threholding
     for (int i = 0 ; i < log_image_seg.rows ; i++) {
       for (int j = 0 ; j < log_image_seg.cols ; j++) {
-	bool condR = (log_image[0].at<double>(i, j) > MINLOGRG)&&(log_image[0].at<double>(i, j) < MAXLOGRG);
-	bool condB = (log_image[1].at<double>(i, j) > MINLOGBG)&&(log_image[1].at<double>(i, j) < MAXLOGBG);
+	const bool condR = (log_image[0].at<double>(i, j) > MINLOGRG)&&(log_image[0].at<double>(i, j) < MAXLOGRG);
+	const bool condB = (log_image[1].at<double>(i, j) > MINLOGBG)&&(log_image[1].at<double>(i, j) < MAXLOGBG);
 	/*----------- Red detection ----------*/
-	log_image_seg.at<uchar>(i, j) = (condR&&condB) ? 255 : 0;
+	log_image_seg.at<uchar>(i, j) = (condR && condB) ? 255 : 0;
 	/*----------- Have to be done for blue too ------------*/
       }
     }
-
-    return log_image_seg;
   }
 
   /*
    * Segmentation of IHLS image
    */
-  cv::Mat seg_norm_hue(cv::Mat ihls_image, int colour, int hue_max, int hue_min, int sat_min) {
+  void seg_norm_hue(const cv::Mat& ihls_image, cv::Mat& nhs_image, const int& colour, int hue_max, int hue_min, int sat_min) {
     
     // Define the different thresholds
     if (colour == 2) {
@@ -74,7 +72,7 @@ namespace segmentation {
     CV_Assert(ihls_image.channels() == 3);
 
     // Create the ouput the image
-    cv::Mat nhs_image(ihls_image.rows, ihls_image.cols, CV_8UC1);
+    nhs_image.create(ihls_image.size(), CV_8UC1);
 
     // I put the if before for loops, to make the process faster.
     // Otherwise for each pixel it had to check this condition.
@@ -110,8 +108,6 @@ namespace segmentation {
 	}
       }
     }
-
-    return nhs_image;
   }
 
 }

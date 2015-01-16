@@ -62,9 +62,11 @@ int main(int argc, char *argv[]) {
    */
 
   // Conversion of the rgb image in ihls color space
-  cv::Mat ihls_image = colorconversion::convert_rgb_to_ihls(input_image);
+  cv::Mat ihls_image;
+  colorconversion::convert_rgb_to_ihls(input_image, ihls_image);
   // Conversion from RGB to logarithmic chromatic red and blue
-  std::vector< cv::Mat > log_image = colorconversion::rgb_to_log_rb(input_image);
+  std::vector< cv::Mat > log_image;
+  colorconversion::rgb_to_log_rb(input_image, log_image);
 
   /*
    * Segmentation of the image using the previous transformation
@@ -73,9 +75,11 @@ int main(int argc, char *argv[]) {
   // Segmentation of the IHLS and more precisely of the normalised hue channel 
   // ONE PARAMETER TO CONSIDER - COLOR OF THE TRAFFIC SIGN TO DETECT - RED VS BLUE
   int nhs_mode = 0; // nhs_mode == 0 -> red segmentation / nhs_mode == 1 -> blue segmentation
-  cv::Mat nhs_image_seg = segmentation::seg_norm_hue(ihls_image, nhs_mode);
+  cv::Mat nhs_image_seg;
+  segmentation::seg_norm_hue(ihls_image, nhs_image_seg, nhs_mode);
   // Segmentation of the log chromatic image
-  cv::Mat log_image_seg = segmentation::seg_log_chromatic(log_image);
+  cv::Mat log_image_seg;
+  segmentation::seg_log_chromatic(log_image, log_image_seg);
 
   /*
    * Merging and filtering of the previous segmentation
@@ -86,13 +90,15 @@ int main(int argc, char *argv[]) {
   cv::Mat merge_image_seg = nhs_image_seg.clone();
   cv::bitwise_or(nhs_image_seg, log_image_seg, merge_image_seg);
   // Filter the image using median filtering and morpho math
-  cv::Mat bin_image = imageprocessing::filter_image(merge_image_seg);
+  cv::Mat bin_image;
+  imageprocessing::filter_image(merge_image_seg, bin_image);
 
   /*
    * Extract candidates (i.e., contours) and remove inconsistent candidates
    */
 
-  std::vector< std::vector< cv::Point > > distorted_contours = imageprocessing::contours_extraction(bin_image);
+  std::vector< std::vector< cv::Point > > distorted_contours;
+  imageprocessing::contours_extraction(bin_image, distorted_contours);
 
   /*
    * Correct the distortion for each contour
@@ -109,14 +115,18 @@ int main(int argc, char *argv[]) {
   }
 
   // Correct the distortion 
-  std::vector< std::vector< cv::Point2f > > undistorted_contours = imageprocessing::correction_distortion (distorted_contours, translation_matrix, rotation_matrix, scaling_matrix);
+  std::vector< std::vector< cv::Point2f > > undistorted_contours;
+  imageprocessing::correction_distortion (distorted_contours, undistorted_contours, translation_matrix, rotation_matrix, scaling_matrix);
 
   // Normalise the contours to be inside a unit circle
   std::vector<double> factor_vector(undistorted_contours.size());
-  std::vector< std::vector< cv::Point2f > > normalised_contours = initoptimisation::normalise_all_contours(undistorted_contours, factor_vector);
+  std::vector< std::vector< cv::Point2f > > normalised_contours;
+  initoptimisation::normalise_all_contours(undistorted_contours, normalised_contours, factor_vector);
 
   // Check the center mass for a contour
   cv::Point2f dum = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
+
+  std::cout << dum << std::endl;
 
   cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
   cv::Scalar color(255,255,255);

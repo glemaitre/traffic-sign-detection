@@ -23,13 +23,14 @@
 namespace colorconversion {
 
   // Function to convert an RGB image (uchar) to log chromatic format (double)
-  std::vector< cv::Mat > rgb_to_log_rb(cv::Mat rgbImage) {
+  void rgb_to_log_rb(const cv::Mat& rgbImage, std::vector< cv::Mat >& log_chromatic_image) {
 
     // Allocate the output - Format: double with two channels
-    cv::Mat logChromaticR = cv::Mat::zeros(rgbImage.rows, rgbImage.cols, CV_64F);
-    cv::Mat logChromaticB = cv::Mat::zeros(rgbImage.rows, rgbImage.cols, CV_64F);
-    std::vector< cv::Mat > logChromaticImg(2);
-
+    cv::Mat log_chromatic_r = cv::Mat::zeros(rgbImage.size(), CV_64F);
+    cv::Mat log_chromatic_b = cv::Mat::zeros(rgbImage.size(), CV_64F);
+    if (!log_chromatic_image.empty())
+      log_chromatic_image.erase(log_chromatic_image.begin(), log_chromatic_image.end());
+    
     // Split the channels rgb
     std::vector< cv::Mat > rgbVector;
     cv::split(rgbImage, rgbVector);
@@ -49,27 +50,25 @@ namespace colorconversion {
 	if (red == 0) red = 1.00;
 
 	// Compute the log chromatic red
-	logChromaticR.at<double>(i, j) = log (red / green);
+	log_chromatic_r.at<double>(i, j) = log (red / green);
 
 	// Compute the log chromatic blue
-	logChromaticB.at<double>(i, j) = log (blue / green);
+	log_chromatic_b.at<double>(i, j) = log (blue / green);
       }
     }
 
-    logChromaticImg[0] = logChromaticR;
-    logChromaticImg[1] = logChromaticB;
-
-    return logChromaticImg;
+    log_chromatic_image.push_back(log_chromatic_r);
+    log_chromatic_image.push_back(log_chromatic_b);
   }
 
   // Conversion from RGB to IHLS
-  cv::Mat convert_rgb_to_ihls(cv::Mat rgb_image) {
+  void convert_rgb_to_ihls(const cv::Mat& rgb_image, cv::Mat& ihls_image) {
     
     // Check the that the image has three channels
     CV_Assert(rgb_image.channels() == 3);
 
-    // Create the output image
-    cv::Mat ihls_image(rgb_image.rows, rgb_image.cols, CV_8UC3);
+    // Create the output image if needed
+    ihls_image.create(rgb_image.size(), CV_8UC3);
 
     // Make the conversion pixel by pixel
     for (int i = 0; i < rgb_image.rows; ++i) {
@@ -85,8 +84,6 @@ namespace colorconversion {
 	    *ihls_data++ = (uchar) retrieve_normalised_hue(r, g, b);
 	}
     }
-
-    return ihls_image;
   }
 
 }

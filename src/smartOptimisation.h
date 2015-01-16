@@ -42,54 +42,60 @@ static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0
 namespace initoptimisation {
 
   // Function to find normalisation factor
-  double find_normalisation_factor(std::vector < cv::Point2f > contour);
+  double find_normalisation_factor(const std::vector < cv::Point2f >& contour);
 
   // Function to normalize a contour
-  std::vector< cv::Point2f > normalise_contour(std::vector < cv::Point2f > contour, double &factor);
+  void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, double& factor);
+
+  // Function to normalize a contour with a given factor
+  void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor);
 
   // Function to normalise a vector of contours
-  std::vector< std::vector< cv::Point2f > > normalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > &factor_vector);
+  void normalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, std::vector< double >& factor_vector);
 
   // Function to denormalize a contour
-  std::vector< cv::Point2f > denormalise_contour(std::vector < cv::Point2f > contour, double factor);
+  void denormalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor);
   
   // Function to denormalise a vector of contours
-  std::vector< std::vector< cv::Point2f > > denormalise_all_contours(std::vector< std::vector < cv::Point2f > > contours, std::vector< double > factor_vector);
+  void denormalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, const std::vector< double >& factor_vector);
 
   // Function to estimate the radius for a contour
-  int radius_estimation(std::vector< cv::Point2f > contour);
+  int radius_estimation(const std::vector< cv::Point2f >& contour);
 
   // Function to extract a ROI from one image with border copy if the ROI is too large
-  cv::Mat roi_extraction(cv::Mat original_image, cv::Rect roi);
+  void roi_extraction(const cv::Mat& original_image, const cv::Rect& roi, cv::Mat& output_image);
   
   // Function to return max and min in x and y of contours
-  void extract_min_max(std::vector< cv::Point2f > contour, double &min_y, double &min_x, double &max_x, double &max_y);
+  void extract_min_max(const std::vector< cv::Point2f >& contour, double &min_y, double &min_x, double &max_x, double &max_y);
 
   // Function to define the ROI dimension around a target by a given factor
-  cv::Rect roi_dimension_definition(double min_y, double min_x, double max_x, double max_y, double factor);
+  void roi_dimension_definition(const double& min_y, const double& min_x, const double& max_x, const double& max_y, const double& factor, cv::Rect& roi_dimension);
 
   // Function to convert the RGB to float gray
-  cv::Mat rgb_to_float_gray(cv::Mat original_image);
+  void rgb_to_float_gray(const cv::Mat& original_image, cv::Mat& gray_image_float);
 
   // Function which threshold the gradient image based on the magnitude image
   void gradient_thresh(cv::Mat &magnitude_image, cv::Mat &gradient_x, cv::Mat& gradient_y);
 
   // Function to determine the angles from the gradient images
-  void orientations_from_gradient(cv::Mat gradient_x, cv::Mat gradient_y, int edges_number, cv::Mat &gradient_vp_x, cv::Mat &gradient_vp_y, cv::Mat &gradient_bar_x, cv::Mat &gradient_bar_y);
+  void orientations_from_gradient(const cv::Mat& gradient_x, const cv::Mat& gradient_y, const int& edges_number, cv::Mat &gradient_vp_x, cv::Mat &gradient_vp_y, cv::Mat &gradient_bar_x, cv::Mat &gradient_bar_y);
 
   // Function to round a matrix
-  cv::Mat round_matrix(cv::Mat original_matrix);
+  cv::Mat round_matrix(const cv::Mat& original_matrix);
 
   // Function to determin mass center by voting
-  cv::Point2f mass_center_by_voting(cv::Mat magnitude_image, cv::Mat gradient_x, cv::Mat gradient_y, cv::Mat gradient_bar_x, cv::Mat gradient_bar_y, cv::Mat gradient_vp_x, cv::Mat gradient_vp_y, float radius, int edges_number);
+  cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat& gradient_x, const cv::Mat& gradient_y, const cv::Mat& gradient_bar_x, const cv::Mat& gradient_bar_y, const cv::Mat& gradient_vp_x, const cv::Mat& gradient_vp_y, const float& radius, const int& edges_number);
 
   // Function to discover the mass center using the radial symmetry detector
   // RELATED PAPER - Fast shape-based road sign detection for a driver assistance system - xLoy et al.
-  cv::Point2f radial_symmetry_detector(cv::Mat roi_image, int radius, int edges_number);
+  cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius, const int& edges_number);
   
   // Function to discover an approximation of the mass center for each contour using a voting method for a given contour
   // THE CONTOUR NEED TO BE THE NORMALIZED CONTOUR WHICH ARE CORRECTED FOR THE DISTORTION
-  cv::Point2f mass_center_discovery(cv::Mat original_image, cv::Mat translation_matrix, cv::Mat rotation_matrix, cv::Mat scaling_matrix, std::vector< cv::Point2f > contour, double factor, int type_traffic_sign);
+  cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& translation_matrix, const cv::Mat& rotation_matrix, const cv::Mat& scaling_matrix, const std::vector< cv::Point2f >& contour, const double& factor, const int& type_traffic_sign);
+
+  // Function to discover an approximation of the rotation offset
+  double rotation_offset();
 
 }
 

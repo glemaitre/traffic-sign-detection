@@ -50,10 +50,10 @@
 namespace segmentation {
 
   // Segmentation of logarithmic chromatic images
-  cv::Mat seg_log_chromatic(std::vector< cv::Mat > log_image);
+  void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_image_seg);
 
   // Segmentation of normalised hue
-  cv::Mat seg_norm_hue(cv::Mat ihls_image, int colour = 0, int hue_max = R_HUE_MAX, int hue_min = R_HUE_MIN, int sat_min = R_SAT_MIN);
+  void seg_norm_hue(const cv::Mat& ihls_image, cv::Mat& nhs_image, const int& colour = 0, int hue_max = R_HUE_MAX, int hue_min = R_HUE_MIN, int sat_min = R_SAT_MIN);
 
 }
 
