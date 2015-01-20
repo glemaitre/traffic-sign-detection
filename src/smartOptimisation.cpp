@@ -718,3 +718,17 @@ namespace initoptimisation {
     return 0.0;
   }
 }
+
+namespace optimisation {
+
+  // // Function to make the optimisation
+  // gielis_optimisation() {
+    
+  //   // Initialisation of the Gielis shape
+  //   RationalSuperShape2D RS;
+
+    
+
+  // }
+
+}

@@ -108,4 +108,36 @@ namespace initoptimisation {
 
 }
 
+namespace optimisation {
+
+  // Structure for configuration regarding the optimisation
+  template<typename _Tp> class ConfigStruct_ {
+  public:
+    // Class constructor
+    // default constructor
+    ConfigStruct_() { a = 1.0; b = 1.0; n1 = 2.0; n2 = 2.0; n3 = 2.0; p = 4.0; q = 1.0; theta_offset = 0.0; phi_offset = 0.0; x_offset = 0.0; y_offset = 0.0; z_offset = 0.0; }
+    // constructor with initialisation
+    ConfigStruct_(const _Tp& _a, const _Tp& _b, const _Tp& _n1, const _Tp& _n2, const _Tp& _n3, const _Tp& _p, const _Tp& _q, const _Tp& _theta_offset, const _Tp& _phi_offset, const _Tp& _x_offset, const _Tp& _y_offset, const _Tp& _z_offset) { a = _a; b = _b; n1 = _n1; n2 = _n2; n3 = _n3; p = _p; q = _q; theta_offset = _theta_offset; phi_offset = _phi_offset; x_offset = _x_offset; y_offset = _y_offset; z_offset = _z_offset; }
+
+    // Class members
+  public:
+    _Tp a;
+    _Tp b;
+    _Tp n1;
+    _Tp n2;
+    _Tp n3;
+    _Tp p;
+    _Tp q;
+    _Tp theta_offset;
+    _Tp phi_offset;
+    _Tp x_offset;
+    _Tp y_offset;
+    _Tp z_offset;
+  };
+
+  /* // Function to make the optimisation */
+  /* gielis_optimisation(); */
+
+}
+
 #endif // SMARTOPTIMISATION_H

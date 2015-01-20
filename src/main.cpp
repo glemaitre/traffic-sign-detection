@@ -27,6 +27,9 @@
 // OpenCV library
 #include <opencv2/opencv.hpp>
 
+// Eigen library
+#include <Eigen/Core>
+
 // our own code
 #include "segmentation.h"
 #include "colorConversion.h"
@@ -138,7 +141,19 @@ int main(int argc, char *argv[]) {
   // Find the rotation offset
   double rot_offset = initoptimisation::rotation_offset(normalised_contours[0]);
 
-  
+  optimisation::ConfigStruct_<double> contour_config;
+  // Set the number of symetry
+  contour_config.p = 0;
+  // Set the rotation matrix
+  contour_config.theta_offset = rot_offset;
+  // Set the mass center 
+  contour_config.x_offset = mass_center.x;
+  contour_config.y_offset = mass_center.y;
+
+  // Convert the data into Eigen type for further optimisation
+  std::vector < Eigen::Vector2d, Eigen::aligned_allocator< Eigen::Vector2d> > Data;
+  for (unsigned int contour_point_idx = 0; contour_point_idx < normalised_contours[0].size(); contour_point_idx++)
+    Data.push_back(Eigen::Vector2d((double) normalised_contours[0][contour_point_idx].x, (double) normalised_contours[0][contour_point_idx].y));
 
   // cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
   // cv::Scalar color(255,255,255);
