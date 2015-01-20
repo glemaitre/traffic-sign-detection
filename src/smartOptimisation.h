@@ -24,6 +24,9 @@
 // OpenCV library
 #include <opencv2/opencv.hpp>
 
+// own library
+#include "math_utils.h"
+
 #define THRESH_GRAD_RAD_DET 0.10
 #define THRESH_BINARY 0.80
 
@@ -93,6 +96,8 @@ namespace initoptimisation {
   // Function to discover an approximation of the mass center for each contour using a voting method for a given contour
   // THE CONTOUR NEED TO BE THE NORMALIZED CONTOUR WHICH ARE CORRECTED FOR THE DISTORTION
   cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& translation_matrix, const cv::Mat& rotation_matrix, const cv::Mat& scaling_matrix, const std::vector< cv::Point2f >& contour, const double& factor, const int& type_traffic_sign);
+
+  void contour_eucl_to_polar(const std::vector< cv::Point2f >& contour_eucl, std::vector< cv::PointPolar2f >& contour_polar);
 
   // Function to discover an approximation of the rotation offset
   double rotation_offset();

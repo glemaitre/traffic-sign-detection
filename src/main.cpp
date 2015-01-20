@@ -32,6 +32,7 @@
 #include "colorConversion.h"
 #include "imageProcessing.h"
 #include "smartOptimisation.h"
+#include "math_utils.h"
 
 int main(int argc, char *argv[]) {
 
@@ -131,6 +132,9 @@ int main(int argc, char *argv[]) {
 
   // Check the center mass for a contour
   cv::Point2f dum = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
+
+  std::vector< cv::PointPolar2f > ct_pol(normalised_contours[0].size());
+  initoptimisation::contour_eucl_to_polar(normalised_contours[0], ct_pol);
 
   // std::cout << dum << std::endl;
 

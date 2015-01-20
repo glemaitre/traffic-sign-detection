@@ -671,6 +671,20 @@ namespace initoptimisation {
     return normalised_mass_center[0];
   }
 
-  // Function to compute the rotation offset for future initialisation
+    // Function to denormalize a contour
+  void contour_eucl_to_polar(const std::vector< cv::Point2f >& contour_eucl, std::vector< cv::PointPolar2f >& contour_polar) {
+    
+    // Initilisation of the output
+    if(!contour_polar.empty()) {
+      contour_polar.erase(contour_polar.begin(), contour_polar.end());
+      contour_polar.resize(contour_eucl.size());
+    }
+    else
+      contour_polar.resize(contour_eucl.size());
 
+    // Make the normalisation
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour_eucl.size(); contour_point_idx++)
+      contour_polar[contour_point_idx].eucl_to_polar(contour_eucl[contour_point_idx]);
+
+  }
 }
