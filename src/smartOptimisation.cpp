@@ -22,6 +22,7 @@
 
 // stl library
 #include <vector>
+#include <algorithm>
 
 // own library
 #include "imageProcessing.h"
@@ -685,6 +686,18 @@ namespace initoptimisation {
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour_eucl.size(); contour_point_idx++)
       contour_polar[contour_point_idx].eucl_to_polar(contour_eucl[contour_point_idx]);
+
+  }
+
+  // Function to discover an approximation of the rotation offset
+  double rotation_offset(const std::vector< cv::Point2f >& contour) {
+
+    // Convert the euclidean coordinates into polar coordinates
+    std::vector< cv::PointPolar2f > polar_contour;
+    contour_eucl_to_polar(contour, polar_contour);
+
+    // Sort the polar contour depending on theta
+    std::sort(polar_contour.begin(), polar_contour.end());
 
   }
 }

@@ -134,7 +134,7 @@ int main(int argc, char *argv[]) {
   cv::Point2f dum = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
 
   std::vector< cv::PointPolar2f > ct_pol(normalised_contours[0].size());
-  initoptimisation::contour_eucl_to_polar(normalised_contours[0], ct_pol);
+  initoptimisation::rotation_offset(normalised_contours[0]);
 
   // std::cout << dum << std::endl;
 

@@ -81,13 +81,18 @@ namespace cv {
       _y = phi * std::sin(theta);
     }
 
+    // Overload of some operator
+    bool operator<(const PointPolar_<_Tp> &pt) const { return theta < pt.theta; }
+    bool operator>(const PointPolar_<_Tp> &pt) const { return theta > pt.theta; }
+    friend std::ostream& operator<<(std::ostream& os, const PointPolar_<_Tp>& pt) { os << "[" << pt.phi << ", " << pt.theta << "]"; return os; }
+
     _Tp phi, theta; //< the point coordinates
   };
 
-typedef PointPolar_<int> PointPolar2i;
-typedef PointPolar2i PointPolar;
-typedef PointPolar_<float> PointPolar2f;
-typedef PointPolar_<double> PointPolar2d;
+  typedef PointPolar_<int> PointPolar2i;
+  typedef PointPolar2i PointPolar;
+  typedef PointPolar_<float> PointPolar2f;
+  typedef PointPolar_<double> PointPolar2d;
   
 }
 
