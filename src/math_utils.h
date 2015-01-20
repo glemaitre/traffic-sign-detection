@@ -52,6 +52,7 @@ namespace cv {
 
     // various constructors
     PointPolar_() { phi = 0; theta = 0; }
+    PointPolar_(const PointPolar_<_Tp>& pt) { phi = pt.phi; theta = pt.theta; }
     PointPolar_(_Tp _phi, _Tp _theta) { phi = _phi; theta = _theta; }
 
     // function euclidean to polar coordinates

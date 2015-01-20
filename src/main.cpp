@@ -130,13 +130,15 @@ int main(int argc, char *argv[]) {
   std::vector< std::vector< cv::Point2f > > normalised_contours;
   initoptimisation::normalise_all_contours(undistorted_contours, normalised_contours, factor_vector);
 
+  // For each contours
+
   // Check the center mass for a contour
-  cv::Point2f dum = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
+  cv::Point2f mass_center = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
 
-  std::vector< cv::PointPolar2f > ct_pol(normalised_contours[0].size());
-  initoptimisation::rotation_offset(normalised_contours[0]);
+  // Find the rotation offset
+  double rot_offset = initoptimisation::rotation_offset(normalised_contours[0]);
 
-  // std::cout << dum << std::endl;
+  
 
   // cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
   // cv::Scalar color(255,255,255);

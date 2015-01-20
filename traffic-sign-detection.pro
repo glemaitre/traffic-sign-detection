@@ -41,4 +41,4 @@ QMAKE_CXXFLAGS += -std=c++11
 CONFIG += link_pkgconfig
 
 # Add the library needed
-PKGCONFIG += opencv
+PKGCONFIG += opencv eigen3

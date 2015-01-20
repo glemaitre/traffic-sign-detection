@@ -699,5 +699,22 @@ namespace initoptimisation {
     // Sort the polar contour depending on theta
     std::sort(polar_contour.begin(), polar_contour.end());
 
+    // Find the first local minimum
+    float sliding_window_size = 21.0;
+    for (unsigned int contour_point_idx = ceil(sliding_window_size / 2.0); contour_point_idx < polar_contour.size() - ceil(sliding_window_size / 2.0); contour_point_idx++) {
+
+      // Get the central point
+      cv::PointPolar2f center_point(polar_contour[contour_point_idx]);
+      // Get the previous points
+      std::vector< cv::PointPolar2f > vec_previous(polar_contour.begin() + contour_point_idx - ceil(sliding_window_size / 2.0), polar_contour.begin() + contour_point_idx - 1);
+      // Get the following points
+      std::vector< cv::PointPolar2f > vec_next(polar_contour.begin() + contour_point_idx + 1, polar_contour.begin() + contour_point_idx + ceil(sliding_window_size / 2.0));
+
+      if (cmp_pt_vec_pts(center_point, vec_previous) && cmp_pt_vec_pts(center_point, vec_next))	
+	return center_point.theta;
+
+    }
+
+    return 0.0;
   }
 }

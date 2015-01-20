@@ -100,6 +100,9 @@ namespace initoptimisation {
   // Function to convert a contour from euclidean to polar coordinates
   void contour_eucl_to_polar(const std::vector< cv::Point2f >& contour_eucl, std::vector< cv::PointPolar2f >& contour_polar);
 
+  // Function to compare the strict inferiority of point compared with a vector of point using phi as reference
+  template<typename _Tp> bool cmp_pt_vec_pts(const cv::PointPolar_<_Tp>& pt_ctr, const std::vector< cv::PointPolar_<_Tp> >& vec_pts) { bool bFlag = true; for (unsigned int i = 0; i < vec_pts.size(); i++) bFlag = (pt_ctr.phi < vec_pts[i].phi) && bFlag; return bFlag; }
+
   // Function to discover an approximation of the rotation offset
   double rotation_offset(const std::vector< cv::Point2f >& contour);
 
