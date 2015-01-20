@@ -5,7 +5,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include "Constante.h"
+#include "math_utils.h"
 #include "SuperFormula.h"
 #include "random-standalone.h"
 #include <iomanip>

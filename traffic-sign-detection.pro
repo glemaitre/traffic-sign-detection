@@ -25,6 +25,8 @@ INCLUDES  += ./src/segmentation.h \
              ./src/colorConversion.h \
              ./src/imageProcessing.h \
              ./src/smartOptimisation.h \
+             ./src/SuperFormula.h \
+             ./src/random-standalone.h \
              ./src/math_utils.h
 
 # Source files
@@ -32,7 +34,10 @@ SOURCES   += ./src/main.cpp \
              ./src/segmentation.cpp \
              ./src/colorConversion.cpp \
              ./src/smartOptimisation.cpp \
-             ./src/imageProcessing.cpp
+             ./src/imageProcessing.cpp \
+             ./src/SuperFormula.cpp \
+             ./src/random-standalone.cpp 
+             
 
 # Support c++11
 QMAKE_CXXFLAGS += -std=c++11
