@@ -24,8 +24,12 @@
 // OpenCV library
 #include <opencv2/opencv.hpp>
 
+// Eigen library
+#include <Eigen/Core>
+
 // own library
 #include "math_utils.h"
+#include "SuperFormula.h"
 
 #define THRESH_GRAD_RAD_DET 0.10
 #define THRESH_BINARY 0.80
@@ -119,6 +123,25 @@ namespace optimisation {
     // constructor with initialisation
     ConfigStruct_(const _Tp& _a, const _Tp& _b, const _Tp& _n1, const _Tp& _n2, const _Tp& _n3, const _Tp& _p, const _Tp& _q, const _Tp& _theta_offset, const _Tp& _phi_offset, const _Tp& _x_offset, const _Tp& _y_offset, const _Tp& _z_offset) { a = _a; b = _b; n1 = _n1; n2 = _n2; n3 = _n3; p = _p; q = _q; theta_offset = _theta_offset; phi_offset = _phi_offset; x_offset = _x_offset; y_offset = _y_offset; z_offset = _z_offset; }
 
+    // Operator =
+    ConfigStruct_<_Tp>& operator=(const ConfigStruct_<_Tp>& cs) { a = cs.a; b = cs.b; n1 = cs.n1; n2 = cs.n2; n3 = cs.n3; p = cs.p; q = cs.q; theta_offset = cs.theta_offset; phi_offset = cs.phi_offset; x_offset = cs.x_offset; y_offset = cs.y_offset; z_offset = cs.z_offset; return *this; }
+
+    // Operator <<
+        friend std::ostream& operator<<(std::ostream& os, const ConfigStruct_<_Tp>& cs) { os 
+	                             << "a = "            << cs.a << "\n"
+				     << "b = "            << cs.b << "\n"
+				     << "n 1 = "          << cs.n1 << "\n"
+				     << "n 2 = "          << cs.n2 << "\n"
+				     << "n 3 = "          << cs.n3 << "\n"
+				     << "p = "            << cs.p << "\n"
+				     << "q = "            << cs.q << "\n"
+				     << "theta offset = " << cs.theta_offset << "\n"
+				     << "phi offset = "   << cs.phi_offset << "\n"
+				     << "x offset = "     << cs.x_offset << "\n"
+				     << "y offset = "     << cs.y_offset << "\n"
+				     << "z offset = "     << cs.z_offset << "\n";
+	                             return os; }
+
     // Class members
   public:
     _Tp a;
@@ -135,9 +158,17 @@ namespace optimisation {
     _Tp z_offset;
   };
 
-  /* // Function to make the optimisation */
-  /* gielis_optimisation(); */
+  
+  typedef ConfigStruct_<int> ConfigStruct2i;
+  typedef ConfigStruct2i ConfigStruct;
+  typedef ConfigStruct_<float> ConfigStruct2f;
+  typedef ConfigStruct_<double> ConfigStruct2d;
 
+  // Function to make the optimisation
+  void gielis_optimisation(const std::vector< cv::Point2f >& contour, ConfigStruct2d& config_shape, Eigen::Vector4d& mean_err, Eigen::Vector4d& std_err);
+
+  // Reconstruction using the Gielis formula
+  void gielis_reconstruction(const ConfigStruct2d& config_shape, std::vector< cv::Point2f >& gielis_contour, const int number_points);
 }
 
 #endif // SMARTOPTIMISATION_H

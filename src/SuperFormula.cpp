@@ -1,4 +1,23 @@
-//superformula.cpp
+/*
+* Copyright (c) 2015 
+* Guillaume Lemaitre (g.lemaitre58@gmail.com)
+* Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr)
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the Free
+* Software Foundation; either version 2 of the License, or (at your option)
+* any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc., 51
+* Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+*/
+
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -102,13 +121,13 @@ double RationalSuperShape2D :: radius ( const double angle ){
 
 }
 
-void RationalSuperShape2D :: Aff(){
-     for ( int i=0; i<Parameters.size(); i++)
-     {
-         cout << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
-     }
-     cout << endl;
- }
+// void RationalSuperShape2D :: Aff(){
+//      for (unsigned int i=0; i<Parameters.size(); i++)
+//      {
+//          cout << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
+//      }
+//      cout << endl;
+//  }
 
 
 //Potential fields
@@ -666,10 +685,10 @@ Df.clear();
 f = f1+f2+sqrt(f1*f1+f2*f2);
 
 if(f1 != 0 || f2 != 0) // function differentiable
-    for(int i=0; i<Df1.size(); i++)
+    for(unsigned int i=0; i<Df1.size(); i++)
         Df.push_back( Df1[i] + Df2[i] +  (f1*Df1[i]+f2*Df2[i])/sqrt(f1*f1+f2*f2) );
 else                   //function not differentiable, set everything to zero
-    for(int i=0; i<Df1.size(); i++)
+    for(unsigned int i=0; i<Df1.size(); i++)
         Df.push_back( 0 );
 }
 
@@ -681,10 +700,10 @@ Df.clear();
 f = f1+f2-sqrt(f1*f1+f2*f2);
 
 if(f1 != 0 || f2 != 0) // function differentiable
-    for(int i=0; i<Df.size(); i++)
+    for(unsigned int i=0; i<Df.size(); i++)
         Df.push_back ( Df1[i] + Df2[i] -  (f1*Df1[i]+f2*Df2[i])/sqrt(f1*f1+f2*f2) ) ;
 else                   //function not differentiable, set everything to zero
-    for(int i=0; i<Df1.size(); i++)
+    for(unsigned int i=0; i<Df1.size(); i++)
         Df.push_back( 0 );
 
 }
@@ -1334,7 +1353,6 @@ double RationalSuperShape2D :: XiSquare7D(
 
 
 void RationalSuperShape2D :: Optimize8D(
-    string outfilename,
     vector< Vector2d, aligned_allocator< Vector2d> > Data,
     double &err ,
     int functionused
@@ -1344,8 +1362,8 @@ void RationalSuperShape2D :: Optimize8D(
   	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
 	int i,j,k, small_improvement(0);
 
-    ofstream logfile;
-    logfile.open(outfilename.c_str());
+	// ofstream logfile;
+	// logfile.open(outfilename.c_str());
 
 
 	bool STOP(false);
@@ -1370,7 +1388,7 @@ void RationalSuperShape2D :: Optimize8D(
 
     Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
 
-    logfile << *this;
+    // logfile << *this;
 
 	double a, b, R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth;
 
@@ -1485,7 +1503,7 @@ void RationalSuperShape2D :: Optimize8D(
             else
             {
             //correct and realistic improvement
-            logfile << *this;
+            // logfile << *this;
 			lambda /=LAMBDA_INCR;
             }
         }
@@ -1495,8 +1513,8 @@ void RationalSuperShape2D :: Optimize8D(
     }	//end for(...
 
     err = ChiSquare;
-    logfile << *this;
-    logfile.close();
+    // logfile << *this;
+    // logfile.close();
 }
 
 
@@ -1721,18 +1739,18 @@ Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
     return H;
 }
 
-void RationalSuperShape2D :: writeFile(std::string fileName){
-     ofstream logfile;
-     logfile.open(fileName.c_str());
+// void RationalSuperShape2D :: writeFile(std::string fileName){
+//      ofstream logfile;
+//      logfile.open(fileName.c_str());
 
-     for ( int i=0; i<Parameters.size(); i++)
-     {
-         logfile << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
-     }
-     logfile << endl;
+//      for ( int i=0; i<Parameters.size(); i++)
+//      {
+//          logfile << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
+//      }
+//      logfile << endl;
      
-     logfile.close();
- }
+//      logfile.close();
+//  }
 
 
 bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< Vector2d> > Data, Vector4d &Mean, Vector4d &Var)

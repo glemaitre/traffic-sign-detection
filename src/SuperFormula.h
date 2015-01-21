@@ -1,6 +1,22 @@
-//
-//// SuperFormula.h
-//
+/*
+* Copyright (c) 2015 
+* Guillaume Lemaitre (g.lemaitre58@gmail.com)
+* Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr)
+*
+* This program is free software; you can redistribute it and/or modify it
+* under the terms of the GNU General Public License as published by the Free
+* Software Foundation; either version 2 of the License, or (at your option)
+* any later version.
+*
+* This program is distributed in the hope that it will be useful, but WITHOUT
+* ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+* FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+* more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc., 51
+* Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+*/
 
 #ifndef _SUPERFORMULA_
 #define _SUPERFORMULA_
@@ -81,7 +97,6 @@ class RationalSuperShape2D{
             );
 
         void Optimize8D(
-            string outfilename, //file to store the evolution of the best fitted curve though iterations
             const vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
@@ -130,29 +145,29 @@ class RationalSuperShape2D{
         inline double Get_yoffset()  {return Parameters [10];};
         inline double Get_zoffset()  {return Parameters [11];};
 
-        inline double Set_a ( const double a)  {Parameters [0]=fabs(a);};
-        inline double Set_b ( const double b)  {Parameters [1]=fabs(b);};
+        inline void Set_a ( const double a)  {Parameters [0]=fabs(a);};
+        inline void Set_b ( const double b)  {Parameters [1]=fabs(b);};
 
-        inline double Set_n1( const double n1) {Parameters [2]=fabs(n1);};
-        inline double Set_n2( const double n2) {Parameters [3]=fabs(n2);};
-        inline double Set_n3( const double n3) {Parameters [4]=fabs(n3);};
+        inline void Set_n1( const double n1) {Parameters [2]=fabs(n1);};
+        inline void Set_n2( const double n2) {Parameters [3]=fabs(n2);};
+        inline void Set_n3( const double n3) {Parameters [4]=fabs(n3);};
 
-        inline double Set_p ( const double p)  {Parameters [5]=p;};
-        inline double Set_q ( const double q)  {Parameters [6]=q;};
+        inline void Set_p ( const double p)  {Parameters [5]=p;};
+        inline void Set_q ( const double q)  {Parameters [6]=q;};
 
-        inline double Set_thtoffset ( const double thtoffset)  {Parameters [7]=thtoffset;};
-        inline double Set_phioffset ( const double phioffset)  {Parameters [8]=phioffset;};
+        inline void Set_thtoffset ( const double thtoffset)  {Parameters [7]=thtoffset;};
+        inline void Set_phioffset ( const double phioffset)  {Parameters [8]=phioffset;};
 
-        inline double Set_xoffset ( const double xoffset)  {Parameters [9]=xoffset;};
-        inline double Set_yoffset ( const double yoffset)  {Parameters [10]=yoffset;};
-        inline double Set_zoffset ( const double zoffset)  {Parameters [11]=zoffset;};
+        inline void Set_xoffset ( const double xoffset)  {Parameters [9]=xoffset;};
+        inline void Set_yoffset ( const double yoffset)  {Parameters [10]=yoffset;};
+        inline void Set_zoffset ( const double zoffset)  {Parameters [11]=zoffset;};
 
 
         double CurveLength(int n = 50);
 
-        void Aff(); // stupid function to display params value
+        //void Aff(); // stupid function to display params value
 	// Guillaume stupid function 
-	void writeFile(std::string fileName);
+	//void writeFile(std::string fileName);
 
         double DrDtheta(double tht);
 
@@ -208,7 +223,7 @@ class RationalSuperShape2D{
 
 inline std::ostream& operator<<(std::ostream& os, const RationalSuperShape2D& RS2D)
         {
-        for(int i=0; i<RS2D.Parameters.size(); i++) os<<RS2D.Parameters[i]<<" ";
+        for(unsigned int i = 0; i < RS2D.Parameters.size(); i++) os << RS2D.Parameters[i] << " ";
         os<<endl;
         return os;
         };

@@ -23,6 +23,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <limits>
 
 // OpenCV library
 #include <opencv2/opencv.hpp>
@@ -133,41 +134,111 @@ int main(int argc, char *argv[]) {
   std::vector< std::vector< cv::Point2f > > normalised_contours;
   initoptimisation::normalise_all_contours(undistorted_contours, normalised_contours, factor_vector);
 
+  std::vector< std::vector< cv::Point2f > > detected_signs_2f(normalised_contours.size());
+  std::vector< std::vector< cv::Point > > detected_signs(normalised_contours.size());
+
   // For each contours
+  for (unsigned int contour_idx = 0; contour_idx < normalised_contours.size(); contour_idx++) {
+ 
+    // For each type of traffic sign
+    /*
+     * sign_type = 0 -> nb_edges = 3;  gielis_sym = 6; radius
+     * sign_type = 1 -> nb_edges = 4;  gielis_sym = 4; radius
+     * sign_type = 2 -> nb_edges = 12; gielis_sym = 4; radius
+     * sign_type = 3 -> nb_edges = 8;  gielis_sym = 8; radius
+     * sign_type = 4 -> nb_edges = 3;  gielis_sym = 6; radius / 2
+     */
 
-  // Check the center mass for a contour
-  cv::Point2f mass_center = initoptimisation::mass_center_discovery(input_image, translation_matrix[0], rotation_matrix[0], scaling_matrix[0], normalised_contours[0], factor_vector[0], 2);
+    optimisation::ConfigStruct_<double> final_config;
+    double best_fit = std::numeric_limits<double>::infinity();
+    int type_sign_to_keep = 0;
+    for (int sign_type = 0; sign_type < 5; sign_type++) {
 
-  // Find the rotation offset
-  double rot_offset = initoptimisation::rotation_offset(normalised_contours[0]);
+      // Check the center mass for a contour
+      cv::Point2f mass_center = initoptimisation::mass_center_discovery(input_image, translation_matrix[contour_idx], rotation_matrix[contour_idx], scaling_matrix[contour_idx], normalised_contours[contour_idx], factor_vector[contour_idx], sign_type);
 
-  optimisation::ConfigStruct_<double> contour_config;
-  // Set the number of symetry
-  contour_config.p = 0;
-  // Set the rotation matrix
-  contour_config.theta_offset = rot_offset;
-  // Set the mass center 
-  contour_config.x_offset = mass_center.x;
-  contour_config.y_offset = mass_center.y;
+      // Find the rotation offset
+      double rot_offset = initoptimisation::rotation_offset(normalised_contours[contour_idx]);
 
-  // Convert the data into Eigen type for further optimisation
-  std::vector < Eigen::Vector2d, Eigen::aligned_allocator< Eigen::Vector2d> > Data;
-  for (unsigned int contour_point_idx = 0; contour_point_idx < normalised_contours[0].size(); contour_point_idx++)
-    Data.push_back(Eigen::Vector2d((double) normalised_contours[0][contour_point_idx].x, (double) normalised_contours[0][contour_point_idx].y));
+      // Declaration of the parameters of the gielis with the default parameters
+      optimisation::ConfigStruct_<double> contour_config;
+      // Set the number of symmetry
+      int gielis_symmetry = 0;
+      switch (sign_type) {
+      case 0:
+	gielis_symmetry = 6;
+	break;
+      case 1:
+	gielis_symmetry = 4;
+	break;
+      case 2:
+	gielis_symmetry = 4;
+	break;
+      case 3:
+	gielis_symmetry = 8;
+	break;
+      case 4:
+	gielis_symmetry = 6;
+	break;
+      }
+      contour_config.p = gielis_symmetry;
+      // Set the rotation matrix
+      contour_config.theta_offset = rot_offset;
+      // Set the mass center 
+      contour_config.x_offset = mass_center.x;
+      contour_config.y_offset = mass_center.y;
 
-  // cv::Mat output_image = cv::Mat::zeros(bin_image.size(), CV_8U);
-  // cv::Scalar color(255,255,255);
-  // cv::drawContours(output_image, distorted_contours, -1, color, 0, 8);
-  // cv::namedWindow("Window", CV_WINDOW_AUTOSIZE);
-  // cv::imshow("Window", output_image);
-  // cv::waitKey(0);
+      // Go for the optimisation
+      Eigen::Vector4d mean_err(0,0,0,0), std_err(0,0,0,0);
+      optimisation::gielis_optimisation(normalised_contours[contour_idx], contour_config, mean_err, std_err);
+
+      mean_err = mean_err.cwiseAbs();
+      double err_fit = mean_err.sum();
+      
+      if (err_fit < best_fit) {
+	best_fit = err_fit;
+	final_config = contour_config;
+	type_sign_to_keep = sign_type;
+      }
+    }
+
+    // Reconstruct the contour
+    std::cout << "Contour #" << contour_idx << ":\n" << final_config << std::endl;
+    std::vector< cv::Point2f > gielis_contour;
+    int nb_points = 1000;
+    optimisation::gielis_reconstruction(final_config, gielis_contour, nb_points);
+    std::vector< cv::Point2f > denormalised_gielis_contour;
+    initoptimisation::denormalise_contour(gielis_contour, denormalised_gielis_contour, factor_vector[contour_idx]);
+    std::vector< cv::Point2f > distorted_gielis_contour;
+    imageprocessing::inverse_transformation_contour(denormalised_gielis_contour, distorted_gielis_contour, translation_matrix[contour_idx], rotation_matrix[contour_idx], scaling_matrix[contour_idx]);
+
+    // Transform to cv::Point to show the results
+    std::vector< cv::Point > distorted_gielis_contour_int(distorted_gielis_contour.size());
+    for (unsigned int i = 0; i < distorted_gielis_contour.size(); i++) {
+      distorted_gielis_contour_int[i].x = (int) std::round(distorted_gielis_contour[i].x);
+      distorted_gielis_contour_int[i].y = (int) std::round(distorted_gielis_contour[i].y);
+    }
+
+    detected_signs_2f[contour_idx] = distorted_gielis_contour;
+    detected_signs[contour_idx] = distorted_gielis_contour_int;
+   
+  }
 
   end = std::chrono::system_clock::now();
   std::chrono::duration<double> elapsed_seconds = end-start;
   std::time_t end_time = std::chrono::system_clock::to_time_t(end);
  
   std::cout << "Finished computation at " << std::ctime(&end_time)
-	    << "Elapsed time: " << elapsed_seconds.count()*1000 << "ms\n";
+	    << "Elapsed time: " << elapsed_seconds.count()*1000 << " ms\n";
+
+  
+  cv::Mat output_image = input_image.clone();
+  cv::Scalar color(0,255,0);
+  cv::drawContours(output_image, detected_signs, -1, color, 2, 8);
+      
+  cv::namedWindow("Window", CV_WINDOW_AUTOSIZE);
+  cv::imshow("Window", output_image);
+  cv::waitKey(0);
 
   return 0;
 }
