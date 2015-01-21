@@ -86,9 +86,14 @@ int main(int argc, char *argv[]) {
   // Segmentation of the IHLS and more precisely of the normalised hue channel 
   // ONE PARAMETER TO CONSIDER - COLOR OF THE TRAFFIC SIGN TO DETECT - RED VS BLUE
   int nhs_mode = 0; // nhs_mode == 0 -> red segmentation / nhs_mode == 1 -> blue segmentation
-  cv::Mat nhs_image_seg;
-  segmentation::seg_norm_hue(ihls_image, nhs_image_seg, nhs_mode);
+  cv::Mat nhs_image_seg_red;
+  segmentation::seg_norm_hue(ihls_image, nhs_image_seg_red, nhs_mode);
+  //nhs_mode = 1; // nhs_mode == 0 -> red segmentation / nhs_mode == 1 -> blue segmentation
+  //cv::Mat nhs_image_seg_blue;
+  cv::Mat nhs_image_seg_blue = nhs_image_seg_red.clone();
+  //segmentation::seg_norm_hue(ihls_image, nhs_image_seg_blue, nhs_mode);
   // Segmentation of the log chromatic image
+  // TODO - DEFINE THE THRESHOLD FOR THE BLUE TRAFFIC SIGN. FOR NOW WE AVOID THE PROCESSING FOR BLUE SIGN AND LET ONLY THE OTHER METHOD TO TAKE CARE OF IT.
   cv::Mat log_image_seg;
   segmentation::seg_log_chromatic(log_image, log_image_seg);
 
@@ -98,11 +103,16 @@ int main(int argc, char *argv[]) {
 
   // Merge the results of previous segmentation using an OR operator
   // Pre-allocation of an image by cloning a previous image
-  cv::Mat merge_image_seg = nhs_image_seg.clone();
-  cv::bitwise_or(nhs_image_seg, log_image_seg, merge_image_seg);
+  cv::Mat merge_image_seg_with_red = nhs_image_seg_red.clone();
+  cv::Mat merge_image_seg = nhs_image_seg_blue.clone();
+  cv::bitwise_or(nhs_image_seg_red, log_image_seg, merge_image_seg_with_red);
+  cv::bitwise_or(nhs_image_seg_blue, merge_image_seg_with_red, merge_image_seg);
+
   // Filter the image using median filtering and morpho math
   cv::Mat bin_image;
   imageprocessing::filter_image(merge_image_seg, bin_image);
+
+  cv::imwrite("seg.jpg", bin_image);
 
   /*
    * Extract candidates (i.e., contours) and remove inconsistent candidates
@@ -127,7 +137,7 @@ int main(int argc, char *argv[]) {
 
   // Correct the distortion 
   std::vector< std::vector< cv::Point2f > > undistorted_contours;
-  imageprocessing::correction_distortion (distorted_contours, undistorted_contours, translation_matrix, rotation_matrix, scaling_matrix);
+  imageprocessing::correction_distortion(distorted_contours, undistorted_contours, translation_matrix, rotation_matrix, scaling_matrix);
 
   // Normalise the contours to be inside a unit circle
   std::vector<double> factor_vector(undistorted_contours.size());

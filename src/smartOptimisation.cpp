@@ -625,7 +625,7 @@ namespace initoptimisation {
 
     // Define a ROI around the supposed target
     cv::Rect roi_dimension;
-    roi_dimension_definition(min_y, min_x, max_x, max_y, 2.0, roi_dimension);
+    roi_dimension_definition(min_y, min_x, max_x, max_y, 1.5, roi_dimension);
 
     // ROI extraction
     cv::Mat roi_image;
