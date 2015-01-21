@@ -32,18 +32,22 @@ The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
 
 ## Compilation
 
-*Create a binary folder:
+* Create a binary folder:
 
 `mkdir bin`
 
-*Move to the created folder:
+* Move to the created folder:
 
 `cd bin`
 
-*Create the `MakeFile` via qmake:
+* Create the `MakeFile` via qmake:
 
 `qmake-qt4 ../`
 
-*Compile the code to generate the executable:
+* Compile the code to generate the executable:
 
 `make`
+
+* In order to run the code:
+
+`./traffic-sign-detection ../test-images/different0035.jpg`
