@@ -130,9 +130,9 @@ int main(int argc, char *argv[]) {
   std::vector< cv::Mat > scaling_matrix(distorted_contours.size());
   std::vector< cv::Mat > translation_matrix(distorted_contours.size());
   for (unsigned int contour_idx = 0; contour_idx < distorted_contours.size(); contour_idx++) {
-    rotation_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_64F);
-    scaling_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_64F);
-    translation_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_64F);
+    rotation_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_32F);
+    scaling_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_32F);
+    translation_matrix[contour_idx] = cv::Mat::eye(3, 3, CV_32F);
   }
 
   // Correct the distortion 

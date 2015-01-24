@@ -40,13 +40,13 @@ namespace colorconversion {
   void convert_rgb_to_ihls(const cv::Mat& rgb_image, cv::Mat& ihls_image);
 
   // Theta computation
-  inline float retrieve_theta(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return acos((r - (g * 0.5) - (b * 0.5)) / sqrtf((r * r) + (g * g) + (b * b) - (r * g) - (r * b) - (g * b))); }
+  inline float retrieve_theta(const float& r, const float& g, const float& b) { return acos((r - (g * 0.5) - (b * 0.5)) / sqrtf((r * r) + (g * g) + (b * b) - (r * g) - (r * b) - (g * b))); }
   // Hue computation -- H = θ if B <= G -- H = 2 * pi − θ if B > G
-  inline float retrieve_normalised_hue(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (b <= g) ? (retrieve_theta(r, g, b) * 255 / (2 * M_PI)) : (((2 * M_PI) - retrieve_theta(r, g, b)) * 255 / (2 * M_PI)); }
+  inline float retrieve_normalised_hue(const float& r, const float& g, const float& b) { return (b <= g) ? (retrieve_theta(r, g, b) * 255.f / (2.f * M_PI)) : (((2.f * M_PI) - retrieve_theta(r, g, b)) * 255.f / (2.f * M_PI)); }
   // Luminance computation -- L = 0.210R + 0.715G + 0.072B
-  inline float retrieve_luminance(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (0.210f * r) + (0.715f * g) + (0.072f * b); }
+  inline float retrieve_luminance(const float& r, const float& g, const float& b) { return (0.210f * r) + (0.715f * g) + (0.072f * b); }
   // Saturation computation -- S = max(R, G, B) − min(R, G, B)
-  inline float retrieve_saturation(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (mathutils::get_maximum(r, g, b) - mathutils::get_minimum(r, g, b)); }
+  inline float retrieve_saturation(const float& r, const float& g, const float& b) { return (mathutils::get_maximum(r, g, b) - mathutils::get_minimum(r, g, b)); }
 
 }
 

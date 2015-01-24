@@ -39,10 +39,10 @@
 namespace mathutils {
 
   // Maximum between three values
-  inline unsigned int get_maximum(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (r >= g) ? ((r >= b) ? r : b) : ((g >= b) ? g : b); }
+  inline float get_maximum(const float& r, const float& g, const float& b) { return (r >= g) ? ((r >= b) ? r : b) : ((g >= b) ? g : b); }
 
   // Minimum between three values
-  inline unsigned int get_minimum(const unsigned int& r, const unsigned int& g, const unsigned int& b) { return (r <= g) ? ((r <= b) ? r : b) : ((g <= b) ? g : b); }
+  inline float get_minimum(const float& r, const float& g, const float& b) { return (r <= g) ? ((r <= b) ? r : b) : ((g <= b) ? g : b); }
 
 }
 

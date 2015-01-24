@@ -66,7 +66,13 @@ namespace initoptimisation {
       output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / (float) factor);
   
   }
-
+  
+  // Function to normalize a contour with a given factor
+  cv::Point2f normalise_point_fixed_factor(const cv::Point2f& point, const double factor) {
+    
+    // Denormalise
+    return point * (1.0f / static_cast<float> (factor));
+  }
   
   // Function to normalize a contour with a given factor
   void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
@@ -614,7 +620,7 @@ namespace initoptimisation {
 
     // Estimate the radius given a contour
     int radius_contour = radius_estimation(denormalised_contour);
-
+    
     // We need to inverse the translation
     std::vector< cv::Point2f > denormalised_contour_no_translation;
     imageprocessing::inverse_transformation_contour(denormalised_contour, denormalised_contour_no_translation, translation_matrix);
@@ -658,19 +664,14 @@ namespace initoptimisation {
 
     // We have to translate back and normalise this coordinates
     // Apply the translation matrix back
-    std::vector< cv::Point2f > mass_center_vector;
-    mass_center_vector.push_back(mass_center);
-   
+
     // We need to inverse the translation
-    std::vector< cv::Point2f > mass_center_vector_no_translation;
-    imageprocessing::forward_transformation_contour(mass_center_vector, mass_center_vector_no_translation, translation_matrix);
+    cv::Point2f mass_center_no_translation;
+    imageprocessing::forward_transformation_point(mass_center, mass_center_no_translation, translation_matrix);
 
-    // Normalise the center
-    std::vector< cv::Point2f > normalised_mass_center;
-    normalise_contour_fixed_factor(mass_center_vector_no_translation, normalised_mass_center, factor);
+    // Normalise the center and return it
+    return normalise_point_fixed_factor(mass_center_no_translation, factor);
 
-    // Return only the center
-    return normalised_mass_center[0];
   }
 
     // Function to denormalize a contour

@@ -54,6 +54,9 @@ namespace initoptimisation {
   // Function to normalize a contour
   void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, double& factor);
 
+  // Function to normalise a single point
+  cv::Point2f normalise_point_fixed_factor(const cv::Point2f& point, const double factor);
+
   // Function to normalize a contour with a given factor
   void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor);
 
