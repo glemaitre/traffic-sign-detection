@@ -30,7 +30,7 @@
 # Emacs file
 *~
 
-#.user
+*.user
 
 #build dirs
-build*
+build-*
