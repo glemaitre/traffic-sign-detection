@@ -76,9 +76,6 @@ TEST(integration, realDataOctogonal17)
     // Filter the image using median filtering and morpho math
     cv::Mat bin_image;
     imageprocessing::filter_image(merge_image_seg, bin_image);
-
-    cv::imwrite("seg.jpg", bin_image);
-
     /*
      * Extract candidates (i.e., contours) and remove inconsistent candidates
      */
