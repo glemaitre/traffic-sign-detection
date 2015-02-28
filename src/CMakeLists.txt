@@ -5,7 +5,7 @@ project(traffic-sign-detection)
 
 include(cmake/options.cmake               REQUIRED)
 
-include(cmake/findDependencies.cmake        REQUIRED)
+include(cmake/findDependencies.cmake      REQUIRED)
 
 include(cmake/compilerDefOpt.cmake        REQUIRED)
 

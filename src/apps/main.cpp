@@ -38,6 +38,8 @@
 #include "smartOptimisation.h"
 #include "math_utils.h"
 
+
+//TODO: code here should be abstracted outside the app, modify tests accordingly
 int main(int argc, char *argv[]) {
 
   // Chec the number of arguments
