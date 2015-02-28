@@ -29,3 +29,8 @@
 
 # Emacs file
 *~
+
+#.user
+
+#build dirs
+build*
