@@ -11,7 +11,7 @@ set(EXECUTABLE_OUTPUT_PATH ${OPT_BIN_DIR})
 
 
 #default test_data_location
-set(TEST_DATA_DIR_DEFAULT "${PROJECT_SOURCE_DIR}/../test-images")
+set(TEST_DATA_DIR "${PROJECT_SOURCE_DIR}/../test-images")
 
 #TODO: check if an env variable exists with the name and use it instead to be able to move test data easily
-add_definitions(-DTEST_DATA_DIR="${TEST_DATA_DIR_DEFAULT}")
+add_definitions(-DTEST_DATA_DIR="${TEST_DATA_DIR}")
