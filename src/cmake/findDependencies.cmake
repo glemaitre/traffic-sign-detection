@@ -9,4 +9,4 @@ find_package(GTest REQUIRED)
 set( external_includes ${EIGEN_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
 
-set( external_libs ${OpenCV_LIBS})
+set( external_libs "${OpenCV_LIBS} -lpthread")
