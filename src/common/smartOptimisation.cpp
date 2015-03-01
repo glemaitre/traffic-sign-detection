@@ -27,7 +27,7 @@
 // own library
 #include "imageProcessing.h"
 
-namespace initoptimisation {
+namespace initopt {
 
   // Function to find normalisation factor
   double find_normalisation_factor(const std::vector < cv::Point2f >& contour) {

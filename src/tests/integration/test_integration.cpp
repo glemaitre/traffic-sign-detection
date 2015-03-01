@@ -106,7 +106,7 @@ TEST(integration, realDataOctogonal17)
     // Normalise the contours to be inside a unit circle
     std::vector<double> factor_vector(undistorted_contours.size());
     std::vector< std::vector< cv::Point2f > > normalised_contours;
-    initoptimisation::normalise_all_contours(undistorted_contours, normalised_contours, factor_vector);
+    initopt::normalise_all_contours(undistorted_contours, normalised_contours, factor_vector);
 
     std::vector< std::vector< cv::Point2f > > detected_signs_2f(normalised_contours.size());
     std::vector< std::vector< cv::Point > > detected_signs(normalised_contours.size());
@@ -130,12 +130,12 @@ TEST(integration, realDataOctogonal17)
         for (int sign_type = 0; sign_type < 5; sign_type++) {
 
             // Check the center mass for a contour
-            cv::Point2f mass_center = initoptimisation::mass_center_discovery(input_image, translation_matrix[contour_idx],
+            cv::Point2f mass_center = initopt::mass_center_discovery(input_image, translation_matrix[contour_idx],
                                                                               rotation_matrix[contour_idx], scaling_matrix[contour_idx],
                                                                               normalised_contours[contour_idx], factor_vector[contour_idx], sign_type);
 
             // Find the rotation offset
-            double rot_offset = initoptimisation::rotation_offset(normalised_contours[contour_idx]);
+            double rot_offset = initopt::rotation_offset(normalised_contours[contour_idx]);
 
             // Declaration of the parameters of the gielis with the default parameters
             optimisation::ConfigStruct_<double> contour_config;
@@ -185,7 +185,7 @@ TEST(integration, realDataOctogonal17)
         int nb_points = 1000;
         optimisation::gielis_reconstruction(final_config, gielis_contour, nb_points);
         std::vector< cv::Point2f > denormalised_gielis_contour;
-        initoptimisation::denormalise_contour(gielis_contour, denormalised_gielis_contour, factor_vector[contour_idx]);
+        initopt::denormalise_contour(gielis_contour, denormalised_gielis_contour, factor_vector[contour_idx]);
         std::vector< cv::Point2f > distorted_gielis_contour;
         imageprocessing::inverse_transformation_contour(denormalised_gielis_contour, distorted_gielis_contour,
                                                         translation_matrix[contour_idx], rotation_matrix[contour_idx], scaling_matrix[contour_idx]);

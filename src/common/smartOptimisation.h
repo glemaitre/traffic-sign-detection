@@ -46,7 +46,7 @@ static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0
 				 -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
 				 -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
 
-namespace initoptimisation {
+namespace initopt {
 
   // Function to find normalisation factor
   double find_normalisation_factor(const std::vector < cv::Point2f >& contour);
