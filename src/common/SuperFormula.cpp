@@ -719,7 +719,6 @@ void RationalSuperShape2D :: Optimize5D(
 {
 
   	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0);
-	int i,j,k;
 
     ofstream logfile;
     logfile.open(outfilename.c_str());
@@ -754,7 +753,7 @@ void RationalSuperShape2D :: Optimize5D(
 
 		//store oldparams
 
-		for(i=0; i<Parameters.size(); i++) oldparams[i] = Parameters[i];
+        for(size_t i=0; i<Parameters.size(); i++) oldparams[i] = Parameters[i];
 
 		alpha.setZero();
         beta.setZero();
@@ -775,7 +774,7 @@ void RationalSuperShape2D :: Optimize5D(
 		//
 
         //Linearization of Hessian, cf Numerical Recepies
-		for(k=0; k<5; k++)
+        for(int k=0; k<5; k++)
 		{
 		    alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
 		    alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
@@ -831,7 +830,7 @@ void RationalSuperShape2D :: Optimize5D(
 		if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
 		{
 			lambda *=LAMBDA_INCR;
-			for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
+            for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
 		}
 		else    //successful iteration
 		{
@@ -846,7 +845,7 @@ void RationalSuperShape2D :: Optimize5D(
 		    if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
 		    {
 		        lambda *=LAMBDA_INCR; // reduce the step within the search direction
-                for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
+                for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
             }
             else
             {
@@ -882,8 +881,6 @@ double RationalSuperShape2D :: XiSquare5D(
     VectorXd dj;     dj = VectorXd::Zero(5);
 
     Matrix3d Tr,Rot;
-
-    int i,j,k;
 
     //functions pointer
     double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
@@ -930,7 +927,7 @@ double RationalSuperShape2D :: XiSquare5D(
                0 , 0 , 1;
 
         //summation of squared potentials
-        for( i=0; i<Data.size(); i++ ){
+        for(size_t i=0; i<Data.size(); i++ ){
 
 			double DfDr;
 
@@ -1000,15 +997,16 @@ double RationalSuperShape2D :: XiSquare5D(
             if(update){
 
              //gradient beta
-                for(k=0;k<5; k++)
+#pragma unroll
+                for(int k=0;k<5; k++)
 				{
                     beta[k] -= f * dj[k];
 				}
 
 			//compute approximation of Hessian matrix
-
-                for(k=0; k<5; k++)
-                    for(j=0; j<5; j++)
+#pragma unroll
+                for(int k=0; k<5; k++)
+                    for(int j=0; j<5; j++)
                         alpha(k,j) +=  dj[k]*dj[j];
             }
 
@@ -1025,8 +1023,6 @@ void RationalSuperShape2D :: Optimize7D(
     )
 {
   	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0;
-	int i,j,k;
-
     ofstream logfile;
     logfile.open(outfilename.c_str());
 
@@ -1061,7 +1057,7 @@ void RationalSuperShape2D :: Optimize7D(
 
 		//store oldparams
 
-		for(i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
+        for(size_t i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
 
 		alpha.setZero();
         beta.setZero();
@@ -1083,7 +1079,8 @@ void RationalSuperShape2D :: Optimize7D(
 		//
 
         //Linearization of Hessian, cf Numerical Recepies
-		for(k=0; k<7; k++)
+#pragma unroll
+        for(int k=0; k<7; k++)
 		{
 		    alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
 		    alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
@@ -1146,7 +1143,7 @@ void RationalSuperShape2D :: Optimize7D(
 		if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
 		{
 			lambda *= LAMBDA_INCR;
-			for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
+            for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
         }
 		else    //successful iteration
 		{
@@ -1161,7 +1158,7 @@ void RationalSuperShape2D :: Optimize7D(
 		    if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
 		    {
 		        lambda *= LAMBDA_INCR; // reduce the step within the search direction
-                for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
+                for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
             }
             else
             {
@@ -1192,10 +1189,6 @@ double RationalSuperShape2D :: XiSquare7D(
     VectorXd dj; dj = VectorXd::Zero(7);
 
     Matrix3d Tr,Rot, dTrdx0, dTrdy0;
-
-    int i,j,k;
-
-
 
     //functions pointer
     double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
@@ -1247,7 +1240,7 @@ double RationalSuperShape2D :: XiSquare7D(
           -sin(tht0) , cos(tht0) , 0 ,
             0 , 0 , 1;
 
-    for( i=0; i<Data.size(); i++){
+    for(size_t i=0; i<Data.size(); i++){
 
         double DfDr;
 
@@ -1336,14 +1329,15 @@ double RationalSuperShape2D :: XiSquare7D(
         ChiSquare += f*f;
 
         if(update){
-            for( k=0; k<7; k++)
+#pragma unroll
+            for(int k=0; k<7; k++)
 				{
                     beta[k] -= f*dj[k];
 				}
 			//compute approximation of Hessian matrix
-
-			for(k=0; k<7; k++)
-				for(j=0; j<7; j++)
+#pragma unroll
+            for(int k=0; k<7; k++)
+                for(int j=0; j<7; j++)
 					alpha(k,j) +=  dj[k]*dj[j];
             }
 		}//for all vertices
@@ -1360,7 +1354,7 @@ void RationalSuperShape2D :: Optimize8D(
 {
 
   	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
-	int i,j,k, small_improvement(0);
+    int small_improvement(0);
 
 	// ofstream logfile;
 	// logfile.open(outfilename.c_str());
@@ -1399,7 +1393,7 @@ void RationalSuperShape2D :: Optimize8D(
 
 		//store oldparams
 
-		for(i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
+        for(size_t i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
 
 		alpha.setZero();
         beta.setZero();
@@ -1420,7 +1414,8 @@ void RationalSuperShape2D :: Optimize8D(
 		//
 
         //Linearization of Hessian, cf Numerical Recepies
-		for(k=0; k<8; k++)
+#pragma unroll
+        for(int k=0; k<8; k++)
 		{
 		    alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
 		    alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
@@ -1484,7 +1479,7 @@ void RationalSuperShape2D :: Optimize8D(
 		if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
 		{
 		    lambda *=LAMBDA_INCR;
-			for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
+            for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
         }
 		else    //successful iteration
 		{
@@ -1498,7 +1493,7 @@ void RationalSuperShape2D :: Optimize8D(
 		    if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
 		    {
 		        lambda *=LAMBDA_INCR; // reduce the step within the search direction
-                for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
+                for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
             }
             else
             {
@@ -1528,8 +1523,6 @@ double RationalSuperShape2D :: XiSquare8D(
     VectorXd dj;  dj = VectorXd::Zero(8);
 
     Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
-
-    int i,j,k;
 
 
     //functions pointer
@@ -1588,7 +1581,7 @@ double RationalSuperShape2D :: XiSquare8D(
                  -cos(tht0) , -sin(tht0) , 0 ,
                      0 , 0 , 1;
 
-    for(i=0; i<Data.size(); i++){
+    for(size_t i=0; i<Data.size(); i++){
 
     double DfDr;
     //global inverse transform is T * R
@@ -1682,14 +1675,15 @@ double RationalSuperShape2D :: XiSquare8D(
     ChiSquare += f*f;
 
     if( update ){
-          for( k=0; k<8; k++)
+#pragma unroll
+          for(int k=0; k<8; k++)
 				{
                     beta[k] -= f*dj[k];
 				}
 			//compute approximation of Hessian matrix
-
-			for(k=0; k<8; k++)
-				for(j=0; j<8; j++)
+#pragma unroll
+            for(int k=0; k<8; k++)
+                for(int j=0; j<8; j++)
 					alpha(k,j) +=  dj[k]*dj[j];
             }
 		}//for all vertices
@@ -1781,7 +1775,7 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
 
     vector < Vector4d, aligned_allocator< Vector4d> > dumarray;
 
-    for( int i=0; i<Data.size(); i++ ){
+    for( size_t i=0; i<Data.size(); i++ ){
 
 		//global inverse transform is T * R
         Vector3d dum(Data[i][0], Data[i][1], 1.);
@@ -1815,7 +1809,7 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
     glLineWidth(2);
     glBegin(GL_LINES);
     */
-    for (int i=0; i< CanonicalData.size(); i++)
+    for (size_t i=0; i< CanonicalData.size(); i++)
     {
         //get point
         Vector2d P ( CanonicalData[i] );
@@ -1843,7 +1837,7 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
 
     //Compute Var
 
-    for (int i=0; i< CanonicalData.size(); i++)
+    for (size_t i=0; i< CanonicalData.size(); i++)
     {
           //compute variance from previously saved results
         Var[0] += pow( Mean[0] - dumarray[i][0], 2);
