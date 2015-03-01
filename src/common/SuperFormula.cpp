@@ -18,15 +18,17 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+#include "math_utils.h"
+#include "SuperFormula.h"
+#include "random-standalone.h"
+#include "timer.h"
+
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <sstream>
 #include <algorithm>
 
-#include "math_utils.h"
-#include "SuperFormula.h"
-#include "random-standalone.h"
 #include <iomanip>
 
 #include <Eigen/Dense>
@@ -146,6 +148,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     double x(P[0]), y(P[1]), PSL(P.squaredNorm()), PL(sqrt(PSL)), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
 
     vector< vector<double> > Df;
+    Df.reserve(Get_q());
 
     //assert angular values between [0, 2q*Pi]
 
@@ -155,6 +158,8 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     //compute all intersections and associated partial derivatives
 
     vector <double> rowi;
+    rowi.reserve(Get_q()*3);
+    f.reserve(Get_q());
 
     for (int i=0; i<Get_q(); i++)
     {
@@ -191,6 +196,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     //Compute resulting Rfunction
 
     vector<double> Df1; //vector for df/dxi
+    Df1.reserve(Get_q());
 
     //iterative evaluation of:
     //      -the resulting R-functions
@@ -220,7 +226,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
 
     //clear arrays
 
-    f.clear();    Df.clear();    Ddum.clear();    Df1.clear();
+    //f.clear();    Df.clear();    Ddum.clear();    Df1.clear();
 
     //return results
 
@@ -685,14 +691,20 @@ void RpUnion(double f1, double f2, vector<double> Df1, vector<double> Df2, doubl
     assert(Df1.size() == Df2.size());
     Df.clear();
 
-    f = f1+f2+sqrt(f1*f1+f2*f2);
+    const double squareRoot = sqrt(f1*f1+f2*f2);
+    f = f1+f2+squareRoot;
 
     if(f1 != 0 || f2 != 0) // function differentiable
+    {
+        const double division = 1.0f/squareRoot;
         for(unsigned int i=0; i<Df1.size(); i++)
-            Df.push_back( Df1[i] + Df2[i] +  (f1*Df1[i]+f2*Df2[i])/sqrt(f1*f1+f2*f2) );
+            Df.push_back( Df1[i] + Df2[i] +  (f1*Df1[i]+f2*Df2[i])*division );
+    }
     else                   //function not differentiable, set everything to zero
+    {
         for(unsigned int i=0; i<Df1.size(); i++)
             Df.push_back( 0 );
+    }
 }
 
 void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df)
@@ -1347,7 +1359,7 @@ void RationalSuperShape2D :: Optimize8D(
         int functionused
         )
 {
-
+    Timer tmr("\tOptimize8D");
     double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
     int small_improvement(0);
 
@@ -1385,6 +1397,7 @@ void RationalSuperShape2D :: Optimize8D(
 
     int itnum = 0;
     for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
+        //Timer tmrLoop("\t\tTheLoop");
 
         //store oldparams
 
@@ -1513,8 +1526,9 @@ double RationalSuperShape2D :: XiSquare8D(
         VectorXd &beta,
         int functionused,
         bool update) {
-
-    VectorXd dj;  dj = VectorXd::Zero(8);
+    //Timer tmr("\t\tXiSquare8D");
+    //VectorXd dj;  dj = VectorXd::Zero(8);
+    VectorXd dj(8);
 
     Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
 
@@ -1553,9 +1567,9 @@ double RationalSuperShape2D :: XiSquare8D(
 
     //First define inverse translation T-1
 
-    Tr.setZero();
-    Rot.setZero();
-    dRotdtht0.setZero();
+    //Tr.setZero();
+    //Rot.setZero();
+    //dRotdtht0.setZero();
     Tr << 1 , 0 , -x0 ,
             0 , 1 , -y0 ,
             0 , 0 , 1;
@@ -1639,8 +1653,6 @@ double RationalSuperShape2D :: XiSquare8D(
 
         //GetPartialDerivatives(tht, DrDa, DrDb, DrDn1, DrDn2, DrDn3);
         //for(int toto=0; toto<8; toto++) dj[toto]=0;
-
-        dj.setZero();
 
         //df/da = df/dr * dr/da
         dj[0] = DfDr * DrDa(tht) ;
