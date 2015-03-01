@@ -18,8 +18,10 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef COLORCONVERSION_H
-#define COLORCONVERSION_H
+#pragma once
+
+// own library
+#include "math_utils.h"
 
 // stl library
 #include <vector>
@@ -27,9 +29,6 @@
 
 // OpenCV library
 #include <opencv2/opencv.hpp>
-
-// own library
-#include "math_utils.h"
 
 namespace colorconversion {
 
@@ -50,4 +49,3 @@ namespace colorconversion {
 
 }
 
-#endif // COLORCONVERSION_H

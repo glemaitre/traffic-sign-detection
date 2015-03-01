@@ -18,9 +18,7 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef IMAGEPROCESSING_H
-#define IMAGEPROCESSING_H
-
+#pragma once
 // OpenCV library
 #include <opencv2/opencv.hpp>
 
@@ -60,5 +58,3 @@ namespace imageprocessing {
   void correction_distortion (const std::vector< std::vector < cv::Point > >& contours, std::vector< std::vector < cv::Point2f > >& output_contours, std::vector< cv::Mat >& translation_matrix, std::vector< cv::Mat >& rotation_matrix, std::vector< cv::Mat >& scaling_matrix);
 
 }
-
-#endif // IMAGEPROCESSING_H

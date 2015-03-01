@@ -18,13 +18,14 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef _SUPERFORMULA_
-#define _SUPERFORMULA_
+#pragma once
 
 #include <cassert>
 #include <cstring>
+
 #include <Eigen/Core>
 #include <Eigen/StdVector>
+
 // import most common Eigen types
 //USING_PART_OF_NAMESPACE_EIGEN
 using namespace Eigen;
@@ -231,6 +232,4 @@ inline std::ostream& operator<<(std::ostream& os, const RationalSuperShape2D& RS
 //Rfunction for self intersecting curves
 void RpUnion(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df);
 void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df);
-
-#endif
 
