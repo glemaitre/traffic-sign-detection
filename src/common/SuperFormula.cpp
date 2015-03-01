@@ -1580,18 +1580,18 @@ double RationalSuperShape2D :: XiSquare8D(
         double DfDr;
         //global inverse transform is T * R
 
-        Vector2d dum(Data[i]);
-        Vector3d dum2(dum[0],dum[1],1);
+        const Vector2d dum(Data[i]);
+        const Vector3d dum2(dum[0],dum[1],1);
 
         //apply inverse transform
-        Vector3d dum3 ( Rot * (Tr * dum2));
+        const Vector3d dum3 ( Rot * (Tr * dum2));
 
         //get partial derivatives for canonical point
-        Vector3d dPdx0 ( Rot * (dTrdx0 * dum2) );
-        Vector3d dPdy0 ( Rot * (dTrdy0 * dum2) );
-        Vector3d dPdtht0 (dRotdtht0 * (Tr *dum2) );
+        const Vector3d dPdx0 ( Rot * (dTrdx0 * dum2) );
+        const Vector3d dPdy0 ( Rot * (dTrdy0 * dum2) );
+        const Vector3d dPdtht0 (dRotdtht0 * (Tr *dum2) );
 
-        Vector2d P(dum3[0],dum3[1]);
+        const Vector2d P(dum3[0],dum3[1]);
 
         //simplify notations
         dxdx0 = dPdx0[0];
