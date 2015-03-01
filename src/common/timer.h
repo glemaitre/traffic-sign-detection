@@ -3,6 +3,8 @@
 #include <chrono>
 #include <iostream>
 
+//TODO: Print the output of this class only when verbose mode, make verbose cmake option flag
+
 /**
  * @brief The Timer class is a RAII to measure time, from instantiation to end of scope
  */

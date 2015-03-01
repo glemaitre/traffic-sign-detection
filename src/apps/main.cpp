@@ -25,6 +25,7 @@
 #include <common/imageProcessing.h>
 #include <common/smartOptimisation.h>
 #include <common/math_utils.h>
+#include <common/timer.h>
 
 // stl library
 #include <string>
@@ -90,6 +91,7 @@ int main(int argc, char *argv[]) {
     // ONE PARAMETER TO CONSIDER - COLOR OF THE TRAFFIC SIGN TO DETECT - RED VS BLUE
     int nhs_mode = 0; // nhs_mode == 0 -> red segmentation / nhs_mode == 1 -> blue segmentation
     cv::Mat nhs_image_seg_red;
+
     segmentation::seg_norm_hue(ihls_image, nhs_image_seg_red, nhs_mode);
     //nhs_mode = 1; // nhs_mode == 0 -> red segmentation / nhs_mode == 1 -> blue segmentation
     //cv::Mat nhs_image_seg_blue;
@@ -114,6 +116,7 @@ int main(int argc, char *argv[]) {
     // Filter the image using median filtering and morpho math
     cv::Mat bin_image;
     imageprocessing::filter_image(merge_image_seg, bin_image);
+
 
     cv::imwrite("seg.jpg", bin_image);
 
@@ -153,6 +156,7 @@ int main(int argc, char *argv[]) {
     // For each contours
     for (unsigned int contour_idx = 0; contour_idx < normalised_contours.size(); contour_idx++) {
 
+        Timer tmr("for each contours");
         // For each type of traffic sign
         /*
      * sign_type = 0 -> nb_edges = 3;  gielis_sym = 6; radius
@@ -162,10 +166,12 @@ int main(int argc, char *argv[]) {
      * sign_type = 4 -> nb_edges = 3;  gielis_sym = 6; radius / 2
      */
 
+        Timer tmrSgnType("For signType");
         optimisation::ConfigStruct_<double> final_config;
         double best_fit = std::numeric_limits<double>::infinity();
         int type_sign_to_keep = 0;
         for (int sign_type = 0; sign_type < 5; sign_type++) {
+            Timer tmrIteration(" for_signType_iter");
 
             // Check the center mass for a contour
             cv::Point2f mass_center = initopt::mass_center_discovery(input_image, translation_matrix[contour_idx],
@@ -204,6 +210,7 @@ int main(int argc, char *argv[]) {
             contour_config.x_offset = mass_center.x;
             contour_config.y_offset = mass_center.y;
 
+            Timer tmrOpt("\t for_signType_gielisOptimization");
             // Go for the optimisation
             Eigen::Vector4d mean_err(0,0,0,0), std_err(0,0,0,0);
             optimisation::gielis_optimisation(normalised_contours[contour_idx], contour_config, mean_err, std_err);
@@ -217,6 +224,8 @@ int main(int argc, char *argv[]) {
                 type_sign_to_keep = sign_type;
             }
         }
+
+        Timer tmr2("Reconstruct contour");
 
         // Reconstruct the contour
         std::cout << "Contour #" << contour_idx << ":\n" << final_config << std::endl;
