@@ -1,9 +1,11 @@
 
-#include "segmentation.h"
-#include "colorConversion.h"
-#include "imageProcessing.h"
-#include "smartOptimisation.h"
-#include "math_utils.h"
+// our own code
+#include <common/segmentation.h>
+#include <common/colorConversion.h>
+#include <common/imageProcessing.h>
+#include <common/smartOptimisation.h>
+#include <common/math_utils.h>
+
 
 #include <iostream>
 

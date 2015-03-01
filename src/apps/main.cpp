@@ -18,6 +18,14 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+
+// our own code
+#include <common/segmentation.h>
+#include <common/colorConversion.h>
+#include <common/imageProcessing.h>
+#include <common/smartOptimisation.h>
+#include <common/math_utils.h>
+
 // stl library
 #include <string>
 #include <iostream>
@@ -30,13 +38,6 @@
 
 // Eigen library
 #include <Eigen/Core>
-
-// our own code
-#include "segmentation.h"
-#include "colorConversion.h"
-#include "imageProcessing.h"
-#include "smartOptimisation.h"
-#include "math_utils.h"
 
 
 //TODO: code here should be abstracted outside the app, modify tests accordingly

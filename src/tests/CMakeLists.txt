@@ -1,7 +1,6 @@
-include_directories(${PROJECT_BINARY_DIR}/)
+include_directories(${PROJECT_SOURCE_DIR}/)
 include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})
 
-include_directories("../common")
 include_directories(${external_includes})
 
 add_subdirectory(integration)

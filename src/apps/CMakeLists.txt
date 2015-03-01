@@ -1,4 +1,5 @@
-include_directories("../common")
+include_directories(${PROJECT_SOURCE_DIR}/)
+#include_directories("../common")
 
 include_directories(${external_includes})
 #include_directories( ${OpenCV_INCLUDE_DIRS} )
