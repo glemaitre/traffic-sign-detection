@@ -54,6 +54,7 @@ extern Random R1;
 void RationalSuperShape2D :: Init( double a, double b, double n1,double n2,double n3,double p, double q , double thtoffset, double phioffset, double xoffset, double yoffset, double zoffset){
 
     Parameters.clear();
+    Parameters.reserve(12);
 
     Parameters.push_back(a);
     Parameters.push_back(b);
@@ -727,7 +728,7 @@ void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2
 
 void RationalSuperShape2D :: Optimize5D(
         string outfilename,
-        vector< Vector2d, aligned_allocator< Vector2d> > Data,
+        const vector< Vector2d, aligned_allocator< Vector2d> > & Data,
         double &err ,
         int functionused
         )
@@ -884,7 +885,7 @@ void RationalSuperShape2D :: Optimize5D(
 
 
 double RationalSuperShape2D :: XiSquare5D(
-        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
+        const vector < Vector2d, aligned_allocator< Vector2d> > & Data,
         MatrixXd &alpha,
         VectorXd &beta,
         int functionused,
@@ -1030,7 +1031,7 @@ double RationalSuperShape2D :: XiSquare5D(
 
 void RationalSuperShape2D :: Optimize7D(
         string outfilename,
-        vector< Vector2d, aligned_allocator< Vector2d> > Data,
+        const vector< Vector2d, aligned_allocator< Vector2d> > & Data,
         double &err ,
         int functionused
         )
@@ -1190,7 +1191,7 @@ void RationalSuperShape2D :: Optimize7D(
 
 
 double RationalSuperShape2D :: XiSquare7D(
-        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
+        const vector < Vector2d, aligned_allocator< Vector2d> > & Data,
         MatrixXd &alpha,
         VectorXd &beta,
         int functionused,
@@ -1354,7 +1355,7 @@ double RationalSuperShape2D :: XiSquare7D(
 
 
 void RationalSuperShape2D :: Optimize8D(
-        vector< Vector2d, aligned_allocator< Vector2d> > Data,
+        const vector< Vector2d, aligned_allocator< Vector2d> > & Data,
         double &err ,
         int functionused
         )
@@ -1521,7 +1522,7 @@ void RationalSuperShape2D :: Optimize8D(
 
 
 double RationalSuperShape2D :: XiSquare8D(
-        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
+        const vector < Vector2d, aligned_allocator< Vector2d> > & Data,
         MatrixXd &alpha,
         VectorXd &beta,
         int functionused,
