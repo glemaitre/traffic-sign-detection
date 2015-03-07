@@ -159,7 +159,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     //compute all intersections and associated partial derivatives
 
     vector <double> rowi;
-    rowi.reserve(Get_q()*3);
+    rowi.reserve(3);
     f.reserve(Get_q());
 
     for (int i=0; i<Get_q(); i++)
@@ -1410,7 +1410,7 @@ void RationalSuperShape2D :: Optimize8D(
         beta2.setZero();
 
         //cout <<"TRIAL:"<<*this<<endl;
-        bool outofbounds(false);
+
 
         //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
         ChiSquare = XiSquare8D(Data,
@@ -1434,7 +1434,8 @@ void RationalSuperShape2D :: Optimize8D(
 
         //coefficients a and b in [0.01, 100]
 
-        outofbounds =  Parameters[0] + beta[0] < 0.01 || Parameters[0] + beta[0] > 1000 ||
+        const bool outofbounds =
+                Parameters[0] + beta[0] < 0.01 || Parameters[0] + beta[0] > 1000 ||
                 Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
                 Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
                 Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
