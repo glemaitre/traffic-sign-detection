@@ -349,7 +349,7 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
     }
 
     vector <double> f, Ddum;
-    double x(P[0]), y(P[1]), PSL(P.squaredNorm()), PL(sqrt(PSL)), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
+    double x(P[0]), y(P[1]), PSL(P.squaredNorm()), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
 
     vector< vector<double> > Df;
 
@@ -734,7 +734,7 @@ void RationalSuperShape2D :: Optimize5D(
         )
 {
 
-    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0);
+    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
 
     ofstream logfile;
     logfile.open(outfilename.c_str());
@@ -759,8 +759,6 @@ void RationalSuperShape2D :: Optimize5D(
     //  sigma = VectorXd::Zero(5);
 
     logfile << *this;
-
-    double a, b, R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth;
 
     vector<double> Df;
 
@@ -910,13 +908,8 @@ double RationalSuperShape2D :: XiSquare5D(
 
     vector<double> Df;
 
-    double a(Get_a()), b(Get_b()), R, x, y, tht, dthtdx, dthtdy, drdth,
-            ChiSquare(1e15),
-            f(0),h(0),
-            df(0),
-            n1(Get_n1()),n2(Get_n2()),n3(Get_n3()),
-            p(Get_p()), q(Get_q()),
-            x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
+    double  x, y, tht, ChiSquare(1e15),
+            f(0), x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
 
     //clean memory
     if ( update )  {
@@ -966,15 +959,15 @@ double RationalSuperShape2D :: XiSquare5D(
 
         tht = atan2(y,x); if( tht<0) tht+=2.*PI;
 
-        R = radius(tht);
+        //double R = radius(tht);
 
         //theta = Arctan(Y/X)
-        dthtdx = -sin(tht) ;//-y / (x*x+y*y);
-        dthtdy =  cos(tht); //x / (x*x+y*y);
+        //double dthtdx = -sin(tht) ;//-y / (x*x+y*y);
+        //double dthtdy =  cos(tht); //x / (x*x+y*y);
 
         //avoid non differentiable cases
 
-        drdth = DrDtheta(tht);
+        //double drdth = DrDtheta(tht);
 
         f = (*this.*pt2ConstMember)(P, Df); // call to the implicit function
 
@@ -1016,7 +1009,6 @@ double RationalSuperShape2D :: XiSquare5D(
             beta -= f*dj;
 
             //compute approximation of Hessian matrix
-#pragma unroll
             for(int k=0; k<5; k++)
                 for(int j=0; j<5; j++)
                     alpha(k,j) +=  dj[k]*dj[j];
@@ -1036,7 +1028,7 @@ void RationalSuperShape2D :: Optimize7D(
         int functionused
         )
 {
-    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0;
+    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
     ofstream logfile;
     logfile.open(outfilename.c_str());
 
@@ -1061,8 +1053,6 @@ void RationalSuperShape2D :: Optimize7D(
     Matrix3d Tr,Rot, dTrdx0, dTrdy0;
 
     logfile << *this;
-
-    double a, b, R, x, y, tht, dthtdx, dthtdy, dthtdx0, dthtdy0, drdth;
 
     vector<double> Df;
 
@@ -1213,14 +1203,9 @@ double RationalSuperShape2D :: XiSquare7D(
 
     vector<double> Df;
 
-    double a(Get_a()), b(Get_b()), R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
-            ChiSquare(1e15),
-            f(0),h(0),
-            df(0),
-            n1(Get_n1()),n2(Get_n2()),n3(Get_n3()),
-            p(Get_p()), q(Get_q()),
-            x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
-            dxdx0,dxdy0,dxdtht0, dydx0,dydy0;
+    double  x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
+            ChiSquare(1e15), f(0), x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
+            dxdx0,dxdy0, dydx0,dydy0;
 
     //clean memory
     if(update)   {
@@ -1284,7 +1269,7 @@ double RationalSuperShape2D :: XiSquare7D(
 
         tht = atan2(y,x); if( tht < 0 ) tht+=2.*PI;
 
-        R = radius(tht);
+        //double R = radius(tht);
 
         //theta = Arctan(Y/X)
         dthtdx = -sin(tht) ;//-y / (x*x+y*y);
@@ -1342,7 +1327,6 @@ double RationalSuperShape2D :: XiSquare7D(
         if(update){
             beta -= f*dj;
             //compute approximation of Hessian matrix
-#pragma unroll
             for(int k=0; k<5; k++)
                 for(int j=0; j<5; j++)
                     alpha(k,j) +=  dj[k]*dj[j];
@@ -1361,8 +1345,7 @@ void RationalSuperShape2D :: Optimize8D(
         )
 {
     Timer tmr("\tOptimize8D");
-    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
-    int small_improvement(0);
+    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
 
     // ofstream logfile;
     // logfile.open(outfilename.c_str());
@@ -1391,8 +1374,6 @@ void RationalSuperShape2D :: Optimize8D(
     Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
 
     // logfile << *this;
-
-    double a, b, R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth;
 
     vector<double> Df;
 
@@ -1547,12 +1528,8 @@ double RationalSuperShape2D :: XiSquare8D(
 
     vector<double> Df;
 
-    double a(Get_a()), b(Get_b()), R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
-            ChiSquare(1e15),
-            f(0),h(0),
-            df(0),
-            n1(Get_n1()),n2(Get_n2()),n3(Get_n3()),
-            p(Get_p()), q(Get_q()),
+    double  x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
+            ChiSquare(1e15), f(0),
             x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
             dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
 
@@ -1625,7 +1602,7 @@ double RationalSuperShape2D :: XiSquare8D(
         if (P.norm()<EPSILON) continue; // avoids division by zero
         tht = atan2(y,x); if( tht<0) tht+=2.*PI;
 
-        R = radius(tht);
+        //double R = radius(tht);
 
         //theta = Arctan(Y/X)
         dthtdx = -sin(tht) ;//-y / (x*x+y*y);
@@ -1685,7 +1662,6 @@ double RationalSuperShape2D :: XiSquare8D(
         if( update ){
             beta -= f*dj;
             //compute approximation of Hessian matrix
-#pragma unroll
             for(int k=0; k<5; k++)
                 for(int j=0; j<5; j++)
                     alpha(k,j) +=  dj[k]*dj[j];
@@ -1700,10 +1676,13 @@ Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
 
     // P is supposed to be expressed in canonical referential
 
-    double tht = atan2(P[1],P[0]); if (tht<0) tht +=2*PI;
-    double delta = 1e-4;
+    double tht = atan2(P[1],P[0]);
+
+    if (tht<0) tht +=2*PI;
+
     double error(1), change(1);
     int it(0);
+
     while (error >= 0.001 && fabs(change)>1e-6 && it < itmax){
 
         // we would like to optimize the distance function

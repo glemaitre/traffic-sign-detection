@@ -126,7 +126,7 @@ TEST(integration, realDataOctogonal17)
 
         optimisation::ConfigStruct_<double> final_config;
         double best_fit = std::numeric_limits<double>::infinity();
-        int type_sign_to_keep = 0;
+        //int type_sign_to_keep = 0;
         for (int sign_type = 0; sign_type < 5; sign_type++) {
 
             // Check the center mass for a contour
@@ -175,7 +175,7 @@ TEST(integration, realDataOctogonal17)
             if (err_fit < best_fit) {
                 best_fit = err_fit;
                 final_config = contour_config;
-                type_sign_to_keep = sign_type;
+                //type_sign_to_keep = sign_type;
             }
         }
 

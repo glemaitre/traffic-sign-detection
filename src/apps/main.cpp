@@ -168,7 +168,7 @@ int main(int argc, char *argv[]) {
         Timer tmrSgnType("For signType");
         optimisation::ConfigStruct_<double> final_config;
         double best_fit = std::numeric_limits<double>::infinity();
-        int type_sign_to_keep = 0;
+        //int type_sign_to_keep = 0;
         for (int sign_type = 0; sign_type < 5; sign_type++) {
             Timer tmrIteration(" for_signType_iter");
 
@@ -220,7 +220,7 @@ int main(int argc, char *argv[]) {
             if (err_fit < best_fit) {
                 best_fit = err_fit;
                 final_config = contour_config;
-                type_sign_to_keep = sign_type;
+                //type_sign_to_keep = sign_type;
             }
         }
 

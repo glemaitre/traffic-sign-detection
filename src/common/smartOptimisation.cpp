@@ -27,6 +27,19 @@
 #include <vector>
 #include <algorithm>
 
+//TODO: probably this should not be static and defined here, is onlye used once in the function
+static float derivative_x [] = { 0.0041,    0.0104,         0,   -0.0104,   -0.0041,
+                 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
+                 0.0467,    0.1180,         0,   -0.1180,   -0.0467,
+                 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
+                 0.0041,    0.0104,         0,   -0.0104,   -0.0041 };
+
+static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0041,
+                 0.0104,    0.0689,    0.1180,    0.0689,    0.0104,
+                 0,         0,         0,         0,         0,
+                 -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
+                 -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
+
 
 namespace initopt {
 
