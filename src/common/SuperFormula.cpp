@@ -749,7 +749,7 @@ void RationalSuperShape2D :: Optimize5D(
     alpha =  MatrixXd::Zero(5,5);
     alpha2 =  MatrixXd::Zero(5,5);
 
-    VectorXd beta, beta2, dj, oldbeta,  sigma;
+    VectorXd beta, beta2, dj, oldbeta;
 
     beta = VectorXd::Zero(5);
     beta2 = VectorXd::Zero(5);
@@ -759,8 +759,6 @@ void RationalSuperShape2D :: Optimize5D(
     //  sigma = VectorXd::Zero(5);
 
     logfile << *this;
-
-    vector<double> Df;
 
     int itnum = 0;
     for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
@@ -1370,12 +1368,6 @@ void RationalSuperShape2D :: Optimize8D(
     oldbeta = VectorXd::Zero(8);
     trial = VectorXd::Zero(8);
     sigma = VectorXd::Zero(8);
-
-    Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
-
-    // logfile << *this;
-
-    vector<double> Df;
 
     int itnum = 0;
     for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
