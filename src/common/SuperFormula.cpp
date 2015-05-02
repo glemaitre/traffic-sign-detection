@@ -18,15 +18,17 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+#include "math_utils.h"
+#include "SuperFormula.h"
+#include "random-standalone.h"
+#include "timer.h"
+
 #include <iostream>
 #include <fstream>
 #include <cmath>
 #include <sstream>
 #include <algorithm>
 
-#include "math_utils.h"
-#include "SuperFormula.h"
-#include "random-standalone.h"
 #include <iomanip>
 
 #include <Eigen/Dense>
@@ -51,73 +53,70 @@ extern Random R1;
 
 void RationalSuperShape2D :: Init( double a, double b, double n1,double n2,double n3,double p, double q , double thtoffset, double phioffset, double xoffset, double yoffset, double zoffset){
 
-     Parameters.clear();
+    Parameters.clear();
+    Parameters.reserve(12);
 
-     Parameters.push_back(a);
-     Parameters.push_back(b);
+    Parameters.push_back(a);
+    Parameters.push_back(b);
 
-     Parameters.push_back(n1);
-     Parameters.push_back(n2);
-     Parameters.push_back(n3);
+    Parameters.push_back(n1);
+    Parameters.push_back(n2);
+    Parameters.push_back(n3);
 
-     Parameters.push_back(p);
-     Parameters.push_back(q);
+    Parameters.push_back(p);
+    Parameters.push_back(q);
 
-     Parameters.push_back(thtoffset);
-     Parameters.push_back(phioffset);
+    Parameters.push_back(thtoffset);
+    Parameters.push_back(phioffset);
 
-     Parameters.push_back(xoffset);
-     Parameters.push_back(yoffset);
-     Parameters.push_back(zoffset);
+    Parameters.push_back(xoffset);
+    Parameters.push_back(yoffset);
+    Parameters.push_back(zoffset);
 }
 
 void RationalSuperShape2D :: Init( double a, double b, double n1,double n2,double n3)
 {
-     Init(
-           a, b,     //scale
-           n1, n2, n3,  //shape
-           Get_p(), Get_q(), //sym
-           0,0,      //rota
-           0,0,0);   //trans
+    Init(
+                a, b,     //scale
+                n1, n2, n3,  //shape
+                Get_p(), Get_q(), //sym
+                0,0,      //rota
+                0,0,0);   //trans
 }
 
 RationalSuperShape2D ::	RationalSuperShape2D(){
-     Init(
-           1, 1,     //scale
-           2, 2, 2,  //shape
-           4, 1,     //sym
-           0,0,      //rota
-           0,0,0);   //trans
+    Init(
+                1, 1,     //scale
+                2, 2, 2,  //shape
+                4, 1,     //sym
+                0,0,      //rota
+                0,0,0);   //trans
 }
 
 
 
 RationalSuperShape2D :: RationalSuperShape2D(double a, double b, double n1,double n2,double n3,double p, double q, double thtoffset, double phioffset, double xoffset, double yoffset, double zoffset){
-     Init(a, b, n1, n2, n3, p, q, thtoffset, phioffset,xoffset, yoffset, zoffset);
+    Init(a, b, n1, n2, n3, p, q, thtoffset, phioffset,xoffset, yoffset, zoffset);
 }
 
 RationalSuperShape2D :: ~RationalSuperShape2D() {
 
-     Parameters.clear();
-     PointList.clear();
-     FaceList.clear();
-     NormalList.clear();
 }
 
 double RationalSuperShape2D :: radius ( const double angle ){
 
-   			double tmp_angle = Get_p() * angle * 0.25 / Get_q() ;
+    double tmp_angle = Get_p() * angle * 0.25 / Get_q() ;
 
-			double tmp1( cos(tmp_angle) );
-			double tmp2( sin(tmp_angle) );
+    double tmp1( cos(tmp_angle) );
+    double tmp2( sin(tmp_angle) );
 
-			//if( tmp1 != 0)
-				tmp1 = pow(fabs(tmp1),Get_n2()) / Get_a();
-			//if( tmp2 != 0)
-                tmp2 = pow(fabs(tmp2),Get_n3()) / Get_b();
+    //if( tmp1 != 0)
+    tmp1 = pow(fabs(tmp1),Get_n2()) / Get_a();
+    //if( tmp2 != 0)
+    tmp2 = pow(fabs(tmp2),Get_n3()) / Get_b();
 
-			if( tmp1 + tmp2 !=0 )	return( pow( (tmp1 + tmp2), -1.0/Get_n1() ) );
-			else				   {cout<<"ERROR RADIUS NULL"<<endl;return 0;}
+    if( tmp1 + tmp2 !=0 )	return( pow( (tmp1 + tmp2), -1.0/Get_n1() ) );
+    else				   {cout<<"ERROR RADIUS NULL"<<endl;return 0;}
 
 }
 
@@ -150,6 +149,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     double x(P[0]), y(P[1]), PSL(P.squaredNorm()), PL(sqrt(PSL)), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
 
     vector< vector<double> > Df;
+    Df.reserve(Get_q());
 
     //assert angular values between [0, 2q*Pi]
 
@@ -157,6 +157,10 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     if (tht<0) thtbase += 2.*PI;
 
     //compute all intersections and associated partial derivatives
+
+    vector <double> rowi;
+    rowi.reserve(3);
+    f.reserve(Get_q());
 
     for (int i=0; i<Get_q(); i++)
     {
@@ -167,7 +171,8 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
 
         // store partial derivatives
 
-        vector <double> rowi;
+        rowi.clear();
+
         drdth = DrDtheta(tht);
         rowi.push_back(  drdth*dthtdx -  cos(tht)); //df/dx
         rowi.push_back(  drdth*dthtdy -  sin(tht)); //df/dy
@@ -179,17 +184,20 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
 
     for(int i=0; i<Get_q()-1; i++)
         for (int j=i+1; j<Get_q(); j++)
+        {
             if (f[i]<f[j])
             {
-            //swap values of f[i] and f[j]
-            swap(f[i],f[j]);
-            //swap rows Df[i] and Df[j]
-            Df[i].swap(Df[j]);
+                //swap values of f[i] and f[j]
+                swap(f[i],f[j]);
+                //swap rows Df[i] and Df[j]
+                Df[i].swap(Df[j]);
             }
+        }
 
     //Compute resulting Rfunction
 
     vector<double> Df1; //vector for df/dxi
+    Df1.reserve(Get_q());
 
     //iterative evaluation of:
     //      -the resulting R-functions
@@ -203,7 +211,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     //combine functions as (...((F1 v F2) v F3 ) v F4) v ...)
 
     for(int i=1; i<Get_q(); i++) // for all intersections
-        {
+    {
         //compute R-function, sets all partial derivatives
         //fdum and Ddum temporary results of the union from F1 to Fi
 
@@ -212,14 +220,14 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
         //update results in f1 and Df1, and iterate
         f1 = fdum;
         Df1 = Ddum;
-        }
+    }
 
     //final partial derivatives df/dxi after R-functions
     Dffinal = Df1;
 
     //clear arrays
 
-    f.clear();    Df.clear();    Ddum.clear();    Df1.clear();
+    //f.clear();    Df.clear();    Ddum.clear();    Df1.clear();
 
     //return results
 
@@ -252,6 +260,8 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
 
     //compute all intersections and associated gradient values
 
+    vector <double> rowi;
+
     for (int i=0; i<Get_q(); i++)
     {
         tht = thtbase + i*2.*PI;
@@ -263,7 +273,8 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
 
         // store partial derivatives
 
-        vector <double> rowi;
+        rowi.clear();
+
         drdth = DrDtheta(tht);
         rowi.push_back( - ( x*R/PL - drdth*dthtdx*PL )/(R*R) ); //df/dx
         rowi.push_back( - ( y*R/PL - drdth*dthtdy*PL )/(R*R) ); //df/dy
@@ -271,16 +282,16 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
         Df.push_back(rowi);
     }
 
-     //bubble sort, not really efficient but acceptable for such small arrays
+    //bubble sort, not really efficient but acceptable for such small arrays
 
     for(int i=0; i<Get_q()-1; i++)
         for (int j=i+1; j<Get_q(); j++)
             if (f[i]<f[j])
             {
-            //swap values of f[i] and f[j]
-            swap(f[i],f[j]);
-            //swap rows Df[i] and Df[j]
-            Df[i].swap(Df[j]);
+                //swap values of f[i] and f[j]
+                swap(f[i],f[j]);
+                //swap rows Df[i] and Df[j]
+                Df[i].swap(Df[j]);
             }
 
     //Compute resulting Rfunction
@@ -299,7 +310,7 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
     //combine functions as (...((F1 v F2) v F3 ) v F4) v ...)
 
     for(int i=1; i<Get_q(); i++) // for all intersections
-        {
+    {
         //compute R-function, sets all partial derivatives
         //fdum and Ddum temporary results of the union from F1 to Fi
 
@@ -308,7 +319,7 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
         //update results in f1 and Df1, and iterate
         f1 = fdum;
         Df1 = Ddum;
-        }
+    }
 
     //final partial derivatives df/dxi after R-functions
     Dffinal = Df1;
@@ -338,7 +349,7 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
     }
 
     vector <double> f, Ddum;
-    double x(P[0]), y(P[1]), PSL(P.squaredNorm()), PL(sqrt(PSL)), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
+    double x(P[0]), y(P[1]), PSL(P.squaredNorm()), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
 
     vector< vector<double> > Df;
 
@@ -348,6 +359,8 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
     if (tht<0) thtbase += 2.*PI;
 
     //compute all intersections and associated gradient values
+
+    vector <double> rowi;
 
     for (int i=0; i<Get_q(); i++)
     {
@@ -361,7 +374,8 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
         // store partial derivatives
 
         drdth = DrDtheta(tht);
-        vector <double> rowi;
+
+        rowi.clear();
         rowi.push_back( -2.*(x*R - PSL * drdth*dthtdx)/(R*PSL)  ); //df/dx
         rowi.push_back( -2.*(y*R - PSL * drdth*dthtdy)/(R*PSL) ); //df/dy
         rowi.push_back( 2./R );  //df/dr
@@ -369,16 +383,16 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
         Df.push_back(rowi);
     }
 
-     //bubble sort, not really efficient but acceptable for such small arrays
+    //bubble sort, not really efficient but acceptable for such small arrays
 
     for(int i=0; i<Get_q()-1; i++)
         for (int j=i+1; j<Get_q(); j++)
             if (f[i]<f[j])
             {
-            //swap values of f[i] and f[j]
-            swap(f[i],f[j]);
-            //swap rows Df[i] and Df[j]
-            Df[i].swap(Df[j]);
+                //swap values of f[i] and f[j]
+                swap(f[i],f[j]);
+                //swap rows Df[i] and Df[j]
+                Df[i].swap(Df[j]);
             }
 
     //Compute resulting Rfunction
@@ -397,7 +411,7 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
     //combine functions as (...((F1 v F2) v F3 ) v F4) v ...)
 
     for(int i=1; i<Get_q(); i++) // for all intersections
-        {
+    {
         //compute R-function, sets all partial derivatives
         //fdum and Ddum temporary results of the union from F1 to Fi
 
@@ -406,14 +420,10 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
         //update results in f1 and Df1, and iterate
         f1 = fdum;
         Df1 = Ddum;
-        }
+    }
 
     //final partial derivatives df/dxi after R-functions
     Dffinal = Df1;
-
-    //clear arrays
-
-    f.clear();    Df.clear();    Ddum.clear();    Df1.clear();
 
     //return results
 
@@ -437,9 +447,9 @@ double RationalSuperShape2D :: DrDtheta(double tht)
                         (-1./n1) *
                         pow(  pow(C,n2) / a + pow(S,n3)/b , -1./n1 - 1.)*
                         (
-								-0.25*m*pow(C,n2)*(n2*tan(m*tht*0.25/q)) / (a*q)
-								+
-								0.25*m*pow(S,n3)*(n3/tan(m*tht*0.25/q)) / (b*q)
+                                -0.25*m*pow(C,n2)*(n2*tan(m*tht*0.25/q)) / (a*q)
+                                +
+                                0.25*m*pow(S,n3)*(n3/tan(m*tht*0.25/q)) / (b*q)
                         );
                         */
 
@@ -456,11 +466,11 @@ double RationalSuperShape2D :: DrDtheta(double tht)
 
 
     Vector4d V(
-                  r0,
-                  -8*r1,
-                  8*r2,
-                  -r3
-                  );
+                r0,
+                -8*r1,
+                8*r2,
+                -r3
+                );
 
     return V.sum() / (12.*delta);
 
@@ -497,11 +507,11 @@ double RationalSuperShape2D :: DrDa(const double tht)
 
 
     Vector4d V(
-                  r0,
-                  -8*r1,
-                  8*r2,
-                  -r3
-                  );
+                r0,
+                -8*r1,
+                8*r2,
+                -r3
+                );
 
     return V.sum() / (12.*delta);
 
@@ -538,11 +548,11 @@ double RationalSuperShape2D :: DrDb(const double tht)
 
 
     Vector4d V(
-                  r0,
-                  -8*r1,
-                  8*r2,
-                  -r3
-                  );
+                r0,
+                -8*r1,
+                8*r2,
+                -r3
+                );
 
     return V.sum() / (12.*delta);
 }
@@ -579,11 +589,11 @@ double RationalSuperShape2D :: DrDn1(const double tht)
 
 
     Vector4d V(
-                  r0,
-                  -8*r1,
-                  8*r2,
-                  -r3
-                  );
+                r0,
+                -8*r1,
+                8*r2,
+                -r3
+                );
 
     return V.sum() / (12.*delta);
 
@@ -606,7 +616,7 @@ double RationalSuperShape2D :: DrDn2(const double tht)
         log(C)*aCn2 / Get_n1();
         */
 
-        //discrete approximation
+    //discrete approximation
 
     double oldn2(Get_n2());
 
@@ -622,11 +632,11 @@ double RationalSuperShape2D :: DrDn2(const double tht)
 
 
     Vector4d V(
-                  r0,
-                  -8*r1,
-                  8*r2,
-                  -r3
-                  );
+                r0,
+                -8*r1,
+                8*r2,
+                -r3
+                );
 
     return V.sum() / (12.*delta);
 
@@ -665,11 +675,11 @@ double RationalSuperShape2D :: DrDn3(const double tht)
 
 
     Vector4d V(
-                  r0,
-                  -8*r1,
-                  8*r2,
-                  -r3
-                  );
+                r0,
+                -8*r1,
+                8*r2,
+                -r3
+                );
 
     return V.sum() / (12.*delta);
 
@@ -679,54 +689,59 @@ double RationalSuperShape2D :: DrDn3(const double tht)
 
 void RpUnion(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df)
 {
-assert(Df1.size() == Df2.size());
-Df.clear();
+    assert(Df1.size() == Df2.size());
+    Df.clear();
 
-f = f1+f2+sqrt(f1*f1+f2*f2);
+    const double squareRoot = sqrt(f1*f1+f2*f2);
+    f = f1+f2+squareRoot;
 
-if(f1 != 0 || f2 != 0) // function differentiable
-    for(unsigned int i=0; i<Df1.size(); i++)
-        Df.push_back( Df1[i] + Df2[i] +  (f1*Df1[i]+f2*Df2[i])/sqrt(f1*f1+f2*f2) );
-else                   //function not differentiable, set everything to zero
-    for(unsigned int i=0; i<Df1.size(); i++)
-        Df.push_back( 0 );
+    if(f1 != 0 || f2 != 0) // function differentiable
+    {
+        const double division = 1.0f/squareRoot;
+        for(unsigned int i=0; i<Df1.size(); i++)
+            Df.push_back( Df1[i] + Df2[i] +  (f1*Df1[i]+f2*Df2[i])*division );
+    }
+    else                   //function not differentiable, set everything to zero
+    {
+        for(unsigned int i=0; i<Df1.size(); i++)
+            Df.push_back( 0 );
+    }
 }
 
 void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df)
 {
-assert(Df1.size() == Df2.size());
-Df.clear();
+    assert(Df1.size() == Df2.size());
+    Df.clear();
 
-f = f1+f2-sqrt(f1*f1+f2*f2);
+    f = f1+f2-sqrt(f1*f1+f2*f2);
 
-if(f1 != 0 || f2 != 0) // function differentiable
-    for(unsigned int i=0; i<Df.size(); i++)
-        Df.push_back ( Df1[i] + Df2[i] -  (f1*Df1[i]+f2*Df2[i])/sqrt(f1*f1+f2*f2) ) ;
-else                   //function not differentiable, set everything to zero
-    for(unsigned int i=0; i<Df1.size(); i++)
-        Df.push_back( 0 );
+    if(f1 != 0 || f2 != 0) // function differentiable
+        for(unsigned int i=0; i<Df.size(); i++)
+            Df.push_back ( Df1[i] + Df2[i] -  (f1*Df1[i]+f2*Df2[i])/sqrt(f1*f1+f2*f2) ) ;
+    else                   //function not differentiable, set everything to zero
+        for(unsigned int i=0; i<Df1.size(); i++)
+            Df.push_back( 0 );
 
 }
 
 
 
 void RationalSuperShape2D :: Optimize5D(
-    string outfilename,
-    vector< Vector2d, aligned_allocator< Vector2d> > Data,
-    double &err ,
-    int functionused
-    )
+        string outfilename,
+        const vector< Vector2d, aligned_allocator< Vector2d> > & Data,
+        double &err ,
+        int functionused
+        )
 {
 
-  	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0);
-	int i,j,k;
+    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
 
     ofstream logfile;
     logfile.open(outfilename.c_str());
 
-	bool STOP(false);
-	double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};  //dj[16];
-	double LAMBDA_INCR(10), lambda(pow(LAMBDA_INCR, -6));
+    bool STOP(false);
+    double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};  //dj[16];
+    double LAMBDA_INCR(10), lambda(pow(LAMBDA_INCR, -6));
 
 
     MatrixXd alpha, alpha2;
@@ -734,29 +749,25 @@ void RationalSuperShape2D :: Optimize5D(
     alpha =  MatrixXd::Zero(5,5);
     alpha2 =  MatrixXd::Zero(5,5);
 
-    VectorXd beta, beta2, dj, oldbeta,  sigma;
+    VectorXd beta, beta2, dj, oldbeta;
 
     beta = VectorXd::Zero(5);
     beta2 = VectorXd::Zero(5);
     dj = VectorXd::Zero(5);
     oldbeta = VectorXd::Zero(5);
-  //  trial = VectorXd::Zero(5);
-  //  sigma = VectorXd::Zero(5);
+    //  trial = VectorXd::Zero(5);
+    //  sigma = VectorXd::Zero(5);
 
     logfile << *this;
 
-	double a, b, R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth;
-
-    vector<double> Df;
-
     int itnum = 0;
-	for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
+    for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
 
-		//store oldparams
+        //store oldparams
 
-		for(i=0; i<Parameters.size(); i++) oldparams[i] = Parameters[i];
+        for(size_t i=0; i<Parameters.size(); i++) oldparams[i] = Parameters[i];
 
-		alpha.setZero();
+        alpha.setZero();
         beta.setZero();
         alpha2.setZero();
         beta2.setZero();
@@ -766,75 +777,75 @@ void RationalSuperShape2D :: Optimize5D(
 
         //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
         ChiSquare = XiSquare5D(Data,
-                             alpha,
-                             beta,
-                             functionused,             //implicit function1
-                             true);         //update vectors
-		//
-		// add Lambda to diagonla elements and solve the matrix
-		//
+                               alpha,
+                               beta,
+                               functionused,             //implicit function1
+                               true);         //update vectors
+        //
+        // add Lambda to diagonla elements and solve the matrix
+        //
 
         //Linearization of Hessian, cf Numerical Recepies
-		for(k=0; k<5; k++)
-		{
-		    alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
-		    alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
-		}
+        for(int k=0; k<5; k++)
+        {
+            alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
+            alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
+        }
 
         //solve system
         alpha.ldlt().solveInPlace(beta);
 
-		//coefficients a and b in [0.01, 100] to preserve numerical accuracy
+        //coefficients a and b in [0.01, 100] to preserve numerical accuracy
 
         outofbounds =  Parameters[0] + beta[0] < 0.01 || Parameters[0] + beta[0] > 1000 ||
-                       Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
-                       Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
-                       Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
-                       Parameters[4] + beta[4] < 0.1 || Parameters[4] + beta[4]> 1000;
+                Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
+                Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
+                Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
+                Parameters[4] + beta[4] < 0.1 || Parameters[4] + beta[4]> 1000;
 
 
         if( !outofbounds )
         {
 
-        Set_a(Parameters[0] + beta[0]);
-        Set_b(Parameters[1] + beta[1]);
+            Set_a(Parameters[0] + beta[0]);
+            Set_b(Parameters[1] + beta[1]);
 
 
-        // coefficients n1 in [1., 1000]
-        // setting n1<1. leads to strong numerical instabilities
+            // coefficients n1 in [1., 1000]
+            // setting n1<1. leads to strong numerical instabilities
 
-        Set_n1( Parameters[2] + beta[2] );
+            Set_n1( Parameters[2] + beta[2] );
 
-		// coefficients n2,n3 in [0.001, 1000]
+            // coefficients n2,n3 in [0.001, 1000]
 
-		Set_n2( Parameters[3] + beta[3]);
-		Set_n3( Parameters[4] + beta[4]);
+            Set_n2( Parameters[3] + beta[3]);
+            Set_n3( Parameters[4] + beta[4]);
         }
 
-		//
-		//	Evaluate chisquare with new values
-		//
+        //
+        //	Evaluate chisquare with new values
+        //
 
 
-		OldChiSquare=ChiSquare;
+        OldChiSquare=ChiSquare;
 
-		NewChiSquare=XiSquare5D(Data,
-                             alpha2,
-                             beta2,
-                             functionused,             //implicit function
-                             false);  // update alpha and beta or not
+        NewChiSquare=XiSquare5D(Data,
+                                alpha2,
+                                beta2,
+                                functionused,             //implicit function
+                                false);  // update alpha and beta or not
 
         //
-		// check if better result
-		//
+        // check if better result
+        //
 
-		if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
-		{
-			lambda *=LAMBDA_INCR;
-			for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
-		}
-		else    //successful iteration
-		{
+        if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
+        {
+            lambda *=LAMBDA_INCR;
+            for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
+        }
+        else    //successful iteration
+        {
 
             // huge improvement, something may have been wrong
             // this may arise during the first iterations
@@ -843,23 +854,23 @@ void RationalSuperShape2D :: Optimize5D(
             // ==> it is better to verify the result with a smaller step
             // if indeed it was a correct iteration, then it will pass the next time
 
-		    if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
-		    {
-		        lambda *=LAMBDA_INCR; // reduce the step within the search direction
-                for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
+            if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
+            {
+                lambda *=LAMBDA_INCR; // reduce the step within the search direction
+                for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
             }
             else
             {
-            //correct and realistic improvement
-            logfile << *this;
-			lambda /=LAMBDA_INCR;
+                //correct and realistic improvement
+                logfile << *this;
+                lambda /=LAMBDA_INCR;
             }
         }
 
-		STOP = lambda > 1e15 || NewChiSquare < 1e-5; // very small displacement ==> local convergence
+        STOP = lambda > 1e15 || NewChiSquare < 1e-5; // very small displacement ==> local convergence
 
 
-	}	//end for(...
+    }	//end for(...
 
 
     err = ChiSquare;
@@ -870,20 +881,18 @@ void RationalSuperShape2D :: Optimize5D(
 
 
 double RationalSuperShape2D :: XiSquare5D(
-                                        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
-                                        MatrixXd &alpha,
-                                        VectorXd &beta,
-                                        int functionused,
-                                        bool update) {
+        const vector < Vector2d, aligned_allocator< Vector2d> > & Data,
+        MatrixXd &alpha,
+        VectorXd &beta,
+        int functionused,
+        bool update) {
 
 
-   //five dimensional optimization: a, b, n1, n2, n3 are optimized
+    //five dimensional optimization: a, b, n1, n2, n3 are optimized
 
     VectorXd dj;     dj = VectorXd::Zero(5);
 
     Matrix3d Tr,Rot;
-
-    int i,j,k;
 
     //functions pointer
     double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
@@ -897,142 +906,133 @@ double RationalSuperShape2D :: XiSquare5D(
 
     vector<double> Df;
 
-  	double a(Get_a()), b(Get_b()), R, x, y, tht, dthtdx, dthtdy, drdth,
-        ChiSquare(1e15),
-        f(0),h(0),
-        df(0),
-        n1(Get_n1()),n2(Get_n2()),n3(Get_n3()),
-        p(Get_p()), q(Get_q()),
-        x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
+    double  x, y, tht, ChiSquare(1e15),
+            f(0), x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
 
-		 //clean memory
-        if ( update )  {
-            alpha.setZero();
-            beta.setZero();
+    //clean memory
+    if ( update )  {
+        alpha.setZero();
+        beta.setZero();
+    }
+
+    //evaluate ChiSquare, components for the beta and matrix alpha
+
+    ChiSquare=0;
+
+    //First define inverse translation T-1
+    Tr.setZero();
+    Rot.setZero();
+
+    Tr << 1 , 0 , -x0 ,
+            0 , 1 , -y0 ,
+            0 , 0 , 1;
+
+    //Then define inverse rotation, i.e. transposed rotation
+
+    Rot << cos(tht0) , sin(tht0) , 0 ,
+            -sin(tht0) , cos(tht0) , 0 ,
+            0 , 0 , 1;
+
+    //summation of squared potentials
+    for(size_t i=0; i<Data.size(); i++ ){
+
+        double DfDr;
+
+        //global inverse transform is T * R
+
+        Vector2d dum(Data[i]);
+        Vector3d dum2(dum[0],dum[1],1);
+
+        //apply inverse transform
+        Vector3d dum3 ( Rot * (Tr * dum2));
+        Vector2d P( dum3[0], dum3[1]); //2D point in canonical referential
+
+        //get partial derivatives for canonical point
+
+        x = P[0]; y = P[1];
+
+        // avoid division by 0 ==> numerical stability
+
+        if (P.norm()<EPSILON) continue; // avoids division by zero
+
+        tht = atan2(y,x); if( tht<0) tht+=2.*PI;
+
+        //double R = radius(tht);
+
+        //theta = Arctan(Y/X)
+        //double dthtdx = -sin(tht) ;//-y / (x*x+y*y);
+        //double dthtdy =  cos(tht); //x / (x*x+y*y);
+
+        //avoid non differentiable cases
+
+        //double drdth = DrDtheta(tht);
+
+        f = (*this.*pt2ConstMember)(P, Df); // call to the implicit function
+
+        //
+        //compute elements beta[i][0] and alpha[i][j]
+        //
+
+        //==> requires partial derivatives!!
+
+        DfDr = Df[2]; //Df/Dr stored at index 2 in array Df during the call to ImplicitFunction1-2-3
+
+        // F1 = R-PL ==> DfDr = 1. ;
+        // F2 = 1-PL/R ==> DfDr = PL/R\B2 ;
+        // F3 =  log ( R\B2/PSL) ==> DfDr = 2/R
+
+        dj.setZero();
+
+        //df/da = df/dr * dr/da
+        dj[0] = DfDr * DrDa(tht) ;
+
+        //df/db = df/dr * dr/db
+        dj[1] = DfDr * DrDb(tht) ;
+
+        //df/dn1 = df/dr * dr/dn1
+        dj[2] = DfDr * DrDn1(tht);
+
+        //df/dn2 = df/dr * dr/dn2
+        dj[3] = DfDr * DrDn2(tht);
+
+        //df/dn3 = df/dr * dr/dn3
+        dj[4] = DfDr * DrDn3(tht);
+
+
+        ChiSquare += f*f;
+
+        if(update){
+
+            //gradient beta
+            beta -= f*dj;
+
+            //compute approximation of Hessian matrix
+            for(int k=0; k<5; k++)
+                for(int j=0; j<5; j++)
+                    alpha(k,j) +=  dj[k]*dj[j];
+
+
         }
 
-        //evaluate ChiSquare, components for the beta and matrix alpha
+    }//for all vertices
 
-		ChiSquare=0;
-
-		//First define inverse translation T-1
-        Tr.setZero();
-        Rot.setZero();
-
-		Tr << 1 , 0 , -x0 ,
-              0 , 1 , -y0 ,
-              0 , 0 , 1;
-
-        //Then define inverse rotation, i.e. transposed rotation
-
-        Rot << cos(tht0) , sin(tht0) , 0 ,
-              -sin(tht0) , cos(tht0) , 0 ,
-               0 , 0 , 1;
-
-        //summation of squared potentials
-        for( i=0; i<Data.size(); i++ ){
-
-			double DfDr;
-
-            //global inverse transform is T * R
-
-            Vector2d dum(Data[i]);
-           	Vector3d dum2(dum[0],dum[1],1);
-
-            //apply inverse transform
-           	Vector3d dum3 ( Rot * (Tr * dum2));
-           	Vector2d P( dum3[0], dum3[1]); //2D point in canonical referential
-
-           	//get partial derivatives for canonical point
-
-           	x = P[0]; y = P[1];
-
-            // avoid division by 0 ==> numerical stability
-
-            if (P.norm()<EPSILON) continue; // avoids division by zero
-
-            tht = atan2(y,x); if( tht<0) tht+=2.*PI;
-
-            R = radius(tht);
-
-            //theta = Arctan(Y/X)
-            dthtdx = -sin(tht) ;//-y / (x*x+y*y);
-            dthtdy =  cos(tht); //x / (x*x+y*y);
-
-            //avoid non differentiable cases
-
-            drdth = DrDtheta(tht);
-
-			f = (*this.*pt2ConstMember)(P, Df); // call to the implicit function
-
-			//
-			//compute elements beta[i][0] and alpha[i][j]
-			//
-
-			//==> requires partial derivatives!!
-
-			DfDr = Df[2]; //Df/Dr stored at index 2 in array Df during the call to ImplicitFunction1-2-3
-
-			// F1 = R-PL ==> DfDr = 1. ;
-			// F2 = 1-PL/R ==> DfDr = PL/R\B2 ;
-			// F3 =  log ( R\B2/PSL) ==> DfDr = 2/R
-
-			dj.setZero();
-
-            //df/da = df/dr * dr/da
-			dj[0] = DfDr * DrDa(tht) ;
-
-			//df/db = df/dr * dr/db
-			dj[1] = DfDr * DrDb(tht) ;
-
-			//df/dn1 = df/dr * dr/dn1
-			dj[2] = DfDr * DrDn1(tht);
-
-			//df/dn2 = df/dr * dr/dn2
-			dj[3] = DfDr * DrDn2(tht);
-
-			//df/dn3 = df/dr * dr/dn3
-			dj[4] = DfDr * DrDn3(tht);
-
-
-            ChiSquare += f*f;
-
-            if(update){
-
-             //gradient beta
-                for(k=0;k<5; k++)
-				{
-                    beta[k] -= f * dj[k];
-				}
-
-			//compute approximation of Hessian matrix
-
-                for(k=0; k<5; k++)
-                    for(j=0; j<5; j++)
-                        alpha(k,j) +=  dj[k]*dj[j];
-            }
-
-		}//for all vertices
-
-		return ChiSquare;
+    return ChiSquare;
 }
 
 void RationalSuperShape2D :: Optimize7D(
-    string outfilename,
-    vector< Vector2d, aligned_allocator< Vector2d> > Data,
-    double &err ,
-    int functionused
-    )
+        string outfilename,
+        const vector< Vector2d, aligned_allocator< Vector2d> > & Data,
+        double &err ,
+        int functionused
+        )
 {
-  	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0;
-	int i,j,k;
-
+    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
     ofstream logfile;
     logfile.open(outfilename.c_str());
 
-	bool STOP(false);
-	double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//, dj[16];
-	double LAMBDA_INCR(10), lambda(pow(LAMBDA_INCR, -6));
+    bool STOP(false);
+    double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//, dj[16];
+    double LAMBDA_INCR(10), lambda(pow(LAMBDA_INCR, -6));
 
     MatrixXd alpha, alpha2;
 
@@ -1052,18 +1052,16 @@ void RationalSuperShape2D :: Optimize7D(
 
     logfile << *this;
 
-	double a, b, R, x, y, tht, dthtdx, dthtdy, dthtdx0, dthtdy0, drdth;
-
     vector<double> Df;
 
     int itnum = 0;
-	for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
+    for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
 
-		//store oldparams
+        //store oldparams
 
-		for(i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
+        for(size_t i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
 
-		alpha.setZero();
+        alpha.setZero();
         beta.setZero();
         alpha2.setZero();
         beta2.setZero();
@@ -1073,21 +1071,19 @@ void RationalSuperShape2D :: Optimize7D(
 
         //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
         ChiSquare = XiSquare7D(Data,
-                             alpha,
-                             beta,
-                             functionused,             //implicitf cuntion1
-                             true);         //update vectors
+                               alpha,
+                               beta,
+                               functionused,             //implicitf cuntion1
+                               true);         //update vectors
 
-		//
-		// add Lambda to diagonla elements and solve the matrix
-		//
+        //
+        // add Lambda to diagonla elements and solve the matrix
+        //
 
         //Linearization of Hessian, cf Numerical Recepies
-		for(k=0; k<7; k++)
-		{
-		    alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
-		    alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
-		}
+
+        alpha *= 1. + lambda;
+        alpha.array() += lambda;
 
 
         //cout << alpha << endl<<endl;
@@ -1096,60 +1092,60 @@ void RationalSuperShape2D :: Optimize7D(
         //solve system
         alpha.ldlt().solveInPlace(beta);
 
-		//coefficients a and b in [0.01, 100]
+        //coefficients a and b in [0.01, 100]
 
         outofbounds =  Parameters[0] + beta[0] < 0.01 || Parameters[0] + beta[0] > 1000 ||
-                       Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
-                       Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
-                       Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
-                       Parameters[4] + beta[4] < 0.1 || Parameters[4] + beta[4]> 1000;
+                Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
+                Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
+                Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
+                Parameters[4] + beta[4] < 0.1 || Parameters[4] + beta[4]> 1000;
 
         if( !outofbounds )
         {
 
-        Set_a( Parameters[0] + beta[0]);
-        Set_b( Parameters[1] + beta[1]);
+            Set_a( Parameters[0] + beta[0]);
+            Set_b( Parameters[1] + beta[1]);
 
-        // coefficients n1 in [1., 1000]
-        // setting n1<1. leads to strong numerical instabilities
+            // coefficients n1 in [1., 1000]
+            // setting n1<1. leads to strong numerical instabilities
 
-        Set_n1( Parameters[2] + beta[2] );
+            Set_n1( Parameters[2] + beta[2] );
 
-		// coefficients n2,n3 in [0.001, 1000]
+            // coefficients n2,n3 in [0.001, 1000]
 
-		Set_n2( Parameters[3] + beta[3]);
-		Set_n3( Parameters[4] + beta[4]);
+            Set_n2( Parameters[3] + beta[3]);
+            Set_n3( Parameters[4] + beta[4]);
 
-		// coefficients x0 and y0
-        //truncate translation to avoid huge gaps
+            // coefficients x0 and y0
+            //truncate translation to avoid huge gaps
 
-        beta[5] = min(0.05, max(-0.05, beta[5]));
-        beta[6] = min(0.05, max(-0.05, beta[6]));
+            beta[5] = min(0.05, max(-0.05, beta[5]));
+            beta[6] = min(0.05, max(-0.05, beta[6]));
 
-        Parameters[9] += beta[5];
-		Parameters[10] += beta[6];
+            Parameters[9] += beta[5];
+            Parameters[10] += beta[6];
 
         }
 
-		//
-		//	Evaluate chisquare with new values
-		//
+        //
+        //	Evaluate chisquare with new values
+        //
 
-		OldChiSquare = ChiSquare;
+        OldChiSquare = ChiSquare;
 
-		 NewChiSquare = XiSquare7D(Data,
-                             alpha2,
-                             beta2,
-                             functionused,             //implicitf cuntion1
-                             false);
+        NewChiSquare = XiSquare7D(Data,
+                                  alpha2,
+                                  beta2,
+                                  functionused,             //implicitf cuntion1
+                                  false);
 
-		if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
-		{
-			lambda *= LAMBDA_INCR;
-			for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
+        if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
+        {
+            lambda *= LAMBDA_INCR;
+            for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
         }
-		else    //successful iteration
-		{
+        else    //successful iteration
+        {
 
             // huge improvement, something may have been wrong
             // this may arise during the first iterations
@@ -1158,23 +1154,23 @@ void RationalSuperShape2D :: Optimize7D(
             // ==> it is better to verify the result with a smaller step
             // if indeed it was a correct iteration, then it will pass the next time
 
-		    if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
-		    {
-		        lambda *= LAMBDA_INCR; // reduce the step within the search direction
-                for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
+            if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
+            {
+                lambda *= LAMBDA_INCR; // reduce the step within the search direction
+                for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
             }
             else
             {
-            //correct and realistic improvement
-            logfile << *this;
-            lambda /=LAMBDA_INCR;
+                //correct and realistic improvement
+                logfile << *this;
+                lambda /=LAMBDA_INCR;
             }
         }
 
-		STOP = lambda > 1e15 || NewChiSquare < 1e-5;
+        STOP = lambda > 1e15 || NewChiSquare < 1e-5;
 
 
-	}	//end for(...
+    }	//end for(...
 
     err = ChiSquare;
     logfile << *this;
@@ -1183,19 +1179,15 @@ void RationalSuperShape2D :: Optimize7D(
 
 
 double RationalSuperShape2D :: XiSquare7D(
-                                        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
-                                        MatrixXd &alpha,
-                                        VectorXd &beta,
-                                        int functionused,
-                                        bool update) {
+        const vector < Vector2d, aligned_allocator< Vector2d> > & Data,
+        MatrixXd &alpha,
+        VectorXd &beta,
+        int functionused,
+        bool update) {
 
     VectorXd dj; dj = VectorXd::Zero(7);
 
     Matrix3d Tr,Rot, dTrdx0, dTrdy0;
-
-    int i,j,k;
-
-
 
     //functions pointer
     double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
@@ -1209,14 +1201,9 @@ double RationalSuperShape2D :: XiSquare7D(
 
     vector<double> Df;
 
-  	double a(Get_a()), b(Get_b()), R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
-        ChiSquare(1e15),
-        f(0),h(0),
-        df(0),
-        n1(Get_n1()),n2(Get_n2()),n3(Get_n3()),
-        p(Get_p()), q(Get_q()),
-        x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
-        dxdx0,dxdy0,dxdtht0, dydx0,dydy0;
+    double  x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
+            ChiSquare(1e15), f(0), x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
+            dxdx0,dxdy0, dydx0,dydy0;
 
     //clean memory
     if(update)   {
@@ -1226,16 +1213,16 @@ double RationalSuperShape2D :: XiSquare7D(
 
     //evaluate ChiSquare, components for the beta and matrix alpha
 
-	ChiSquare=0;
+    ChiSquare=0;
 
-	//First define inverse translation T-1
+    //First define inverse translation T-1
 
-	Tr.setZero();
-	Rot.setZero();
+    Tr.setZero();
+    Rot.setZero();
 
-	Tr << 1 , 0 , -x0 ,
-          0 , 1 , -y0 ,
-          0 , 0 , 1;
+    Tr << 1 , 0 , -x0 ,
+            0 , 1 , -y0 ,
+            0 , 0 , 1;
 
     //derivatives of translation matrix are constant and can be computed once for all
     dTrdx0 << 0 , 0 , -1 , 0 , 0 , 0 ,  0 , 0 , 1;
@@ -1244,10 +1231,10 @@ double RationalSuperShape2D :: XiSquare7D(
     //Then define inverse rotation, i.e. transposed rotation
 
     Rot << cos(tht0) , sin(tht0) , 0 ,
-          -sin(tht0) , cos(tht0) , 0 ,
+            -sin(tht0) , cos(tht0) , 0 ,
             0 , 0 , 1;
 
-    for( i=0; i<Data.size(); i++){
+    for(size_t i=0; i<Data.size(); i++){
 
         double DfDr;
 
@@ -1280,7 +1267,7 @@ double RationalSuperShape2D :: XiSquare7D(
 
         tht = atan2(y,x); if( tht < 0 ) tht+=2.*PI;
 
-        R = radius(tht);
+        //double R = radius(tht);
 
         //theta = Arctan(Y/X)
         dthtdx = -sin(tht) ;//-y / (x*x+y*y);
@@ -1297,11 +1284,11 @@ double RationalSuperShape2D :: XiSquare7D(
 
         f = (*this.*pt2ConstMember)(P, Df); // call to the implicit function
 
-		//
-		//compute elements beta[i][0] and alpha[i][j]
-		//
+        //
+        //compute elements beta[i][0] and alpha[i][j]
+        //
 
-		//==> requires partial derivatives!!
+        //==> requires partial derivatives!!
 
         DfDr = Df[2]; //Df/Dr stored at index 2 in array Df during the call to ImplicitFunction1-2-3
 
@@ -1309,68 +1296,64 @@ double RationalSuperShape2D :: XiSquare7D(
         // F2 = 1-PL/R ==> DfDr = PL/R\B2 ;
         // F3 =  log ( R\B2/PSL) ==> DfDr = 2/R
 
-		dj.setZero();
+        dj.setZero();
 
-		//df/da = df/dr * dr/da
-		dj[0] = DfDr * DrDa(tht) ;
+        //df/da = df/dr * dr/da
+        dj[0] = DfDr * DrDa(tht) ;
 
-		//df/db = df/dr * dr/db
-		dj[1] = DfDr * DrDb(tht) ;
+        //df/db = df/dr * dr/db
+        dj[1] = DfDr * DrDb(tht) ;
 
-		//df/dn1 = df/dr * dr/dn1
-		dj[2] = DfDr * DrDn1(tht);
+        //df/dn1 = df/dr * dr/dn1
+        dj[2] = DfDr * DrDn1(tht);
 
-		//df/dn2 = df/dr * dr/dn2
-		dj[3] = DfDr * DrDn2(tht);
+        //df/dn2 = df/dr * dr/dn2
+        dj[3] = DfDr * DrDn2(tht);
 
-		//df/dn3 = df/dr * dr/dn3
-		dj[4] = DfDr * DrDn3(tht);
+        //df/dn3 = df/dr * dr/dn3
+        dj[4] = DfDr * DrDn3(tht);
 
-		//df/dx0 = df/dr * dr/dtht *dtht/dx0
-		dj[5]= DfDr * drdth*dthtdx0;
+        //df/dx0 = df/dr * dr/dtht *dtht/dx0
+        dj[5]= DfDr * drdth*dthtdx0;
 
-		//df/dy0 = df/dr * dr/dtht *dtht/dy0
-		dj[6]= DfDr * drdth*dthtdy0;
+        //df/dy0 = df/dr * dr/dtht *dtht/dy0
+        dj[6]= DfDr * drdth*dthtdy0;
 
         //squared summation
         ChiSquare += f*f;
 
         if(update){
-            for( k=0; k<7; k++)
-				{
-                    beta[k] -= f*dj[k];
-				}
-			//compute approximation of Hessian matrix
+            beta -= f*dj;
+            //compute approximation of Hessian matrix
+            for(int k=0; k<5; k++)
+                for(int j=0; j<5; j++)
+                    alpha(k,j) +=  dj[k]*dj[j];
+        }
 
-			for(k=0; k<7; k++)
-				for(j=0; j<7; j++)
-					alpha(k,j) +=  dj[k]*dj[j];
-            }
-		}//for all vertices
+    }//for all vertices
 
-		return ChiSquare;
+    return ChiSquare;
 }
 
 
 void RationalSuperShape2D :: Optimize8D(
-    vector< Vector2d, aligned_allocator< Vector2d> > Data,
-    double &err ,
-    int functionused
-    )
+        const vector< Vector2d, aligned_allocator< Vector2d> > & Data,
+        double &err ,
+        int functionused
+        )
 {
+    Timer tmr("\tOptimize8D");
+    double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
 
-  	double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15),f(0),df(0),n1,n2,n3,p,q,x0,y0,tht0, dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
-	int i,j,k, small_improvement(0);
-
-	// ofstream logfile;
-	// logfile.open(outfilename.c_str());
+    // ofstream logfile;
+    // logfile.open(outfilename.c_str());
 
 
-	bool STOP(false);
-	double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//, dj[16];
+    bool STOP(false);
+    double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//, dj[16];
 
-	double LAMBDA_INCR(10);
-	double lambda(pow(LAMBDA_INCR, -6));
+    double LAMBDA_INCR(10);
+    double lambda(pow(LAMBDA_INCR, -6));
 
     MatrixXd alpha, alpha2;
 
@@ -1386,108 +1369,102 @@ void RationalSuperShape2D :: Optimize8D(
     trial = VectorXd::Zero(8);
     sigma = VectorXd::Zero(8);
 
-    Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
-
-    // logfile << *this;
-
-	double a, b, R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth;
-
-	vector<double> Df;
-
     int itnum = 0;
-	for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
+    for(itnum=0; itnum<1000 && STOP==false; itnum++)	{
+        //Timer tmrLoop("\t\tTheLoop");
 
-		//store oldparams
+        //store oldparams
 
-		for(i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
+        for(size_t i=0; i<Parameters.size(); i++) oldparams[i]=Parameters[i];
 
-		alpha.setZero();
+        alpha.setZero();
         beta.setZero();
         alpha2.setZero();
         beta2.setZero();
 
         //cout <<"TRIAL:"<<*this<<endl;
-        bool outofbounds(false);
+
 
         //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
         ChiSquare = XiSquare8D(Data,
-                             alpha,
-                             beta,
-                             functionused,             //implicitf cuntion1
-                             true);         //update vectors
-		//
-		// add Lambda to diagonla elements and solve the matrix
-		//
+                               alpha,
+                               beta,
+                               functionused,             //implicitf cuntion1
+                               true);         //update vectors
+        //
+        // add Lambda to diagonla elements and solve the matrix
+        //
 
         //Linearization of Hessian, cf Numerical Recepies
-		for(k=0; k<8; k++)
-		{
-		    alpha(k,k) *=   1. + lambda;  //multiplicative factor to make diagonal dominant
-		    alpha(k,k) +=   lambda;       //additive factor to avoid rank deficient matrix
-		}
+
+        alpha *= 1. + lambda;
+        alpha.array() += lambda;
+
+
 
         //solve system
         alpha.ldlt().solveInPlace(beta);
 
-		//coefficients a and b in [0.01, 100]
+        //coefficients a and b in [0.01, 100]
 
-        outofbounds =  Parameters[0] + beta[0] < 0.01 || Parameters[0] + beta[0] > 1000 ||
-                       Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
-                       Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
-                       Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
-                       Parameters[4] + beta[4] < 0.1 || Parameters[4] + beta[4]> 1000;
+        const bool outofbounds =
+                Parameters[0] + beta[0] < 0.01 || Parameters[0] + beta[0] > 1000 ||
+                Parameters[1] + beta[1] < 0.01 || Parameters[1] + beta[1] > 1000 ||
+                Parameters[2] + beta[2] < 0.1  || Parameters[2] + beta[2]> 1000 ||
+                Parameters[3] + beta[3] < 0.1 || Parameters[3] + beta[3]> 1000 ||
+                Parameters[4] + beta[4] < 0.1 || Parameters[4] + beta[4]> 1000;
 
         if( !outofbounds ) {
 
-        Set_a( Parameters[0] + beta[0]);
-        Set_b( Parameters[1] + beta[1]);
+            Set_a( Parameters[0] + beta[0]);
+            Set_b( Parameters[1] + beta[1]);
 
-        // coefficients n1 in [1., 1000]
-        // setting n1<1. leads to strong numerical instabilities
+            // coefficients n1 in [1., 1000]
+            // setting n1<1. leads to strong numerical instabilities
 
-        Set_n1( Parameters[2] + beta[2] );
+            Set_n1( Parameters[2] + beta[2] );
 
-		// coefficients n2,n3 in [0.001, 1000]
+            // coefficients n2,n3 in [0.001, 1000]
 
-		Set_n2( Parameters[3] + beta[3]);
-		Set_n3( Parameters[4] + beta[4]);
+            Set_n2( Parameters[3] + beta[3]);
+            Set_n3( Parameters[4] + beta[4]);
 
-		// coefficients x0 and y0
-        //truncate translation to avoid huge gaps
+            // coefficients x0 and y0
+            //truncate translation to avoid huge gaps
 
-        beta[5] = min(0.05, max(-0.05, beta[5]));
-        beta[6] = min(0.05, max(-0.05, beta[6]));
+            beta[5] = min(0.05, max(-0.05, beta[5]));
+            beta[6] = min(0.05, max(-0.05, beta[6]));
 
-        Parameters[9] += beta[5];
-		Parameters[10] += beta[6];
+            Parameters[9] += beta[5];
+            Parameters[10] += beta[6];
 
-        //same for rotational offset tht0
-        beta[7] = min(PI/50., max(-PI/50., beta[7]));
-        Parameters[7] += beta[7];
+            //same for rotational offset tht0
+            beta[7] = min(PI/50., max(-PI/50., beta[7]));
+            Parameters[7] += beta[7];
         }
 
-		//
-		//	Evaluate chisquare with new values
-		//
+        //
+        //	Evaluate chisquare with new values
+        //
 
         OldChiSquare = ChiSquare;
 
-		NewChiSquare=XiSquare8D(Data,
-                             alpha2,
-                             beta2,
-                             functionused,             //implicitf cuntion1
-                             false);
+        NewChiSquare=XiSquare8D(Data,
+                                alpha2,
+                                beta2,
+                                functionused,             //implicitf cuntion1
+                                false);
         //
-		// check if better result
-		//
+        // check if better result
+        //
 
-		if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
-		{
-		    lambda *=LAMBDA_INCR;
-			for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
+        if(	NewChiSquare>0.999*OldChiSquare )			// new result sucks-->restore old params and try with lambda 10 times bigger
+        {
+            lambda *=LAMBDA_INCR;
+            for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i];
         }
-		else    //successful iteration
-		{
+        else    //successful iteration
+        {
             // huge improvement, something may have been wrong
             // this may arise during the first iterations
             // n1 may literally explode, or tend to 0...
@@ -1495,20 +1472,20 @@ void RationalSuperShape2D :: Optimize8D(
             // ==> it is better to verify the result with a smaller step
             // if indeed it was a correct iteration, then it will pass the next time
 
-		    if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
-		    {
-		        lambda *=LAMBDA_INCR; // reduce the step within the search direction
-                for(i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
+            if (NewChiSquare <= 0.01*OldChiSquare) //99% improvement, impossible
+            {
+                lambda *=LAMBDA_INCR; // reduce the step within the search direction
+                for(size_t i=0; i<Parameters.size(); i++) Parameters[i]=oldparams[i]; // restore old parameters
             }
             else
             {
-            //correct and realistic improvement
-            // logfile << *this;
-			lambda /=LAMBDA_INCR;
+                //correct and realistic improvement
+                // logfile << *this;
+                lambda /=LAMBDA_INCR;
             }
         }
 
-		STOP = lambda > 1e15 || NewChiSquare < 1e-5; // very small displacement ==> local convergence
+        STOP = lambda > 1e15 || NewChiSquare < 1e-5; // very small displacement ==> local convergence
 
     }	//end for(...
 
@@ -1519,17 +1496,16 @@ void RationalSuperShape2D :: Optimize8D(
 
 
 double RationalSuperShape2D :: XiSquare8D(
-                                        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
-                                        MatrixXd &alpha,
-                                        VectorXd &beta,
-                                        int functionused,
-                                        bool update) {
-
-    VectorXd dj;  dj = VectorXd::Zero(8);
+        const vector < Vector2d, aligned_allocator< Vector2d> > & Data,
+        MatrixXd &alpha,
+        VectorXd &beta,
+        int functionused,
+        bool update) {
+    //Timer tmr("\t\tXiSquare8D");
+    //VectorXd dj;  dj = VectorXd::Zero(8);
+    VectorXd dj(8);
 
     Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
-
-    int i,j,k;
 
 
     //functions pointer
@@ -1544,14 +1520,10 @@ double RationalSuperShape2D :: XiSquare8D(
 
     vector<double> Df;
 
-  	double a(Get_a()), b(Get_b()), R, x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
-        ChiSquare(1e15),
-        f(0),h(0),
-        df(0),
-        n1(Get_n1()),n2(Get_n2()),n3(Get_n3()),
-        p(Get_p()), q(Get_q()),
-        x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
-        dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
+    double  x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
+            ChiSquare(1e15), f(0),
+            x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset()),
+            dxdx0,dxdy0,dxdtht0, dydx0,dydy0,dydtht0, dthtdtht0;
 
     //clean memory
     if(update)
@@ -1562,16 +1534,16 @@ double RationalSuperShape2D :: XiSquare8D(
 
     //evaluate ChiSquare, components for the beta and matrix alpha
 
-	ChiSquare=0;
+    ChiSquare=0;
 
-	//First define inverse translation T-1
+    //First define inverse translation T-1
 
-    Tr.setZero();
-    Rot.setZero();
-    dRotdtht0.setZero();
+    //Tr.setZero();
+    //Rot.setZero();
+    //dRotdtht0.setZero();
     Tr << 1 , 0 , -x0 ,
-          0 , 1 , -y0 ,
-          0 , 0 , 1;
+            0 , 1 , -y0 ,
+            0 , 0 , 1;
 
     //derivatives of translation matrix are constant and can be computed once for all
     dTrdx0 << 0 , 0 , -1 , 0 , 0 , 0 ,  0 , 0 , 1;
@@ -1580,159 +1552,156 @@ double RationalSuperShape2D :: XiSquare8D(
     //Then define inverse rotation, i.e. transposed rotation
 
     Rot << cos(tht0) , sin(tht0) , 0 ,
-           -sin(tht0) , cos(tht0) , 0 ,
+            -sin(tht0) , cos(tht0) , 0 ,
             0 , 0 , 1;
 
     //get partial derivatives
     dRotdtht0 << -sin(tht0) , cos(tht0) , 0 ,
-                 -cos(tht0) , -sin(tht0) , 0 ,
-                     0 , 0 , 1;
+            -cos(tht0) , -sin(tht0) , 0 ,
+            0 , 0 , 1;
 
-    for(i=0; i<Data.size(); i++){
+    for(size_t i=0; i<Data.size(); i++){
 
-    double DfDr;
-    //global inverse transform is T * R
+        double DfDr;
+        //global inverse transform is T * R
 
-    Vector2d dum(Data[i]);
-    Vector3d dum2(dum[0],dum[1],1);
+        const Vector2d dum(Data[i]);
+        const Vector3d dum2(dum[0],dum[1],1);
 
-    //apply inverse transform
-    Vector3d dum3 ( Rot * (Tr * dum2));
+        //apply inverse transform
+        const Vector3d dum3 ( Rot * (Tr * dum2));
 
-    //get partial derivatives for canonical point
-    Vector3d dPdx0 ( Rot * (dTrdx0 * dum2) );
-    Vector3d dPdy0 ( Rot * (dTrdy0 * dum2) );
-    Vector3d dPdtht0 (dRotdtht0 * (Tr *dum2) );
+        //get partial derivatives for canonical point
+        const Vector3d dPdx0 ( Rot * (dTrdx0 * dum2) );
+        const Vector3d dPdy0 ( Rot * (dTrdy0 * dum2) );
+        const Vector3d dPdtht0 (dRotdtht0 * (Tr *dum2) );
 
-    Vector2d P(dum3[0],dum3[1]);
+        const Vector2d P(dum3[0],dum3[1]);
 
-    //simplify notations
-    dxdx0 = dPdx0[0];
-    dxdy0 = dPdy0[0];
-    dxdtht0 =  dPdtht0[0];
+        //simplify notations
+        dxdx0 = dPdx0[0];
+        dxdy0 = dPdy0[0];
+        dxdtht0 =  dPdtht0[0];
 
-    dydx0 = dPdx0[1];
-    dydy0 = dPdy0[1];
-    dydtht0 =  dPdtht0[1];
+        dydx0 = dPdx0[1];
+        dydy0 = dPdy0[1];
+        dydtht0 =  dPdtht0[1];
 
-    x = P[0]; y = P[1];
+        x = P[0]; y = P[1];
 
-    // avoid division by 0 ==> numerical stability
+        // avoid division by 0 ==> numerical stability
 
-    if (P.norm()<EPSILON) continue; // avoids division by zero
-    tht = atan2(y,x); if( tht<0) tht+=2.*PI;
+        if (P.norm()<EPSILON) continue; // avoids division by zero
+        tht = atan2(y,x); if( tht<0) tht+=2.*PI;
 
-    R = radius(tht);
+        //double R = radius(tht);
 
-    //theta = Arctan(Y/X)
-    dthtdx = -sin(tht) ;//-y / (x*x+y*y);
-    dthtdy =  cos(tht); //x / (x*x+y*y);
+        //theta = Arctan(Y/X)
+        dthtdx = -sin(tht) ;//-y / (x*x+y*y);
+        dthtdy =  cos(tht); //x / (x*x+y*y);
 
-    //partial derivatives of theta regarding x offset, y offset, and angular offset
+        //partial derivatives of theta regarding x offset, y offset, and angular offset
 
-    dthtdx0   = dthtdx * dxdx0  + dthtdy * dydx0;
-    dthtdy0   = dthtdx * dxdy0  + dthtdy * dydy0;
-    dthtdtht0 = dthtdx * dxdtht0+ dthtdy * dydtht0;
+        dthtdx0   = dthtdx * dxdx0  + dthtdy * dydx0;
+        dthtdy0   = dthtdx * dxdy0  + dthtdy * dydy0;
+        dthtdtht0 = dthtdx * dxdtht0+ dthtdy * dydtht0;
 
-    //avoid non differentiable cases
-    drdth = DrDtheta(tht);
-    f = (*this.*pt2ConstMember)(P, Df); // call to the implicit function
+        //avoid non differentiable cases
+        drdth = DrDtheta(tht);
+        f = (*this.*pt2ConstMember)(P, Df); // call to the implicit function
 
-    //
-    //compute elements beta[i][0] and alpha[i][j]
-    //
+        //
+        //compute elements beta[i][0] and alpha[i][j]
+        //
 
-    //==> requires partial derivatives!!
+        //==> requires partial derivatives!!
 
-	DfDr = Df[2]; //Df/Dr stored at index 2 in array Df during the call to ImplicitFunction1-2-3
+        DfDr = Df[2]; //Df/Dr stored at index 2 in array Df during the call to ImplicitFunction1-2-3
 
-	// F1 = R-PL ==> DfDr = 1. ;
-	// F2 = 1-PL/R ==> DfDr = PL/R\B2 ;
-	// F3 =  log ( R\B2/PSL) ==> DfDr = 2/R
+        // F1 = R-PL ==> DfDr = 1. ;
+        // F2 = 1-PL/R ==> DfDr = PL/R\B2 ;
+        // F3 =  log ( R\B2/PSL) ==> DfDr = 2/R
 
-	//GetPartialDerivatives(tht, DrDa, DrDb, DrDn1, DrDn2, DrDn3);
-	//for(int toto=0; toto<8; toto++) dj[toto]=0;
+        //GetPartialDerivatives(tht, DrDa, DrDb, DrDn1, DrDn2, DrDn3);
+        //for(int toto=0; toto<8; toto++) dj[toto]=0;
 
-	dj.setZero();
+        //df/da = df/dr * dr/da
+        dj[0] = DfDr * DrDa(tht) ;
 
-    //df/da = df/dr * dr/da
-	dj[0] = DfDr * DrDa(tht) ;
+        //df/db = df/dr * dr/db
+        dj[1] = DfDr * DrDb(tht) ;
 
-	//df/db = df/dr * dr/db
-	dj[1] = DfDr * DrDb(tht) ;
+        //df/dn1 = df/dr * dr/dn1
+        dj[2] = DfDr * DrDn1(tht);
 
-	//df/dn1 = df/dr * dr/dn1
-	dj[2] = DfDr * DrDn1(tht);
+        //df/dn2 = df/dr * dr/dn2
+        dj[3] = DfDr * DrDn2(tht);
 
-	//df/dn2 = df/dr * dr/dn2
-	dj[3] = DfDr * DrDn2(tht);
+        //df/dn3 = df/dr * dr/dn3
+        dj[4] = DfDr * DrDn3(tht);
 
-	//df/dn3 = df/dr * dr/dn3
-	dj[4] = DfDr * DrDn3(tht);
+        //df/dx0 = df/dr * dr/dtht *dtht/dx0
+        dj[5]= DfDr * drdth*dthtdx0;
 
-    //df/dx0 = df/dr * dr/dtht *dtht/dx0
-	dj[5]= DfDr * drdth*dthtdx0;
+        //df/dy0 = df/dr * dr/dtht *dtht/dy0
+        dj[6]= DfDr * drdth*dthtdy0;
 
-	//df/dy0 = df/dr * dr/dtht *dtht/dy0
-	dj[6]= DfDr * drdth*dthtdy0;
+        //df/dth0 = dfdr * dr/dtht * dtht/dtht0
+        dj[7]= DfDr * drdth*dthtdtht0;
 
-	//df/dth0 = dfdr * dr/dtht * dtht/dtht0
-	dj[7]= DfDr * drdth*dthtdtht0;
+        ChiSquare += f*f;
 
-    ChiSquare += f*f;
+        if( update ){
+            beta -= f*dj;
+            //compute approximation of Hessian matrix
+            for(int k=0; k<5; k++)
+                for(int j=0; j<5; j++)
+                    alpha(k,j) +=  dj[k]*dj[j];
+        }
+    }//for all vertices
 
-    if( update ){
-          for( k=0; k<8; k++)
-				{
-                    beta[k] -= f*dj[k];
-				}
-			//compute approximation of Hessian matrix
-
-			for(k=0; k<8; k++)
-				for(j=0; j<8; j++)
-					alpha(k,j) +=  dj[k]*dj[j];
-            }
-		}//for all vertices
-
-		return ChiSquare;
+    return ChiSquare;
 }
 
 
 Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
 
-   // P is supposed to be expressed in canonical referential
+    // P is supposed to be expressed in canonical referential
 
-    double tht = atan2(P[1],P[0]); if (tht<0) tht +=2*PI;
-    double delta = 1e-4;
+    double tht = atan2(P[1],P[0]);
+
+    if (tht<0) tht +=2*PI;
+
     double error(1), change(1);
     int it(0);
+
     while (error >= 0.001 && fabs(change)>1e-6 && it < itmax){
 
-    // we would like to optimize the distance function
-    // change = l' / l'' where l is distance function with argument phi
-    // find the change of phi
-    // but by somehow we feel like to ignore the sign of f''
+        // we would like to optimize the distance function
+        // change = l' / l'' where l is distance function with argument phi
+        // find the change of phi
+        // but by somehow we feel like to ignore the sign of f''
 
-    // dl_dphi(parameters, point, phi);
-    double f_prime = Deriv1(tht, P);
-                            //parameters, point, phi, delta);
+        // dl_dphi(parameters, point, phi);
+        double f_prime = Deriv1(tht, P);
+        //parameters, point, phi, delta);
 
-    // d2l_dphi2(parameters, point, phi, delta);
-    double f_2prime = Deriv2(tht, P);
+        // d2l_dphi2(parameters, point, phi, delta);
+        double f_2prime = Deriv2(tht, P);
 
-     change = f_prime / fabs(f_2prime);
-
-
-    error = fabs(change);
+        change = f_prime / fabs(f_2prime);
 
 
-    change = change / 10;   // slowly move on
-    tht = tht-change;
-    it++;
+        error = fabs(change);
+
+
+        change = change / 10;   // slowly move on
+        tht = tht-change;
+        it++;
     }
 
 
-   // cout <<"PPoint found"<<endl;
+    // cout <<"PPoint found"<<endl;
 
     Vector2d H (Point(tht));
     //H = Rot.transpose()*H + Vector2d(Get_xoffset(), Get_yoffset());
@@ -1748,7 +1717,7 @@ Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
 //          logfile << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
 //      }
 //      logfile << endl;
-     
+
 //      logfile.close();
 //  }
 
@@ -1761,17 +1730,17 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
     //allocate matrices (homogenous coordinate, so 3x3 matrix)
 
     Matrix3d Tr,Rot;
-	//First define inverse translation T-1
+    //First define inverse translation T-1
     Tr.setZero();
     Tr << 1 , 0 , -x0 ,
-          0 , 1 , -y0 ,
-          0 , 0 , 1;
+            0 , 1 , -y0 ,
+            0 , 0 , 1;
     //Now define inverse rotation, i.e. transposed rotation
     Rot.setZero();
 
     Rot << cos(tht0) , sin(tht0) , 0 ,
-          -sin(tht0) , cos(tht0) , 0 ,
-           0 , 0 , 1;
+            -sin(tht0) , cos(tht0) , 0 ,
+            0 , 0 , 1;
 
     //now process all the data and store the point in a local array
 
@@ -1781,9 +1750,9 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
 
     vector < Vector4d, aligned_allocator< Vector4d> > dumarray;
 
-    for( int i=0; i<Data.size(); i++ ){
+    for( size_t i=0; i<Data.size(); i++ ){
 
-		//global inverse transform is T * R
+        //global inverse transform is T * R
         Vector3d dum(Data[i][0], Data[i][1], 1.);
 
         //apply inverse transform
@@ -1791,13 +1760,13 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
         CanonicalData.push_back( Vector2d (dum2[0], dum2[1]) ); //2D point in canonical referential
     }
 
-/*
+    /*
     glColor3f(0,0,0);
     glPointSize(2);
     glBegin(GL_POINTS);
     for( int i=0; i<Data.size(); i++ ){
 
-		//global inverse transform is T * R
+        //global inverse transform is T * R
         Vector2d dum(CanonicalData[i]);
         glVertex3f(dum[0],dum[1],0);
     }
@@ -1815,37 +1784,37 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
     glLineWidth(2);
     glBegin(GL_LINES);
     */
-    for (int i=0; i< CanonicalData.size(); i++)
+    for (size_t i=0; i< CanonicalData.size(); i++)
     {
         //get point
         Vector2d P ( CanonicalData[i] );
         //compute shortest point
         Vector2d H ( ClosestPoint(P) );
-/*
+        /*
         glVertex3f( P[0], P[1], 0);
         glVertex3f( H[0], H[1], 0);
 */
         //compute everything for this 2d point)
         Vector4d dumvector4d(
-                             pow ( ImplicitFunction1(P, Dffinal), 2) ,
-                             pow ( ImplicitFunction2(P, Dffinal), 2) ,
-                             pow ( ImplicitFunction3(P, Dffinal), 2) ,
-                             (P-H).norm() //euclidean distance
-                             );
+                    pow ( ImplicitFunction1(P, Dffinal), 2) ,
+                    pow ( ImplicitFunction2(P, Dffinal), 2) ,
+                    pow ( ImplicitFunction3(P, Dffinal), 2) ,
+                    (P-H).norm() //euclidean distance
+                    );
 
         //compute directly the 3 implicit functions implemented
         Mean += dumvector4d;
         dumarray.push_back(dumvector4d); //store results for variance computation without recomputing everything
     }
- //   glEnd();
+    //   glEnd();
 
     Mean /= CanonicalData.size();
 
     //Compute Var
 
-    for (int i=0; i< CanonicalData.size(); i++)
+    for (size_t i=0; i< CanonicalData.size(); i++)
     {
-          //compute variance from previously saved results
+        //compute variance from previously saved results
         Var[0] += pow( Mean[0] - dumarray[i][0], 2);
         Var[1] += pow( Mean[1] - dumarray[i][1], 2);
         Var[2] += pow( Mean[2] - dumarray[i][2], 2);

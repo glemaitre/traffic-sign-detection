@@ -18,8 +18,7 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef SEGMENTATION_H
-#define SEGMENTATION_H
+#pragma once
 
 // stl library
 #include <vector>
@@ -56,5 +55,3 @@ namespace segmentation {
   void seg_norm_hue(const cv::Mat& ihls_image, cv::Mat& nhs_image, const int& colour = 0, int hue_max = R_HUE_MAX, int hue_min = R_HUE_MIN, int sat_min = R_SAT_MIN);
 
 }
-
-#endif // SEGMENTATION_H

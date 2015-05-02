@@ -18,8 +18,7 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef MATH_UTILS_H_
-#define MATH_UTILS_H_
+#pragma once
 
 // stl library
 #include <iostream>
@@ -105,5 +104,3 @@ namespace cv {
   typedef PointPolar_<double> PointPolar2d;
   
 }
-
-#endif /* MATH_UTILS_H_ */

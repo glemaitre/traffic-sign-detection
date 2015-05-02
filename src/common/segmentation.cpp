@@ -82,13 +82,13 @@ namespace segmentation {
       for (int i = 0; i < ihls_image.rows; ++i) {
 	const uchar *ihls_data = ihls_image.ptr<uchar> (i);
 	uchar *nhs_data = nhs_image.ptr<uchar> (i);
-	for (int j = 0; j < ihls_image.cols; ++j) {
-	  uchar s = *ihls_data++;
-	  // Although l is not being used and we could have
-	  // replaced the next line with ihls_data++
-	  // but for the sake of readability, we left it as it it.
-	  uchar l = *ihls_data++;
-	  uchar h = *ihls_data++;
+    for (int j = 0; j < ihls_image.cols; ++j) {
+      uchar s = *ihls_data++;
+      // Although l is not being used and we could have
+      // replaced the next line with ihls_data++
+      // but for the sake of readability, we left it as it it.
+      uchar l = *ihls_data++;
+      uchar h = *ihls_data++;
 	  *nhs_data++ = (B_CONDITION) ? 255 : 0;
 	}
       }
@@ -98,12 +98,12 @@ namespace segmentation {
 	const uchar *ihls_data = ihls_image.ptr<uchar> (i);
 	uchar *nhs_data = nhs_image.ptr<uchar> (i);
 	for (int j = 0; j < ihls_image.cols; ++j) {
-	  uchar s = *ihls_data++;
-	  // Although l is not being used and we could have
-	  // replaced the next line with ihls_data++
-	  // but for the sake of readability, we left it as it it.
-	  uchar l = *ihls_data++;
-	  uchar h = *ihls_data++;
+      uchar s = *ihls_data++;
+      // Although l is not being used and we could have
+      // replaced the next line with ihls_data++
+      // but for the sake of readability, we left it as it it.
+      uchar l = *ihls_data++;
+      uchar h = *ihls_data++;
 	  *nhs_data++ = (R_CONDITION) ? 255 : 0;
 	}
       }

@@ -21,7 +21,7 @@ CONFIG    += console
 QT        -= gui
 
 # Header files
-INCLUDES  += ./src/segmentation.h \
+HEADERS  += ./src/segmentation.h \
              ./src/colorConversion.h \
              ./src/imageProcessing.h \
              ./src/smartOptimisation.h \

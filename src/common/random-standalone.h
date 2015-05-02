@@ -6,8 +6,7 @@
 //This header file provides a good random generator. It is the one of L'Ecuyer
 //with Bays-Durham shuffle, found in Numerical Recipes(http://www.nr.com)
 
-#ifndef __RANDOM_H__
-#define __RANDOM_H__
+#pragma once
 
 #include <cmath>
 #include <limits>
@@ -91,5 +90,3 @@ class Random //Autonome/Standalone
     //The kernel of the generator : returns a double uniformly in ]0;1[
     double theRandom(void);
 };
-
-#endif // __RANDOM_H__

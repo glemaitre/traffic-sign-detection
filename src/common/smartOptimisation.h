@@ -18,8 +18,11 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef SMARTOPTIMISATION_H
-#define SMARTOPTIMISATION_H
+#pragma once
+
+// own library
+#include "math_utils.h"
+#include "SuperFormula.h"
 
 // OpenCV library
 #include <opencv2/opencv.hpp>
@@ -27,26 +30,10 @@
 // Eigen library
 #include <Eigen/Core>
 
-// own library
-#include "math_utils.h"
-#include "SuperFormula.h"
-
 #define THRESH_GRAD_RAD_DET 0.10
 #define THRESH_BINARY 0.80
 
-static float derivative_x [] = { 0.0041,    0.0104,         0,   -0.0104,   -0.0041,
-				 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
-				 0.0467,    0.1180,         0,   -0.1180,   -0.0467,
-				 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
-				 0.0041,    0.0104,         0,   -0.0104,   -0.0041 };
-
-static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0041,
-				 0.0104,    0.0689,    0.1180,    0.0689,    0.0104,
-				 0,         0,         0,         0,         0,
-				 -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
-				 -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
-
-namespace initoptimisation {
+namespace initopt {
 
   // Function to find normalisation factor
   double find_normalisation_factor(const std::vector < cv::Point2f >& contour);
@@ -173,5 +160,3 @@ namespace optimisation {
   // Reconstruction using the Gielis formula
   void gielis_reconstruction(const ConfigStruct2d& config_shape, std::vector< cv::Point2f >& gielis_contour, const int number_points);
 }
-
-#endif // SMARTOPTIMISATION_H

@@ -18,19 +18,17 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#ifndef _SUPERFORMULA_
-#define _SUPERFORMULA_
+#pragma once
 
 #include <cassert>
 #include <cstring>
+
 #include <Eigen/Core>
 #include <Eigen/StdVector>
+
 // import most common Eigen types
 //USING_PART_OF_NAMESPACE_EIGEN
 using namespace Eigen;
-using namespace std;
-
-
 
 class RationalSuperShape2D{
 
@@ -54,12 +52,12 @@ class RationalSuperShape2D{
         // Parameters[10] : y offset
         // Parameters[11] : z offset // unused in 2D
 
-        vector<double> Parameters;
+        std::vector<double> Parameters;
 
 		//data storage for display
-        vector< Vector3d, aligned_allocator< Vector3d> > PointList;
-        vector< Vector3d, aligned_allocator< Vector3d> > NormalList;
-        vector< Vector3i, aligned_allocator< Vector3i> > FaceList;
+        std::vector< Vector3d, aligned_allocator< Vector3d> > PointList;
+        std::vector< Vector3d, aligned_allocator< Vector3d> > NormalList;
+        std::vector< Vector3i, aligned_allocator< Vector3i> > FaceList;
 
 		//constructors an destructors
 		RationalSuperShape2D();
@@ -69,10 +67,10 @@ class RationalSuperShape2D{
 		void Init( double a, double b, double n1,double n2,double n3);
 
 		//computation
-		//double ImplicitFunction0(const Vector2d P, bool op=1, int m=1);
-		double ImplicitFunction1( const Vector2d P, vector <double> &Dffinal );
-		double ImplicitFunction2( const Vector2d P, vector <double> &Dffinal );
-		double ImplicitFunction3( const Vector2d P, vector <double> &Dffinal );
+        //double ImplicitFunction0(const Vector2d P, bool op=1, int m=1);
+        double ImplicitFunction1( const Vector2d P, std::vector <double> &Dffinal );
+        double ImplicitFunction2( const Vector2d P, std::vector <double> &Dffinal );
+        double ImplicitFunction3( const Vector2d P, std::vector <double> &Dffinal );
 
         double DrDa(const double);
         double DrDb(const double);
@@ -83,42 +81,42 @@ class RationalSuperShape2D{
         void GetPartialDerivatives(double tht, double &DrDa, double &DrDb, double &DrDn1, double &DrDn2, double &DrDn3);
 
         void Optimize5D(
-            string outfilename, //file to store the evolution of the best fitted curve though iterations
-            const vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
+            std::string outfilename, //file to store the evolution of the best fitted curve though iterations
+            const std::vector< Vector2d, aligned_allocator< Vector2d> > &, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
             );
 
         void Optimize7D(
-            string outfilename, //file to store the evolution of the best fitted curve though iterations
-            const vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
+            std::string outfilename, //file to store the evolution of the best fitted curve though iterations
+            const std::vector< Vector2d, aligned_allocator< Vector2d> > &, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
             );
 
         void Optimize8D(
-            const vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
+            const std::vector< Vector2d, aligned_allocator< Vector2d> > &, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
             );
 
         //sub function used in the baove function to compute hessian approx and gradient
         double XiSquare5D(
-                      const vector < Vector2d, aligned_allocator< Vector2d> > Data,    //array of 2D points
+                      const std::vector < Vector2d, aligned_allocator< Vector2d> > & Data,    //array of 2D points
                       MatrixXd &alpha,      //hessian approximation
                       VectorXd &beta,       //gradient approximation
                       int function_used = 1,    //index of the implicit function used
                       bool udpate = false); //boolean if hessian and gradient have to be updated or not
 
         double XiSquare7D(
-                      const vector < Vector2d, aligned_allocator< Vector2d> > Data,    //array of 2D points
+                      const std::vector < Vector2d, aligned_allocator< Vector2d> > & Data,    //array of 2D points
                       MatrixXd &alpha,      //hessian approximation
                       VectorXd &beta,       //gradient approximation
                       int function_used = 1,    //index of the implicit function used
                       bool udpate = false); //boolean if hessian and gradient have to be updated or not
 
         double XiSquare8D(
-                      const vector < Vector2d, aligned_allocator< Vector2d> > Data,    //array of 2D points
+                      const std::vector < Vector2d, aligned_allocator< Vector2d> > & Data,    //array of 2D points
                       MatrixXd &alpha,      //hessian approximation
                       VectorXd &beta,       //gradient approximation
                       int function_used = 1,    //index of the implicit function used
@@ -126,7 +124,7 @@ class RationalSuperShape2D{
 
 		double radius ( const double angle );
 
-		inline Vector2d Point( double angle) {double r = radius(angle); return Vector2d (r*cos(angle),r*sin(angle));};
+        inline Vector2d Point( double angle) {double r = radius(angle); return Vector2d (r*cos(angle),r*sin(angle));};
 
         inline double Get_a()  {return Parameters [0];};
         inline double Get_b()  {return Parameters [1];};
@@ -167,7 +165,7 @@ class RationalSuperShape2D{
 
         //void Aff(); // stupid function to display params value
 	// Guillaume stupid function 
-	//void writeFile(std::string fileName);
+    //void writeFile(std::std::string fileName);
 
         double DrDtheta(double tht);
 
@@ -218,19 +216,17 @@ class RationalSuperShape2D{
         Vector2d ClosestPoint( Vector2d P, int itmax = 10);
 
         //computation of the four cost functions for a given data set, returns Mean and Var for each cost function
-        bool ErrorMetric (vector < Vector2d, aligned_allocator< Vector2d> > Data, Vector4d &Mean, Vector4d &Var);
+        bool ErrorMetric (std::vector < Vector2d, aligned_allocator< Vector2d> > Data, Vector4d &Mean, Vector4d &Var);
 };
 
 inline std::ostream& operator<<(std::ostream& os, const RationalSuperShape2D& RS2D)
         {
         for(unsigned int i = 0; i < RS2D.Parameters.size(); i++) os << RS2D.Parameters[i] << " ";
-        os<<endl;
+        os<<std::endl;
         return os;
         };
 
 //Rfunction for self intersecting curves
-void RpUnion(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df);
-void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df);
-
-#endif
+void RpUnion(double f1, double f2, std::vector<double> Df1, std::vector<double> Df2, double &f, std::vector<double> &Df);
+void RpIntersection(double f1, double f2, std::vector<double> Df1, std::vector<double> Df2, double &f, std::vector<double> &Df);
 

@@ -28,6 +28,12 @@ The version available in Ubuntu 14.04 repositories is Eigen 3.2.0
 
 `sudo apt-get install libopencv-dev`
 
+### Google tests
+Recommended to install from source
+https://code.google.com/p/googletest/
+
+Google tests depends on pthread
+
 The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
 
 ## Compilation
