@@ -6,17 +6,16 @@ Real-time traffic sign detection using Gielis curves
 System requirements:
 
 * Ubuntu 14.04
-* Qt 4.8.x
-* Eigen 3.x
-* OpenCV 2.x
+* CMake 2.8.12
+* Eigen 3.2.0
+* OpenCV 2.4.8
+* GTest 1.6.1
 
-### Qt library
+### CMake Library
 
-To install the full Qt SDK
+`sudo apt-get install cmake`
 
-`sudo apt-get install qt-sdk`
-
-The version available in Ubuntu 14.04 repositories is Qt 4.8.5
+The version available in Ubuntu 14.04 repositories is CMake 2.8.12
 
 ### Eigen Library
 
@@ -28,13 +27,21 @@ The version available in Ubuntu 14.04 repositories is Eigen 3.2.0
 
 `sudo apt-get install libopencv-dev`
 
-### Google tests
-Recommended to install from source
-https://code.google.com/p/googletest/
-
-Google tests depends on pthread
-
 The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
+
+### Google tests
+
+`sudo apt-get install libgtest-dev`
+
+However, this command only download the source that you need to compile.
+
+```
+sudo cmake CMakeLists.txt
+sudo make
+sudo cp *.a /usr/lib
+```
+
+The version available in Ubuntu 14.04 repositories is GTest 1.6.1
 
 ## Compilation
 
@@ -46,14 +53,14 @@ The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
 
 `cd bin`
 
-* Create the `MakeFile` via qmake:
+* Create the `MakeFile` via cmake:
 
-`qmake-qt4 ../`
+`cmake ../src`
 
 * Compile the code to generate the executable:
 
-`make`
+`make` or `make -j n` where `n` is the number of cores to use for the compilation
 
 * In order to run the code:
 
-`./traffic-sign-detection ../test-images/different0035.jpg`
+`./main ../test-images/different0035.jpg`
