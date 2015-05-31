@@ -82,41 +82,41 @@ class RationalSuperShape2D{
 
         void Optimize5D(
             std::string outfilename, //file to store the evolution of the best fitted curve though iterations
-            const std::vector< Vector2d, aligned_allocator< Vector2d> > &, // array of 2D points
+            const std::vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
             );
 
         void Optimize7D(
             std::string outfilename, //file to store the evolution of the best fitted curve though iterations
-            const std::vector< Vector2d, aligned_allocator< Vector2d> > &, // array of 2D points
+            const std::vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
             );
 
         void Optimize8D(
-            const std::vector< Vector2d, aligned_allocator< Vector2d> > &, // array of 2D points
+            const std::vector< Vector2d, aligned_allocator< Vector2d> >, // array of 2D points
             double & ,         //error of fit
             int functionused = 1 //index of the implicit function used:1,2,or 3
             );
 
         //sub function used in the baove function to compute hessian approx and gradient
         double XiSquare5D(
-                      const std::vector < Vector2d, aligned_allocator< Vector2d> > & Data,    //array of 2D points
+                      const std::vector < Vector2d, aligned_allocator< Vector2d> > Data,    //array of 2D points
                       MatrixXd &alpha,      //hessian approximation
                       VectorXd &beta,       //gradient approximation
                       int function_used = 1,    //index of the implicit function used
                       bool udpate = false); //boolean if hessian and gradient have to be updated or not
 
         double XiSquare7D(
-                      const std::vector < Vector2d, aligned_allocator< Vector2d> > & Data,    //array of 2D points
+                      const std::vector < Vector2d, aligned_allocator< Vector2d> > Data,    //array of 2D points
                       MatrixXd &alpha,      //hessian approximation
                       VectorXd &beta,       //gradient approximation
                       int function_used = 1,    //index of the implicit function used
                       bool udpate = false); //boolean if hessian and gradient have to be updated or not
 
         double XiSquare8D(
-                      const std::vector < Vector2d, aligned_allocator< Vector2d> > & Data,    //array of 2D points
+                      const std::vector < Vector2d, aligned_allocator< Vector2d> > Data,    //array of 2D points
                       MatrixXd &alpha,      //hessian approximation
                       VectorXd &beta,       //gradient approximation
                       int function_used = 1,    //index of the implicit function used

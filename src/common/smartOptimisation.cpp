@@ -18,10 +18,7 @@
 * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-// own library
-#include "imageProcessing.h"
 #include "smartOptimisation.h"
-#include "timer.h"
 
 // stl library
 #include <vector>
@@ -39,7 +36,8 @@ static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0
                  0,         0,         0,         0,         0,
                  -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
                  -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
-
+// own library
+#include "imageProcessing.h"
 
 namespace initopt {
 
@@ -743,31 +741,24 @@ namespace optimisation {
    
     // Convert the data into Eigen type for further optimisation
     std::vector < Eigen::Vector2d, Eigen::aligned_allocator< Eigen::Vector2d> > Data;
-    Data.reserve(contour.size());
-    for (size_t contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-    {
-        Data.emplace_back(double(contour[contour_point_idx].x), double(contour[contour_point_idx].y));
-    }
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
+      Data.push_back(Eigen::Vector2d((double) contour[contour_point_idx].x, (double) contour[contour_point_idx].y));
+
     // Declaration of the Rational Shape
     RationalSuperShape2D RS;
 
     // Initilisation of the parameterers
-    RS.Init(config_shape.a, config_shape.b, config_shape.n1, config_shape.n2, config_shape.n3, config_shape.p, config_shape.q,
-            config_shape.theta_offset, config_shape.phi_offset, config_shape.x_offset, config_shape.y_offset, config_shape.z_offset);
+    RS.Init(config_shape.a, config_shape.b, config_shape.n1, config_shape.n2, config_shape.n3, config_shape.p, config_shape.q, config_shape.theta_offset, config_shape.phi_offset, config_shape.x_offset, config_shape.y_offset, config_shape.z_offset);
 
-    Timer tmrRun("\tRS run");
     // Run the optimisation
     double ErrorOfFit;
     RS.Optimize8D(Data, ErrorOfFit, 1);
-
-    Timer tmrAftRun("\tRS Afterrun");
 
     // test the Error Metric function
     RS.ErrorMetric (Data, mean_err, std_err);
 
     // Recover the different parameters
-    config_shape = ConfigStruct2d(RS.Get_a(), RS.Get_b(), RS.Get_n1(), RS.Get_n2(), RS.Get_n3(), RS.Get_p(), RS.Get_q(), RS.Get_thtoffset(),
-                                  RS.Get_phioffset(), RS.Get_xoffset(), RS.Get_yoffset(), RS.Get_zoffset());
+    config_shape = ConfigStruct2d(RS.Get_a(), RS.Get_b(), RS.Get_n1(), RS.Get_n2(), RS.Get_n3(), RS.Get_p(), RS.Get_q(), RS.Get_thtoffset(), RS.Get_phioffset(), RS.Get_xoffset(), RS.Get_yoffset(), RS.Get_zoffset());
 
   }
 

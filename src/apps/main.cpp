@@ -156,6 +156,7 @@ int main(int argc, char *argv[]) {
     // For each contours
     for (unsigned int contour_idx = 0; contour_idx < normalised_contours.size(); contour_idx++) {
 
+        Timer tmr("for each contours");
         // For each type of traffic sign
         /*
      * sign_type = 0 -> nb_edges = 3;  gielis_sym = 6; radius
