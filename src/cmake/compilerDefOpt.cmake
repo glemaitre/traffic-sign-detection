@@ -58,3 +58,16 @@ endif()
 if(OPT_ASAN)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address -fno-omit-frame-pointer")
 endif()
+
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+
+    if(NOT EXISTS ${CMAKE_CXX_COMPILER})
+        message( FATAL_ERROR "Clang++ not found. " )
+    endif()
+
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register -Qunused-arguments")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-unused-const-variable")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fcolor-diagnostics")
+
+endif()
