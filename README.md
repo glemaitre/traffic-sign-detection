@@ -45,22 +45,24 @@ The version available in Ubuntu 14.04 repositories is GTest 1.6.1
 
 ## Compilation
 
-* Create a binary folder:
+* Create a build folder:
 
-`mkdir bin`
+`mkdir build`
 
 * Move to the created folder:
 
-`cd bin`
+`cd build`
 
 * Create the `MakeFile` via cmake:
 
-`cmake ../src`
+`cmake ../src` 
 
 * Compile the code to generate the executable:
 
 `make` or `make -j n` where `n` is the number of cores to use for the compilation
 
+* A folder bin will be created at the same level as the build directory.
+
 * In order to run the code:
 
-`./main ../test-images/different0035.jpg`
+`../bin/main ../test-images/different0035.jpg`
