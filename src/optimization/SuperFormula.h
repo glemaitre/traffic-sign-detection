@@ -44,7 +44,6 @@ the use of this software, even if advised of the possibility of such damage.
 #pragma once
 
 // our own code
-#include <common/math_utils.h>
 
 #include <cassert>
 #include <cstring>
@@ -231,7 +230,7 @@ public:
         //convert P in polar coordinates. P must be in canonical ref
 
         Vector2d Ppol(P.norm(), atan2(P[1],P[0]));
-        if (Ppol[1]<0) Ppol[1] += 2*PI;
+        if (Ppol[1]<0) Ppol[1] += 2*M_PI;
 
         double r (radius(tht));
         return sqrt( r*r + Ppol[0]*Ppol[0] - 2*r*Ppol[0]*cos(tht-Ppol[1]));

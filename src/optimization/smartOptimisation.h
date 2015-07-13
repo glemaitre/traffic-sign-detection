@@ -45,7 +45,6 @@ the use of this software, even if advised of the possibility of such damage.
 
 // own library
 #include "SuperFormula.h"
-#include <common/math_utils.h>
 
 // OpenCV library
 #include <opencv2/opencv.hpp>

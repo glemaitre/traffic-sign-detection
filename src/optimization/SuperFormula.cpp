@@ -149,11 +149,11 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     vector< vector<double> > Df;
     //assert angular values between [0, 2q*Pi]
     double tht (atan2(y,x)), thtbase(tht);
-    if (tht<0) thtbase += 2.*PI;
+    if (tht<0) thtbase += 2.*M_PI;
     //compute all intersections and associated partial derivatives
     for (int i=0; i<Get_q(); i++)
     {
-        tht = thtbase + i*2.*PI;
+        tht = thtbase + i*2.*M_PI;
         R = radius(tht);
         f.push_back(R - PL); //store function
         // store partial derivatives
@@ -214,11 +214,11 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
     vector<vector<double> > Df;
     //assert angular values between [0, 2q*Pi]
     double tht (atan2(y,x)), thtbase(tht);
-    if (tht<0) thtbase += 2.*PI;
+    if (tht<0) thtbase += 2.*M_PI;
     //compute all intersections and associated gradient values
     for (int i=0; i<Get_q(); i++)
     {
-        tht = thtbase + i*2.*PI;
+        tht = thtbase + i*2.*M_PI;
         R = radius(tht);
         drdth = DrDtheta(tht);
         f.push_back(1. - PL/R); //store function
@@ -280,11 +280,11 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
     vector< vector<double> > Df;
     //assert angular values between [0, 2q*Pi]
     double tht (atan2(y,x)), thtbase(tht);
-    if (tht<0) thtbase += 2.*PI;
+    if (tht<0) thtbase += 2.*M_PI;
     //compute all intersections and associated gradient values
     for (int i=0; i<Get_q(); i++)
     {
-        tht = thtbase + i*2.*PI;
+        tht = thtbase + i*2.*M_PI;
         R = radius(tht);
         drdth = DrDtheta(tht);
         f.push_back( log( R*R / PSL)); //store function
@@ -695,7 +695,7 @@ double RationalSuperShape2D :: XiSquare5D(
         x = P[0]; y = P[1];
         // avoid division by 0 ==> numerical stability
         if (P.norm()<EPSILON) continue; // avoids division by zero
-        tht = atan2(y,x); if( tht<0) tht+=2.*PI;
+        tht = atan2(y,x); if( tht<0) tht+=2.*M_PI;
         //theta = Arctan(Y/X)
 
         //avoid non differentiable cases
@@ -913,7 +913,7 @@ double RationalSuperShape2D :: XiSquare7D(
         x = P[0]; y = P[1];
         // avoid division by 0 ==> numerical stability
         if (P.norm()<EPSILON) continue; // avoids division by zero
-        tht = atan2(y,x); if( tht < 0 ) tht+=2.*PI;
+        tht = atan2(y,x); if( tht < 0 ) tht+=2.*M_PI;
 
         //theta = Arctan(Y/X)
         dthtdx = -sin(tht) ;//-y / (x*x+y*y);
@@ -1036,7 +1036,7 @@ void RationalSuperShape2D :: Optimize8D(
             Parameters[9] += beta[5];
             Parameters[10] += beta[6];
             //same for rotational offset tht0
-            beta[7] = min(PI/50., max(-PI/50., beta[7]));
+            beta[7] = min(M_PI/50., max(-M_PI/50., beta[7]));
             Parameters[7] += beta[7];
         }
         //
@@ -1152,7 +1152,7 @@ double RationalSuperShape2D :: XiSquare8D(
         x = P[0]; y = P[1];
         // avoid division by 0 ==> numerical stability
         if (P.norm()<EPSILON) continue; // avoids division by zero
-        tht = atan2(y,x); if( tht<0) tht+=2.*PI;
+        tht = atan2(y,x); if( tht<0) tht+=2.*M_PI;
 
         //theta = Arctan(Y/X)
         dthtdx = -sin(tht) ;//-y / (x*x+y*y);
@@ -1209,7 +1209,7 @@ double RationalSuperShape2D :: XiSquare8D(
 }
 Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
     // P is supposed to be expressed in canonical referential
-    double tht = atan2(P[1],P[0]); if (tht<0) tht +=2*PI;
+    double tht = atan2(P[1],P[0]); if (tht<0) tht +=2*M_PI;
     double error(1), change(1);
     int it(0);
     while (error >= 0.001 && fabs(change)>1e-6 && it < itmax){
