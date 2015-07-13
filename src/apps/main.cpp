@@ -41,10 +41,11 @@
 // the use of this software, even if advised of the possibility of such damage.
 
 // our own code
-#include <common/segmentation.h>
-#include <common/colorConversion.h>
-#include <common/imageProcessing.h>
-#include <common/smartOptimisation.h>
+#include <img_processing/segmentation.h>
+#include <img_processing/colorConversion.h>
+#include <img_processing/imageProcessing.h>
+#include <img_processing/contour.h>
+#include <optimization/smartOptimisation.h>
 #include <common/math_utils.h>
 #include <common/timer.h>
 

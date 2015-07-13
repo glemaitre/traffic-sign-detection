@@ -46,6 +46,10 @@ include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(common)
 
+add_subdirectory(img_processing)
+
+add_subdirectory(optimization)
+
 add_subdirectory(apps)
 
 add_subdirectory(tests)

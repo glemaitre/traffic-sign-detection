@@ -54,5 +54,7 @@ add_executable(test_all
 target_link_libraries(test_all
                       ${GTEST_BOTH_LIBRARIES}
                       common
+                      img_processing
+                      optimization
                       ${external_libs}
 )

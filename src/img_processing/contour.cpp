@@ -41,7 +41,10 @@ or tort (including negligence or otherwise) arising in any way out of
 the use of this software, even if advised of the possibility of such damage.
 */
 
-#include "smartOptimisation.h"
+// own library
+#include "contour.h"
+#include "imageProcessing.h"
+
 
 // stl library
 #include <vector>
@@ -59,8 +62,6 @@ static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0
                                  0,         0,         0,         0,         0,
                                  -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
                                  -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
-// own library
-#include "imageProcessing.h"
 
 namespace initopt {
 
@@ -754,69 +755,4 @@ double rotation_offset(const std::vector< cv::Point2f >& contour) {
 
     return 0.0;
 }
-}
-
-namespace optimisation {
-
-
-// Function to make the optimisation
-void gielis_optimisation(const std::vector< cv::Point2f >& contour, ConfigStruct2d& config_shape, Eigen::Vector4d& mean_err, Eigen::Vector4d& std_err) {
-
-    // Convert the data into Eigen type for further optimisation
-    std::vector < Eigen::Vector2d, Eigen::aligned_allocator< Eigen::Vector2d> > Data;
-    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-        Data.push_back(Eigen::Vector2d((double) contour[contour_point_idx].x, (double) contour[contour_point_idx].y));
-
-    // Declaration of the Rational Shape
-    RationalSuperShape2D RS;
-
-    // Initilisation of the parameterers
-    RS.Init(config_shape.a, config_shape.b, config_shape.n1, config_shape.n2, config_shape.n3, config_shape.p, config_shape.q, config_shape.theta_offset, config_shape.phi_offset, config_shape.x_offset, config_shape.y_offset, config_shape.z_offset);
-
-    // Run the optimisation
-    double ErrorOfFit;
-    RS.Optimize8D(Data, ErrorOfFit, 1);
-
-    // test the Error Metric function
-    RS.ErrorMetric (Data, mean_err, std_err);
-
-    // Recover the different parameters
-    config_shape = ConfigStruct2d(RS.Get_a(), RS.Get_b(), RS.Get_n1(), RS.Get_n2(), RS.Get_n3(), RS.Get_p(), RS.Get_q(), RS.Get_thtoffset(), RS.Get_phioffset(), RS.Get_xoffset(), RS.Get_yoffset(), RS.Get_zoffset());
-
-}
-
-// Reconstruction using the Gielis formula
-void gielis_reconstruction(const ConfigStruct2d& config_shape, std::vector< cv::Point2f >& gielis_contour, const int number_points) {
-    
-    // Initilisation of the output
-    if(!gielis_contour.empty()) {
-        gielis_contour.erase(gielis_contour.begin(), gielis_contour.end());
-        gielis_contour.resize(number_points);
-    }
-    else
-        gielis_contour.resize(number_points);
-
-    for (int j = 0; j < number_points; j++) {
-
-        /*----- Compute the radius ----*/
-        double tmpRadius = 0;
-
-        // Compute the radius
-        double tmpIdx = ((double) j * 2.00 * M_PI) / ((double) number_points);
-        double tmp_angle = config_shape.p * tmpIdx * 0.25 / config_shape.q;
-        double tmpCos = cos(tmp_angle);
-        double tmpSin = sin(tmp_angle);
-
-        double tmp1 = (pow(fabs(tmpCos), config_shape.n2)) / config_shape.a;
-        double tmp2 = (pow(fabs(tmpSin), config_shape.n3)) / config_shape.b;
-
-        if ((tmp1 + tmp2) != 0) tmpRadius = pow((tmp1 + tmp2), -1.00 / config_shape.n1);
-        else tmpRadius = 0.00;
-
-        // Computation of x and y with denormalization
-        gielis_contour[j].x = ( cos( tmpIdx + config_shape.theta_offset) * tmpRadius + config_shape.x_offset );
-        gielis_contour[j].y = ( sin( tmpIdx + config_shape.theta_offset) * tmpRadius + config_shape.y_offset );
-    }
-}
-
 }

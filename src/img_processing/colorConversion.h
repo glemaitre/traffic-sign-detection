@@ -44,7 +44,7 @@ the use of this software, even if advised of the possibility of such damage.
 #pragma once
 
 // own library
-#include "math_utils.h"
+#include <common/math_utils.h>
 
 // stl library
 #include <vector>

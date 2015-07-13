@@ -1,4 +1,3 @@
-
 # By downloading, copying, installing or using the software you agree to this license.
 # If you do not agree to this license, do not download, install,
 # copy or use the software.
@@ -40,21 +39,15 @@
 # or tort (including negligence or otherwise) arising in any way out of
 # the use of this software, even if advised of the possibility of such damage.
 
-include_directories(${PROJECT_SOURCE_DIR}/)
-#include_directories("../common")
+file(GLOB_RECURSE img_processing_sources *.cpp *.cc)
+file(GLOB_RECURSE img_processing_headers *.h *.hpp)
 
 include_directories(${external_includes})
-#include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories(${PROJECT_SOURCE_DIR}/common/)
 
-# Create test executables
-set(app_programs
-	main)
+add_library(img_processing STATIC
+        ${img_processing_sources}
+        ${img_processing_headers}
+)
 
-foreach(app ${app_programs})
-    add_executable(${app} ${app}.cpp)
-    target_link_libraries(${app}
-                          common
-                          img_processing
-                          optimization
-                          ${external_libs})
-endforeach()
+target_link_libraries(img_processing common ${external_libs})

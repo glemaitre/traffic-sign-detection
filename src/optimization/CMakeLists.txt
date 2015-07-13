@@ -1,4 +1,3 @@
-
 # By downloading, copying, installing or using the software you agree to this license.
 # If you do not agree to this license, do not download, install,
 # copy or use the software.
@@ -8,8 +7,8 @@
 #                For Open Source Computer Vision Library
 #                        (3-clause BSD License)
 
-# Copyright (C) 2015, 
-# 	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
+# Copyright (C) 2015,
+# 	  Guillaume Lemaitre (g.lemaitre58@gmail.com),
 # 	  Johan Massich (mailsik@gmail.com),
 # 	  Gerard Bahi (zomeck@gmail.com),
 # 	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
@@ -40,21 +39,15 @@
 # or tort (including negligence or otherwise) arising in any way out of
 # the use of this software, even if advised of the possibility of such damage.
 
-include_directories(${PROJECT_SOURCE_DIR}/)
-#include_directories("../common")
+file(GLOB_RECURSE optimization_sources *.cpp *.cc)
+file(GLOB_RECURSE optimization_headers *.h *.hpp)
 
 include_directories(${external_includes})
-#include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories(${PROJECT_SOURCE_DIR}/common/)
 
-# Create test executables
-set(app_programs
-	main)
+add_library(optimization STATIC
+        ${optimization_sources}
+        ${optimization_headers}
+)
 
-foreach(app ${app_programs})
-    add_executable(${app} ${app}.cpp)
-    target_link_libraries(${app}
-                          common
-                          img_processing
-                          optimization
-                          ${external_libs})
-endforeach()
+target_link_libraries(optimization common ${external_libs})

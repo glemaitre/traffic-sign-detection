@@ -43,6 +43,9 @@ the use of this software, even if advised of the possibility of such damage.
 
 #pragma once
 
+// our own code
+#include <common/math_utils.h>
+
 #include <cassert>
 #include <cstring>
 
