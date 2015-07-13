@@ -39,24 +39,6 @@
 # or tort (including negligence or otherwise) arising in any way out of
 # the use of this software, even if advised of the possibility of such damage.
 
-include_directories(${PROJECT_SOURCE_DIR}/)
-include_directories(SYSTEM ${GTEST_INCLUDE_DIRS})
+file(GLOB files "common/*.cpp")
 
-include_directories(${external_includes})
-
-add_subdirectory(integration)
-add_subdirectory(unit)
-
-add_executable(test_all
-                tests_all.cpp
-		${srcs_common_all}
-                ${srcs_integration_all}
-                )
-
-target_link_libraries(test_all
-                      ${GTEST_BOTH_LIBRARIES}
-                      common
-                      img_processing
-                      optimization
-                      ${external_libs}
-)
+set(srcs_common_all ${files} PARENT_SCOPE)
