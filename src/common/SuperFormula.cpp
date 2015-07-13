@@ -10,10 +10,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -664,7 +664,7 @@ double RationalSuperShape2D :: XiSquare5D(
     }
     vector<double> Df;
     double x, y, tht, ChiSquare(1e15), f(0),
-           x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
+            x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
     //clean memory
     if ( update ) {
         alpha.setZero();

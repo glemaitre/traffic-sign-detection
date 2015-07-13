@@ -9,10 +9,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,

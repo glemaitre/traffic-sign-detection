@@ -9,10 +9,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -49,30 +49,30 @@ the use of this software, even if advised of the possibility of such damage.
 
 //TODO: probably this should not be static and defined here, is onlye used once in the function
 static float derivative_x [] = { 0.0041,    0.0104,         0,   -0.0104,   -0.0041,
-                 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
-                 0.0467,    0.1180,         0,   -0.1180,   -0.0467,
-                 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
-                 0.0041,    0.0104,         0,   -0.0104,   -0.0041 };
+                                 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
+                                 0.0467,    0.1180,         0,   -0.1180,   -0.0467,
+                                 0.0273,    0.0689,         0,   -0.0689,   -0.0273,
+                                 0.0041,    0.0104,         0,   -0.0104,   -0.0041 };
 
 static float derivative_y [] = { 0.0041,    0.0273,    0.0467,    0.0273,    0.0041,
-                 0.0104,    0.0689,    0.1180,    0.0689,    0.0104,
-                 0,         0,         0,         0,         0,
-                 -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
-                 -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
+                                 0.0104,    0.0689,    0.1180,    0.0689,    0.0104,
+                                 0,         0,         0,         0,         0,
+                                 -0.0104,   -0.0689,   -0.1180,   -0.0689,   -0.0104,
+                                 -0.0041,   -0.0273,   -0.0467,   -0.0273,   -0.0041 };
 // own library
 #include "imageProcessing.h"
 
 namespace initopt {
 
-  // Function to find normalisation factor
-  double find_normalisation_factor(const std::vector < cv::Point2f >& contour) {
+// Function to find normalisation factor
+double find_normalisation_factor(const std::vector < cv::Point2f >& contour) {
 
     // No method is available to find the max coordinate
     cv::Mat contour_x = cv::Mat::zeros(1, contour.size(), CV_32F);
     cv::Mat contour_y = cv::Mat::zeros(1, contour.size(), CV_32F);
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
-      contour_x.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].x);
-      contour_y.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].y);
+        contour_x.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].x);
+        contour_y.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].y);
     }
     
     double max_x, max_y;
@@ -80,174 +80,174 @@ namespace initopt {
     cv::minMaxIdx(contour_y, NULL, &max_y, NULL, NULL);
     
     return std::max(max_x, max_y);
-  }
+}
 
-  // Function to normalize a contour
-  void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, double& factor) {
+// Function to normalize a contour
+void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, double& factor) {
     
     // Find the normalisation factor
     factor = find_normalisation_factor(contour);
 
     // Initilisation of the output
     if(!output_contour.empty()) {
-      output_contour.erase(output_contour.begin(), output_contour.end());
-      output_contour.resize(contour.size());
+        output_contour.erase(output_contour.begin(), output_contour.end());
+        output_contour.resize(contour.size());
     }
     else
-      output_contour.resize(contour.size());
+        output_contour.resize(contour.size());
 
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / (float) factor);
-  
-  }
-  
-  // Function to normalize a contour with a given factor
-  cv::Point2f normalise_point_fixed_factor(const cv::Point2f& point, const double factor) {
+        output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / (float) factor);
+
+}
+
+// Function to normalize a contour with a given factor
+cv::Point2f normalise_point_fixed_factor(const cv::Point2f& point, const double factor) {
     
     // Denormalise
     return point * (1.0f / static_cast<float> (factor));
-  }
-  
-  // Function to normalize a contour with a given factor
-  void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
+}
+
+// Function to normalize a contour with a given factor
+void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
     
     // Initilisation of the output
     if(!output_contour.empty()) {
-      output_contour.erase(output_contour.begin(), output_contour.end());
-      output_contour.resize(contour.size());
+        output_contour.erase(output_contour.begin(), output_contour.end());
+        output_contour.resize(contour.size());
     }
     else
-      output_contour.resize(contour.size());
+        output_contour.resize(contour.size());
 
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / factor);
+        output_contour[contour_point_idx] = contour[contour_point_idx] * (1.00 / factor);
 
-  }
+}
 
-  // Function to normalise a vector of contours
-  void normalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, std::vector< double >& factor_vector) {
+// Function to normalise a vector of contours
+void normalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, std::vector< double >& factor_vector) {
     
     // Allocate the output contours
     if(!output_contours.empty()) {
-      output_contours.erase(output_contours.begin(), output_contours.end());
-      output_contours.resize(contours.size());
+        output_contours.erase(output_contours.begin(), output_contours.end());
+        output_contours.resize(contours.size());
     }
     else
-      output_contours.resize(contours.size());
+        output_contours.resize(contours.size());
 
     // For each contour
     for (unsigned int contour_idx = 0; contour_idx < contours.size(); contour_idx++)
-      normalise_contour(contours[contour_idx], output_contours[contour_idx], factor_vector[contour_idx]);
+        normalise_contour(contours[contour_idx], output_contours[contour_idx], factor_vector[contour_idx]);
 
-  }
+}
 
-  // Function to denormalize a contour
-  void denormalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
+// Function to denormalize a contour
+void denormalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
     
     // Initilisation of the output
     if(!output_contour.empty()) {
-      output_contour.erase(output_contour.begin(), output_contour.end());
-      output_contour.resize(contour.size());
+        output_contour.erase(output_contour.begin(), output_contour.end());
+        output_contour.resize(contour.size());
     }
     else
-      output_contour.resize(contour.size());
+        output_contour.resize(contour.size());
 
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      output_contour[contour_point_idx] = contour[contour_point_idx] * factor;
+        output_contour[contour_point_idx] = contour[contour_point_idx] * factor;
 
-  }
+}
 
-  // Function to denormalise a vector of contours
-  void denormalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, const std::vector< double >& factor_vector) {
+// Function to denormalise a vector of contours
+void denormalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, const std::vector< double >& factor_vector) {
     
     // Allocate the output contours
     if(!output_contours.empty()) {
-      output_contours.erase(output_contours.begin(), output_contours.end());
-      output_contours.resize(contours.size());
+        output_contours.erase(output_contours.begin(), output_contours.end());
+        output_contours.resize(contours.size());
     }
     else
-      output_contours.resize(contours.size());
+        output_contours.resize(contours.size());
 
     // For each contour
     for (unsigned int contour_idx = 0; contour_idx < contours.size(); contour_idx++)
-      denormalise_contour(contours[contour_idx], output_contours[contour_idx], factor_vector[contour_idx]);
+        denormalise_contour(contours[contour_idx], output_contours[contour_idx], factor_vector[contour_idx]);
 
-  }
+}
 
-  // Function to estimate the radius for a contour - THE CONTOUR NEEDS TO BE DENORMALIZED
-  int radius_estimation(const std::vector< cv::Point2f >& contour) { 
+// Function to estimate the radius for a contour - THE CONTOUR NEEDS TO BE DENORMALIZED
+int radius_estimation(const std::vector< cv::Point2f >& contour) {
     
     double radius = 0;
     // Add the distance of each contour point
-    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) 
-      radius += cv::norm(contour[contour_point_idx]);
+    for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
+        radius += cv::norm(contour[contour_point_idx]);
 
     return (int) std::ceil(radius / (double)contour.size());
-  }
+}
 
-  // Function to extract a ROI from one image with border copy if the ROI is too large
-  void roi_extraction(const cv::Mat& original_image, const cv::Rect& roi, cv::Mat& output_image) {
+// Function to extract a ROI from one image with border copy if the ROI is too large
+void roi_extraction(const cv::Mat& original_image, const cv::Rect& roi, cv::Mat& output_image) {
 
     // No padding needed
     if ((roi.x > 0) && ((roi.x + roi.width) < original_image.cols) &&
-	(roi.y > 0) && ((roi.y + roi.height) < original_image.rows) )
-      output_image = original_image(roi);
+            (roi.y > 0) && ((roi.y + roi.height) < original_image.rows) )
+        output_image = original_image(roi);
     // Otherwise we need to pad arounf the image
     else {
 
-      // Create a ROI with the part which is inside the original picture
-      cv::Rect within_roi(roi);
-      if (roi.x < 0) {
-	within_roi.x = 0;
-	within_roi.width -= roi.x;
-      }
-      if (roi.y < 0) {
-	within_roi.y = 0;
-	within_roi.height -= roi.y;
-      }
-      if ((within_roi.x + within_roi.width) >= original_image.cols)
-	within_roi.width = original_image.cols - within_roi.x;
-      if ((within_roi.y + within_roi.height) >= original_image.rows)
-	within_roi.height = original_image.rows - within_roi.y;
+        // Create a ROI with the part which is inside the original picture
+        cv::Rect within_roi(roi);
+        if (roi.x < 0) {
+            within_roi.x = 0;
+            within_roi.width -= roi.x;
+        }
+        if (roi.y < 0) {
+            within_roi.y = 0;
+            within_roi.height -= roi.y;
+        }
+        if ((within_roi.x + within_roi.width) >= original_image.cols)
+            within_roi.width = original_image.cols - within_roi.x;
+        if ((within_roi.y + within_roi.height) >= original_image.rows)
+            within_roi.height = original_image.rows - within_roi.y;
 
-      // Crop the ROI within the image
-      cv::Mat within_image = original_image(within_roi);
+        // Crop the ROI within the image
+        cv::Mat within_image = original_image(within_roi);
 
-      // Now create pad around the image with replication
-      int top = 0, bottom = 0, left = 0, right = 0;
-      if (roi.x < 0)
-	left = std::abs(roi.x);
-      if (roi.y < 0)
-        top = std::abs(roi.y);
-      if ((roi.x + roi.width) >= original_image.cols)
-	right = roi.width - (original_image.cols - roi.x);
-      if ((roi.y + roi.height) >= original_image.rows)
-	bottom = roi.height - (original_image.rows - roi.y);
+        // Now create pad around the image with replication
+        int top = 0, bottom = 0, left = 0, right = 0;
+        if (roi.x < 0)
+            left = std::abs(roi.x);
+        if (roi.y < 0)
+            top = std::abs(roi.y);
+        if ((roi.x + roi.width) >= original_image.cols)
+            right = roi.width - (original_image.cols - roi.x);
+        if ((roi.y + roi.height) >= original_image.rows)
+            bottom = roi.height - (original_image.rows - roi.y);
 
-      // Pad the image
-      cv::copyMakeBorder(within_image, output_image, top, bottom, left, right, cv::BORDER_REPLICATE);
+        // Pad the image
+        cv::copyMakeBorder(within_image, output_image, top, bottom, left, right, cv::BORDER_REPLICATE);
     }
-  }
+}
 
-  // Function to return max and min in x and y of contours
-  void extract_min_max(const std::vector< cv::Point2f >& contour, double &min_y, double &min_x, double &max_x, double &max_y) { 
+// Function to return max and min in x and y of contours
+void extract_min_max(const std::vector< cv::Point2f >& contour, double &min_y, double &min_x, double &max_x, double &max_y) {
     // Find the minimum coordinate around the supposed target
     // No method is available to find the max coordinate
     cv::Mat contour_x = cv::Mat::zeros(1, contour.size(), CV_32F);
     cv::Mat contour_y = cv::Mat::zeros(1, contour.size(), CV_32F);
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++) {
-      contour_x.at<float>(contour_point_idx) = contour[contour_point_idx].x;
-      contour_y.at<float>(contour_point_idx) = contour[contour_point_idx].y;
+        contour_x.at<float>(contour_point_idx) = contour[contour_point_idx].x;
+        contour_y.at<float>(contour_point_idx) = contour[contour_point_idx].y;
     }
     cv::minMaxIdx(contour_x, &min_x, &max_x, NULL, NULL);
     cv::minMaxIdx(contour_y, &min_y, &max_y, NULL, NULL);
-  }
+}
 
-  // Function to define the ROI dimension around a target by a given factor
-  void roi_dimension_definition(const double& min_y, const double& min_x, const double& max_x, const double& max_y, const double& factor, cv::Rect& roi_dimension) {
+// Function to define the ROI dimension around a target by a given factor
+void roi_dimension_definition(const double& min_y, const double& min_x, const double& max_x, const double& max_y, const double& factor, cv::Rect& roi_dimension) {
     
     // Create a RoI
     roi_dimension.height = (int) ceil(factor * (max_y - min_y));
@@ -255,41 +255,41 @@ namespace initopt {
     roi_dimension.x = (int) ceil(min_x + (1.00 - factor) * ((max_x - min_x) * 0.5));
     roi_dimension.y = (int) ceil(min_y + (1.00 - factor) * ((max_y - min_y) * 0.5));
 
-  }
+}
 
-  // Function to convert the RGB to float gray
-  void rgb_to_float_gray(const cv::Mat& original_image, cv::Mat& gray_image_float) {
+// Function to convert the RGB to float gray
+void rgb_to_float_gray(const cv::Mat& original_image, cv::Mat& gray_image_float) {
 
     // The roi image has to be converted in RGB for further processing
     cv::Mat gray_image;
     cv::cvtColor(original_image, gray_image, CV_RGB2GRAY);
 
     // Convert the image into float
-    gray_image.convertTo(gray_image_float, CV_32F); 
+    gray_image.convertTo(gray_image_float, CV_32F);
 
-  }
+}
 
-  // Function which threshold the gradient image based on the magnitude image
-  void gradient_thresh(cv::Mat &magnitude_image, cv::Mat &gradient_x, cv::Mat& gradient_y) {
+// Function which threshold the gradient image based on the magnitude image
+void gradient_thresh(cv::Mat &magnitude_image, cv::Mat &gradient_x, cv::Mat& gradient_y) {
     
     // Find the maximum magnitude
     double max_magnitude;
     cv::minMaxLoc(magnitude_image, NULL, &max_magnitude);
     
     for (int i = 0; i < magnitude_image.rows; i++) {
-      for (int j = 0; j < magnitude_image.cols; j++) {
-	if (magnitude_image.at<float>(i, j) < ((float) max_magnitude * THRESH_GRAD_RAD_DET)) {
-	  gradient_x.at<float>(i, j) = 0.00;
-	  gradient_y.at<float>(i, j) = 0.00;
-	  magnitude_image.at<float>(i, j) = 0.00;
-	}
-      }
+        for (int j = 0; j < magnitude_image.cols; j++) {
+            if (magnitude_image.at<float>(i, j) < ((float) max_magnitude * THRESH_GRAD_RAD_DET)) {
+                gradient_x.at<float>(i, j) = 0.00;
+                gradient_y.at<float>(i, j) = 0.00;
+                magnitude_image.at<float>(i, j) = 0.00;
+            }
+        }
     }
 
-  }
+}
 
-  // Function to determine the angles from the gradient images
-  void orientations_from_gradient(const cv::Mat& gradient_x, const cv::Mat& gradient_y, const int& edges_number, cv::Mat &gradient_vp_x, cv::Mat &gradient_vp_y, cv::Mat &gradient_bar_x, cv::Mat &gradient_bar_y) {
+// Function to determine the angles from the gradient images
+void orientations_from_gradient(const cv::Mat& gradient_x, const cv::Mat& gradient_y, const int& edges_number, cv::Mat &gradient_vp_x, cv::Mat &gradient_vp_y, cv::Mat &gradient_bar_x, cv::Mat &gradient_bar_y) {
 
     // Allocation of the diffrent gradients
     cv::Mat gradient_gp_radian = cv::Mat(gradient_x.size(), CV_32F);
@@ -298,18 +298,18 @@ namespace initopt {
 
     // Compute gradient gp in radian
     for (int i = 0; i < gradient_gp_radian.rows; i++)
-      for (int j = 0; j < gradient_gp_radian.cols ; j++)
-        gradient_gp_radian.at<float>(i, j) = atan2(gradient_y.at<float>(i, j), gradient_x.at<float>(i, j));
+        for (int j = 0; j < gradient_gp_radian.cols ; j++)
+            gradient_gp_radian.at<float>(i, j) = atan2(gradient_y.at<float>(i, j), gradient_x.at<float>(i, j));
 
     // Convert from gradient gp to degree
     cv::divide((180.0 * gradient_gp_radian), cv::Mat::ones(gradient_gp_radian.size(), CV_32F) * M_PI, gradient_gp_degree);
-     
+
     // Compute the gradient vp in degree
     for (int i = 0; i < gradient_vp_degree.rows; i++) {
-      for (int j = 0; j < gradient_vp_degree.cols; j++) {
-        gradient_vp_degree.at<float>(i, j) = gradient_gp_degree.at<float>(i, j) * (float) edges_number;
-        gradient_vp_degree.at<float>(i, j) = fmod(gradient_vp_degree.at<float>(i, j), (float) 360.00);
-      }
+        for (int j = 0; j < gradient_vp_degree.cols; j++) {
+            gradient_vp_degree.at<float>(i, j) = gradient_gp_degree.at<float>(i, j) * (float) edges_number;
+            gradient_vp_degree.at<float>(i, j) = fmod(gradient_vp_degree.at<float>(i, j), (float) 360.00);
+        }
     }
     
     // Compute the angle difference between the gradients vp and gp
@@ -319,10 +319,10 @@ namespace initopt {
     cv::Mat cos_theta = cv::Mat::zeros(theta.size(), CV_32F);
     cv::Mat sin_theta = cv::Mat::zeros(theta.size(), CV_32F);
     for (int i = 0; i < theta.rows; i++) {
-      for (int j = 0; j < theta.cols; j++) {
-        cos_theta.at<float>(i, j) = cos(theta.at<float>(i, j));
-        sin_theta.at<float>(i, j) = sin(theta.at<float>(i, j));
-      }
+        for (int j = 0; j < theta.cols; j++) {
+            cos_theta.at<float>(i, j) = cos(theta.at<float>(i, j));
+            sin_theta.at<float>(i, j) = sin(theta.at<float>(i, j));
+        }
     }
 
     cv::Mat tmp_matrix_1;
@@ -337,38 +337,38 @@ namespace initopt {
 
     gradient_bar_x = gradient_y;
     gradient_bar_y = - gradient_x;
-  }
+}
 
-  // Function to round a matrix
-  cv::Mat round_matrix(const cv::Mat& original_matrix) {
+// Function to round a matrix
+cv::Mat round_matrix(const cv::Mat& original_matrix) {
     
     // Allocate the ouput
     cv::Mat result(original_matrix.size(), CV_32F);
 
     for(int i = 0; i< original_matrix.rows; i++) {
-      const float* ptr_original = original_matrix.ptr<float>(i);
-      float* ptr_result = result.ptr<float>(i);
-      for(int j = 0; j < original_matrix.cols; j++ ) {
-	ptr_result[j] = (float) cvRound(ptr_original[j]);
-      }
+        const float* ptr_original = original_matrix.ptr<float>(i);
+        float* ptr_result = result.ptr<float>(i);
+        for(int j = 0; j < original_matrix.cols; j++ ) {
+            ptr_result[j] = (float) cvRound(ptr_original[j]);
+        }
     }
 
     return result;
-  }
+}
 
-  // Function to determine mass center by voting
-  cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat& gradient_x, const cv::Mat& gradient_y, const cv::Mat& gradient_bar_x, const cv::Mat& gradient_bar_y, const cv::Mat& gradient_vp_x, const cv::Mat& gradient_vp_y, const float& radius, const int& edges_number) {
+// Function to determine mass center by voting
+cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat& gradient_x, const cv::Mat& gradient_y, const cv::Mat& gradient_bar_x, const cv::Mat& gradient_bar_y, const cv::Mat& gradient_vp_x, const cv::Mat& gradient_vp_y, const float& radius, const int& edges_number) {
 
-    // Create all the possible combination of coordinate 
+    // Create all the possible combination of coordinate
     cv::Mat coord_x = cv::Mat(magnitude_image.size(), CV_32F);
     cv::Mat coord_y = cv::Mat(magnitude_image.size(), CV_32F);
     for(int i = 0; i < coord_x.rows; i++) {
-      float* ptr_coord_x = coord_x.ptr<float>(i);
-      float* ptr_coord_y = coord_y.ptr<float>(i);
-      for(int j = 0; j < coord_x.cols; j++) {
-	ptr_coord_x[j] = (float) j;
-	ptr_coord_y[j] = (float) i;
-      }
+        float* ptr_coord_x = coord_x.ptr<float>(i);
+        float* ptr_coord_y = coord_y.ptr<float>(i);
+        for(int j = 0; j < coord_x.cols; j++) {
+            ptr_coord_x[j] = (float) j;
+            ptr_coord_y[j] = (float) i;
+        }
     }
     
     // Allocate the different image needed during the voting process
@@ -392,21 +392,21 @@ namespace initopt {
 
     // Check if the values are inside the boundaries
     for(int i = 0; i < pos_vote_x.rows; i++) {
-      float* ptr_pos_vote_x = pos_vote_x.ptr<float>(i);
-      float* ptr_pos_vote_y = pos_vote_y.ptr<float>(i);
-      float* ptr_neg_vote_x = neg_vote_x.ptr<float>(i);
-      float* ptr_neg_vote_y = neg_vote_y.ptr<float>(i);
+        float* ptr_pos_vote_x = pos_vote_x.ptr<float>(i);
+        float* ptr_pos_vote_y = pos_vote_y.ptr<float>(i);
+        float* ptr_neg_vote_x = neg_vote_x.ptr<float>(i);
+        float* ptr_neg_vote_y = neg_vote_y.ptr<float>(i);
 
-      for(int j = 0; j < pos_vote_x.cols; j++) {
-	if(ptr_pos_vote_x[j] < 1) ptr_pos_vote_x[j] = 1;
-	if(ptr_pos_vote_y[j] < 1) ptr_pos_vote_y[j] = 1;
-	if(ptr_neg_vote_x[j] < 1) ptr_neg_vote_x[j] = 1;
-	if(ptr_neg_vote_y[j] < 1) ptr_neg_vote_y[j] = 1;
-	if(ptr_pos_vote_x[j] > pos_vote_x.cols - 1) ptr_pos_vote_x[j] = pos_vote_x.cols - 1;	
-	if(ptr_pos_vote_y[j] > pos_vote_y.rows - 1) ptr_pos_vote_y[j] = pos_vote_y.rows - 1;
-	if(ptr_neg_vote_x[j] > neg_vote_x.cols - 1) ptr_neg_vote_x[j] = neg_vote_x.cols - 1;	
-	if(ptr_neg_vote_y[j] > neg_vote_y.rows - 1) ptr_neg_vote_y[j] = neg_vote_y.rows - 1;
-      }
+        for(int j = 0; j < pos_vote_x.cols; j++) {
+            if(ptr_pos_vote_x[j] < 1) ptr_pos_vote_x[j] = 1;
+            if(ptr_pos_vote_y[j] < 1) ptr_pos_vote_y[j] = 1;
+            if(ptr_neg_vote_x[j] < 1) ptr_neg_vote_x[j] = 1;
+            if(ptr_neg_vote_y[j] < 1) ptr_neg_vote_y[j] = 1;
+            if(ptr_pos_vote_x[j] > pos_vote_x.cols - 1) ptr_pos_vote_x[j] = pos_vote_x.cols - 1;
+            if(ptr_pos_vote_y[j] > pos_vote_y.rows - 1) ptr_pos_vote_y[j] = pos_vote_y.rows - 1;
+            if(ptr_neg_vote_x[j] > neg_vote_x.cols - 1) ptr_neg_vote_x[j] = neg_vote_x.cols - 1;
+            if(ptr_neg_vote_y[j] > neg_vote_y.rows - 1) ptr_neg_vote_y[j] = neg_vote_y.rows - 1;
+        }
     }
 
     // Calculate W, the unit length of the vote lines in pixel
@@ -414,93 +414,93 @@ namespace initopt {
 
     //Compute Votes
     for (int i = 0; i < magnitude_image.rows; i++) {
-      for (int j = 0; j < magnitude_image.cols; j++) {
-	if (magnitude_image.at<float>(i, j) != 0.00) {
-	  // Positive votes
-	  for (int m = - W; m <= W; m++) {
-	    int LXpos = (int) pos_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
-	    int LYpos = (int) pos_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
+        for (int j = 0; j < magnitude_image.cols; j++) {
+            if (magnitude_image.at<float>(i, j) != 0.00) {
+                // Positive votes
+                for (int m = - W; m <= W; m++) {
+                    int LXpos = (int) pos_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
+                    int LYpos = (int) pos_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
 
-	    int LXneg = (int) neg_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
-	    int LYneg = (int) neg_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
+                    int LXneg = (int) neg_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
+                    int LYneg = (int) neg_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
 
-	    if((LXpos >= 0) && (LXpos < magnitude_image.cols) &&
-	       (LYpos >= 0) && (LYpos < magnitude_image.rows)) {
-	      // Vote for Or image
-	      Or.at<float>(LYpos, LXpos) = Or.at<float>(LYpos, LXpos) + 1.00;
+                    if((LXpos >= 0) && (LXpos < magnitude_image.cols) &&
+                            (LYpos >= 0) && (LYpos < magnitude_image.rows)) {
+                        // Vote for Or image
+                        Or.at<float>(LYpos, LXpos) = Or.at<float>(LYpos, LXpos) + 1.00;
 
-	      // Vote the Br image for X and Y
-	      BrX.at<float>(LYpos, LXpos) = BrX.at<float>(LYpos, LXpos) + gradient_vp_x.at<float>(i, j);
-	      BrY.at<float>(LYpos, LXpos) = BrY.at<float>(LYpos, LXpos) + gradient_vp_y.at<float>(i, j);
-	    }
-	    if((LXneg >= 0) && (LXneg < magnitude_image.cols) && 
-	       (LYneg >= 0) && (LYneg < magnitude_image.rows)) {
-	      // Vote for Or image
-	      Or.at<float>(LYneg, LXneg) = Or.at<float>(LYneg, LXneg) + 1.00;
+                        // Vote the Br image for X and Y
+                        BrX.at<float>(LYpos, LXpos) = BrX.at<float>(LYpos, LXpos) + gradient_vp_x.at<float>(i, j);
+                        BrY.at<float>(LYpos, LXpos) = BrY.at<float>(LYpos, LXpos) + gradient_vp_y.at<float>(i, j);
+                    }
+                    if((LXneg >= 0) && (LXneg < magnitude_image.cols) &&
+                            (LYneg >= 0) && (LYneg < magnitude_image.rows)) {
+                        // Vote for Or image
+                        Or.at<float>(LYneg, LXneg) = Or.at<float>(LYneg, LXneg) + 1.00;
 
-	      // Vote the Br image for X and Y
-	      BrX.at<float>(LYneg, LXneg) = BrX.at<float>(LYneg, LXneg) + gradient_vp_x.at<float>(i, j);
-	      BrY.at<float>(LYneg, LXneg) = BrY.at<float>(LYneg, LXneg) + gradient_vp_y.at<float>(i, j);
-	    }
-	  }
+                        // Vote the Br image for X and Y
+                        BrX.at<float>(LYneg, LXneg) = BrX.at<float>(LYneg, LXneg) + gradient_vp_x.at<float>(i, j);
+                        BrY.at<float>(LYneg, LXneg) = BrY.at<float>(LYneg, LXneg) + gradient_vp_y.at<float>(i, j);
+                    }
+                }
 
-	  // First negative votes
-	  for (int m = (- 2 * W); m <= (- W - 1); m++) {
-	    int LXpos = (int) pos_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
-	    int LYpos = (int) pos_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
+                // First negative votes
+                for (int m = (- 2 * W); m <= (- W - 1); m++) {
+                    int LXpos = (int) pos_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
+                    int LYpos = (int) pos_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
 
-	    int LXneg = (int) neg_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
-	    int LYneg = (int) neg_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
+                    int LXneg = (int) neg_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
+                    int LYneg = (int) neg_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
 
-	    if((LXpos >= 0) && (LXpos < magnitude_image.cols) && 
-	       (LYpos >= 0) && (LYpos < magnitude_image.rows)) {
-	      // Vote for Or image
-	      Or.at<float>(LYpos, LXpos) = Or.at<float>(LYpos, LXpos) - 1.00;
+                    if((LXpos >= 0) && (LXpos < magnitude_image.cols) &&
+                            (LYpos >= 0) && (LYpos < magnitude_image.rows)) {
+                        // Vote for Or image
+                        Or.at<float>(LYpos, LXpos) = Or.at<float>(LYpos, LXpos) - 1.00;
 
-	      // Vote the Br image for X and Y
-	      BrX.at<float>(LYpos, LXpos) = BrX.at<float>(LYpos, LXpos) - gradient_vp_x.at<float>(i, j);
-	      BrY.at<float>(LYpos, LXpos) = BrY.at<float>(LYpos, LXpos) - gradient_vp_y.at<float>(i, j);
-	    }
-	    if((LXneg >= 0) && (LXneg < magnitude_image.cols) && 
-	       (LYneg >= 0) && (LYneg < magnitude_image.rows)) {
-	      // Vote for Or image
-	      Or.at<float>(LYneg, LXneg) = Or.at<float>(LYneg, LXneg) - 1.00;
+                        // Vote the Br image for X and Y
+                        BrX.at<float>(LYpos, LXpos) = BrX.at<float>(LYpos, LXpos) - gradient_vp_x.at<float>(i, j);
+                        BrY.at<float>(LYpos, LXpos) = BrY.at<float>(LYpos, LXpos) - gradient_vp_y.at<float>(i, j);
+                    }
+                    if((LXneg >= 0) && (LXneg < magnitude_image.cols) &&
+                            (LYneg >= 0) && (LYneg < magnitude_image.rows)) {
+                        // Vote for Or image
+                        Or.at<float>(LYneg, LXneg) = Or.at<float>(LYneg, LXneg) - 1.00;
 
-	      // Vote the Br image for X and Y
-	      BrX.at<float>(LYneg, LXneg) = BrX.at<float>(LYneg, LXneg) - gradient_vp_x.at<float>(i, j);
-	      BrY.at<float>(LYneg, LXneg) = BrY.at<float>(LYneg, LXneg) - gradient_vp_y.at<float>(i, j);
-	    }
-	  }
+                        // Vote the Br image for X and Y
+                        BrX.at<float>(LYneg, LXneg) = BrX.at<float>(LYneg, LXneg) - gradient_vp_x.at<float>(i, j);
+                        BrY.at<float>(LYneg, LXneg) = BrY.at<float>(LYneg, LXneg) - gradient_vp_y.at<float>(i, j);
+                    }
+                }
 
-	  // Second negative votes
-	  for (int m = (W + 1); m <= (2 * W); m++) {
-	    int LXpos = (int) pos_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
-	    int LYpos = (int) pos_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
+                // Second negative votes
+                for (int m = (W + 1); m <= (2 * W); m++) {
+                    int LXpos = (int) pos_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
+                    int LYpos = (int) pos_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
 
-	    int LXneg = (int) neg_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
-	    int LYneg = (int) neg_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
+                    int LXneg = (int) neg_vote_x.at<float>(i, j) + (int) ceil((float) m * gradient_bar_x.at<float>(i, j));
+                    int LYneg = (int) neg_vote_y.at<float>(i, j) + (int) ceil((float) m * gradient_bar_y.at<float>(i, j));
 
-	    if((LXpos >= 0) && (LXpos < magnitude_image.cols) &&
-	       (LYpos >= 0) && (LYpos < magnitude_image.rows)) {
-	      // Vote for Or image
-	      Or.at<float>(LYpos, LXpos) = Or.at<float>(LYpos, LXpos) - 1.00;
+                    if((LXpos >= 0) && (LXpos < magnitude_image.cols) &&
+                            (LYpos >= 0) && (LYpos < magnitude_image.rows)) {
+                        // Vote for Or image
+                        Or.at<float>(LYpos, LXpos) = Or.at<float>(LYpos, LXpos) - 1.00;
 
-	      // Vote the Br image for X and Y
-	      BrX.at<float>(LYpos, LXpos) = BrX.at<float>(LYpos, LXpos) - gradient_vp_x.at<float>(i, j);
-	      BrY.at<float>(LYpos, LXpos) = BrY.at<float>(LYpos, LXpos) - gradient_vp_y.at<float>(i, j);
-	    }
-	    if((LXneg >= 0) && (LXneg < magnitude_image.cols) && 
-	       (LYneg >= 0) && (LYneg < magnitude_image.rows)) {
-	      // Vote for Or image
-	      Or.at<float>(LYneg, LXneg) = Or.at<float>(LYneg, LXneg) - 1.00;
+                        // Vote the Br image for X and Y
+                        BrX.at<float>(LYpos, LXpos) = BrX.at<float>(LYpos, LXpos) - gradient_vp_x.at<float>(i, j);
+                        BrY.at<float>(LYpos, LXpos) = BrY.at<float>(LYpos, LXpos) - gradient_vp_y.at<float>(i, j);
+                    }
+                    if((LXneg >= 0) && (LXneg < magnitude_image.cols) &&
+                            (LYneg >= 0) && (LYneg < magnitude_image.rows)) {
+                        // Vote for Or image
+                        Or.at<float>(LYneg, LXneg) = Or.at<float>(LYneg, LXneg) - 1.00;
 
-	      // Vote the Br image for X and Y
-	      BrX.at<float>(LYneg, LXneg) = BrX.at<float>(LYneg, LXneg) - gradient_vp_x.at<float>(i, j);
-	      BrY.at<float>(LYneg, LXneg) = BrY.at<float>(LYneg, LXneg) - gradient_vp_y.at<float>(i, j);
-	    }
-	  }
-	}
-      }
+                        // Vote the Br image for X and Y
+                        BrX.at<float>(LYneg, LXneg) = BrX.at<float>(LYneg, LXneg) - gradient_vp_x.at<float>(i, j);
+                        BrY.at<float>(LYneg, LXneg) = BrY.at<float>(LYneg, LXneg) - gradient_vp_y.at<float>(i, j);
+                    }
+                }
+            }
+        }
     }
 
     // Compute Br
@@ -510,41 +510,41 @@ namespace initopt {
     int border = 5;
     // For left border
     for (int j = 0; j < border; j++) {
-      for (int i = 0; i < magnitude_image.rows; i++) {
-	Or.at<float>(i, j) = 0.00;
-	Br.at<float>(i, j) = 0.00;
-      }
+        for (int i = 0; i < magnitude_image.rows; i++) {
+            Or.at<float>(i, j) = 0.00;
+            Br.at<float>(i, j) = 0.00;
+        }
     }
     // For top border
     for (int i = 0; i < border; i++) {
-      for (int j = 0; j < magnitude_image.cols; j++) {
-	Or.at<float>(i, j) = 0.00;
-	Br.at<float>(i, j) = 0.00;
-      }
+        for (int j = 0; j < magnitude_image.cols; j++) {
+            Or.at<float>(i, j) = 0.00;
+            Br.at<float>(i, j) = 0.00;
+        }
     }
     // For bottom border
     for (int i = magnitude_image.rows - 1; i <= magnitude_image.rows - border; i++) {
-      for (int j = 0; j < magnitude_image.cols; j++) {
-	Or.at<float>(i, j) = 0.00;
-	Br.at<float>(i, j) = 0.00;
-      }
+        for (int j = 0; j < magnitude_image.cols; j++) {
+            Or.at<float>(i, j) = 0.00;
+            Br.at<float>(i, j) = 0.00;
+        }
     }
     // For the right border
     for (int j = magnitude_image.cols - 1; j <= magnitude_image.cols - border; j++) {
-      for (int i = 0; i < magnitude_image.rows; i++) {
-	Or.at<float>(i, j) = 0.00;
-	Br.at<float>(i, j) = 0.00;
-      }
+        for (int i = 0; i < magnitude_image.rows; i++) {
+            Or.at<float>(i, j) = 0.00;
+            Br.at<float>(i, j) = 0.00;
+        }
     }
     
     // Allocate the image for the output
     cv::Mat Sr;
     cv::Mat S = cv::Mat::zeros(gradient_x.size(), CV_32F);
 
-    if (edges_number == 12) 
-      cv::multiply(Or, Or, Sr);
+    if (edges_number == 12)
+        cv::multiply(Or, Or, Sr);
     else
-      cv::multiply(Or, Br, Sr);
+        cv::multiply(Or, Br, Sr);
     
     cv::divide(Sr, cv::Mat::ones(magnitude_image.size(), CV_32F) * pow(2.00 * (float) W * radius, 2.00), Sr);
 
@@ -574,20 +574,20 @@ namespace initopt {
     // Compute the gravity center
     float sumX = 0, sumY = 0, normalization = 0;
     for (int i = 0; i < S_thresh.rows; i ++) {
-      for (int j = 0; j < S_thresh.cols; j++) {
-	if (S_thresh.at<bool>(i,j) == true) {
-	  sumX += (float) j;
-	  sumY += (float) i;
-	  normalization += 1.00;
-	}
-      }
+        for (int j = 0; j < S_thresh.cols; j++) {
+            if (S_thresh.at<bool>(i,j) == true) {
+                sumX += (float) j;
+                sumY += (float) i;
+                normalization += 1.00;
+            }
+        }
     }
 
     return(cv::Point2f(ceil(sumX / normalization), ceil(sumY / normalization)));
-  }
+}
 
-  // Function to discover the mass center using the radial symmetry detector
-  cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius, const int& edges_number) {
+// Function to discover the mass center using the radial symmetry detector
+cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius, const int& edges_number) {
     
     /*
      * Conversion to write data type
@@ -595,14 +595,14 @@ namespace initopt {
 
     cv::Mat gray_image_float;
     rgb_to_float_gray(roi_image, gray_image_float);
-   
+
     // Apply a Gaussian filtering
     cv::Mat blurred_image;
     cv::GaussianBlur(gray_image_float, blurred_image, cv::Size(3,3), 0, 0, cv::BORDER_DEFAULT);
 
     /*
      * Gradients computation before voting
-     */    
+     */
 
     // Compute the gardient image
     // Define the kernel to apply to the image
@@ -637,10 +637,10 @@ namespace initopt {
     
     float radius_float = (float) radius;
     return mass_center_by_voting(magnitude_image, gradient_x, gradient_y, gradient_bar_x, gradient_bar_y, gradient_vp_x, gradient_vp_y, radius_float, edges_number);
-  }
-  
-  // Function to discover an approximation of the mass center for each contour using a voting method for a given contour
-  cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& translation_matrix, const cv::Mat& rotation_matrix, const cv::Mat& scaling_matrix, const std::vector< cv::Point2f >& contour, const double& factor, const int& type_traffic_sign) {
+}
+
+// Function to discover an approximation of the mass center for each contour using a voting method for a given contour
+cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& translation_matrix, const cv::Mat& rotation_matrix, const cv::Mat& scaling_matrix, const std::vector< cv::Point2f >& contour, const double& factor, const int& type_traffic_sign) {
 
     // Compute the transformation necessary to warp the original image
     cv::Mat transform_warping = translation_matrix.inv() * rotation_matrix * scaling_matrix * translation_matrix;
@@ -676,21 +676,21 @@ namespace initopt {
     int edges_number = 0;
     switch (type_traffic_sign) {
     case 0:
-      edges_number = 3;
-      break;
+        edges_number = 3;
+        break;
     case 1:
-      edges_number = 4;
-      break;
+        edges_number = 4;
+        break;
     case 2:
-      edges_number = 12;
-      break;
+        edges_number = 12;
+        break;
     case 3:
-      edges_number = 8;
-      break;
+        edges_number = 8;
+        break;
     case 4:
-      edges_number = 3;
-      radius_contour = (int) ceil((float) radius_contour / 2.00);
-      break;
+        edges_number = 3;
+        radius_contour = (int) ceil((float) radius_contour / 2.00);
+        break;
     }
 
     cv::Point2f mass_center = radial_symmetry_detector(roi_image, radius_contour, edges_number);
@@ -707,27 +707,27 @@ namespace initopt {
     // Normalise the center and return it
     return normalise_point_fixed_factor(mass_center_no_translation, factor);
 
-  }
+}
 
-    // Function to denormalize a contour
-  void contour_eucl_to_polar(const std::vector< cv::Point2f >& contour_eucl, std::vector< cv::PointPolar2f >& contour_polar) {
+// Function to denormalize a contour
+void contour_eucl_to_polar(const std::vector< cv::Point2f >& contour_eucl, std::vector< cv::PointPolar2f >& contour_polar) {
     
     // Initilisation of the output
     if(!contour_polar.empty()) {
-      contour_polar.erase(contour_polar.begin(), contour_polar.end());
-      contour_polar.resize(contour_eucl.size());
+        contour_polar.erase(contour_polar.begin(), contour_polar.end());
+        contour_polar.resize(contour_eucl.size());
     }
     else
-      contour_polar.resize(contour_eucl.size());
+        contour_polar.resize(contour_eucl.size());
 
     // Make the normalisation
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour_eucl.size(); contour_point_idx++)
-      contour_polar[contour_point_idx].eucl_to_polar(contour_eucl[contour_point_idx]);
+        contour_polar[contour_point_idx].eucl_to_polar(contour_eucl[contour_point_idx]);
 
-  }
+}
 
-  // Function to discover an approximation of the rotation offset
-  double rotation_offset(const std::vector< cv::Point2f >& contour) {
+// Function to discover an approximation of the rotation offset
+double rotation_offset(const std::vector< cv::Point2f >& contour) {
 
     // Convert the euclidean coordinates into polar coordinates
     std::vector< cv::PointPolar2f > polar_contour;
@@ -740,32 +740,32 @@ namespace initopt {
     float sliding_window_size = 21.0;
     for (unsigned int contour_point_idx = ceil(sliding_window_size / 2.0); contour_point_idx < polar_contour.size() - ceil(sliding_window_size / 2.0); contour_point_idx++) {
 
-      // Get the central point
-      cv::PointPolar2f center_point(polar_contour[contour_point_idx]);
-      // Get the previous points
-      std::vector< cv::PointPolar2f > vec_previous(polar_contour.begin() + contour_point_idx - ceil(sliding_window_size / 2.0), polar_contour.begin() + contour_point_idx - 1);
-      // Get the following points
-      std::vector< cv::PointPolar2f > vec_next(polar_contour.begin() + contour_point_idx + 1, polar_contour.begin() + contour_point_idx + ceil(sliding_window_size / 2.0));
+        // Get the central point
+        cv::PointPolar2f center_point(polar_contour[contour_point_idx]);
+        // Get the previous points
+        std::vector< cv::PointPolar2f > vec_previous(polar_contour.begin() + contour_point_idx - ceil(sliding_window_size / 2.0), polar_contour.begin() + contour_point_idx - 1);
+        // Get the following points
+        std::vector< cv::PointPolar2f > vec_next(polar_contour.begin() + contour_point_idx + 1, polar_contour.begin() + contour_point_idx + ceil(sliding_window_size / 2.0));
 
-      if (cmp_pt_vec_pts(center_point, vec_previous) && cmp_pt_vec_pts(center_point, vec_next))	
-	return center_point.theta;
+        if (cmp_pt_vec_pts(center_point, vec_previous) && cmp_pt_vec_pts(center_point, vec_next))
+            return center_point.theta;
 
     }
 
     return 0.0;
-  }
+}
 }
 
 namespace optimisation {
 
- 
-  // Function to make the optimisation
-  void gielis_optimisation(const std::vector< cv::Point2f >& contour, ConfigStruct2d& config_shape, Eigen::Vector4d& mean_err, Eigen::Vector4d& std_err) {
-   
+
+// Function to make the optimisation
+void gielis_optimisation(const std::vector< cv::Point2f >& contour, ConfigStruct2d& config_shape, Eigen::Vector4d& mean_err, Eigen::Vector4d& std_err) {
+
     // Convert the data into Eigen type for further optimisation
     std::vector < Eigen::Vector2d, Eigen::aligned_allocator< Eigen::Vector2d> > Data;
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
-      Data.push_back(Eigen::Vector2d((double) contour[contour_point_idx].x, (double) contour[contour_point_idx].y));
+        Data.push_back(Eigen::Vector2d((double) contour[contour_point_idx].x, (double) contour[contour_point_idx].y));
 
     // Declaration of the Rational Shape
     RationalSuperShape2D RS;
@@ -783,40 +783,40 @@ namespace optimisation {
     // Recover the different parameters
     config_shape = ConfigStruct2d(RS.Get_a(), RS.Get_b(), RS.Get_n1(), RS.Get_n2(), RS.Get_n3(), RS.Get_p(), RS.Get_q(), RS.Get_thtoffset(), RS.Get_phioffset(), RS.Get_xoffset(), RS.Get_yoffset(), RS.Get_zoffset());
 
-  }
+}
 
-  // Reconstruction using the Gielis formula
-  void gielis_reconstruction(const ConfigStruct2d& config_shape, std::vector< cv::Point2f >& gielis_contour, const int number_points) {
+// Reconstruction using the Gielis formula
+void gielis_reconstruction(const ConfigStruct2d& config_shape, std::vector< cv::Point2f >& gielis_contour, const int number_points) {
     
     // Initilisation of the output
     if(!gielis_contour.empty()) {
-      gielis_contour.erase(gielis_contour.begin(), gielis_contour.end());
-      gielis_contour.resize(number_points);
+        gielis_contour.erase(gielis_contour.begin(), gielis_contour.end());
+        gielis_contour.resize(number_points);
     }
     else
-      gielis_contour.resize(number_points);
+        gielis_contour.resize(number_points);
 
     for (int j = 0; j < number_points; j++) {
 
-      /*----- Compute the radius ----*/
-      double tmpRadius = 0;
+        /*----- Compute the radius ----*/
+        double tmpRadius = 0;
 
-      // Compute the radius
-      double tmpIdx = ((double) j * 2.00 * M_PI) / ((double) number_points);
-      double tmp_angle = config_shape.p * tmpIdx * 0.25 / config_shape.q;
-      double tmpCos = cos(tmp_angle);
-      double tmpSin = sin(tmp_angle);
+        // Compute the radius
+        double tmpIdx = ((double) j * 2.00 * M_PI) / ((double) number_points);
+        double tmp_angle = config_shape.p * tmpIdx * 0.25 / config_shape.q;
+        double tmpCos = cos(tmp_angle);
+        double tmpSin = sin(tmp_angle);
 
-      double tmp1 = (pow(fabs(tmpCos), config_shape.n2)) / config_shape.a;
-      double tmp2 = (pow(fabs(tmpSin), config_shape.n3)) / config_shape.b;
+        double tmp1 = (pow(fabs(tmpCos), config_shape.n2)) / config_shape.a;
+        double tmp2 = (pow(fabs(tmpSin), config_shape.n3)) / config_shape.b;
 
-      if ((tmp1 + tmp2) != 0) tmpRadius = pow((tmp1 + tmp2), -1.00 / config_shape.n1);
-      else tmpRadius = 0.00;
+        if ((tmp1 + tmp2) != 0) tmpRadius = pow((tmp1 + tmp2), -1.00 / config_shape.n1);
+        else tmpRadius = 0.00;
 
-      // Computation of x and y with denormalization
-      gielis_contour[j].x = ( cos( tmpIdx + config_shape.theta_offset) * tmpRadius + config_shape.x_offset );
-      gielis_contour[j].y = ( sin( tmpIdx + config_shape.theta_offset) * tmpRadius + config_shape.y_offset );
+        // Computation of x and y with denormalization
+        gielis_contour[j].x = ( cos( tmpIdx + config_shape.theta_offset) * tmpRadius + config_shape.x_offset );
+        gielis_contour[j].y = ( sin( tmpIdx + config_shape.theta_offset) * tmpRadius + config_shape.y_offset );
     }
-  }
+}
 
 }

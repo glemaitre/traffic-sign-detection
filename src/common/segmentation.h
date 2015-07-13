@@ -9,10 +9,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -71,10 +71,10 @@ the use of this software, even if advised of the possibility of such damage.
 
 namespace segmentation {
 
-  // Segmentation of logarithmic chromatic images
-  void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_image_seg);
+// Segmentation of logarithmic chromatic images
+void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_image_seg);
 
-  // Segmentation of normalised hue
-  void seg_norm_hue(const cv::Mat& ihls_image, cv::Mat& nhs_image, const int& colour = 0, int hue_max = R_HUE_MAX, int hue_min = R_HUE_MIN, int sat_min = R_SAT_MIN);
+// Segmentation of normalised hue
+void seg_norm_hue(const cv::Mat& ihls_image, cv::Mat& nhs_image, const int& colour = 0, int hue_max = R_HUE_MAX, int hue_min = R_HUE_MIN, int sat_min = R_SAT_MIN);
 
 }

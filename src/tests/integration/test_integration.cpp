@@ -9,10 +9,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -173,8 +173,8 @@ TEST(integration, realDataOctogonal17)
 
             // Check the center mass for a contour
             cv::Point2f mass_center = initopt::mass_center_discovery(input_image, translation_matrix[contour_idx],
-                                                                              rotation_matrix[contour_idx], scaling_matrix[contour_idx],
-                                                                              normalised_contours[contour_idx], factor_vector[contour_idx], sign_type);
+                                                                     rotation_matrix[contour_idx], scaling_matrix[contour_idx],
+                                                                     normalised_contours[contour_idx], factor_vector[contour_idx], sign_type);
 
             // Find the rotation offset
             double rot_offset = initopt::rotation_offset(normalised_contours[contour_idx]);

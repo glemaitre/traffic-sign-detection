@@ -9,10 +9,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -48,19 +48,19 @@ using namespace std;
 
 class Random //Autonome/Standalone
 {
-  private:
+private:
     template<typename T>
     static inline bool typeIsInteger(void)
-           {return numeric_limits<T>::is_integer;}
-            //Si le numeric_limits<T> ne marche pas/if numeric_limits doesn't work
-            //{return static_cast<T>(1)/static_cast<T>(2)==static_cast<T>(0);}
+    {return numeric_limits<T>::is_integer;}
+    //Si le numeric_limits<T> ne marche pas/if numeric_limits doesn't work
+    //{return static_cast<T>(1)/static_cast<T>(2)==static_cast<T>(0);}
 
-  public:
+public:
     Random(long seed=0);
     ~Random() {if (iv) delete [] iv; iv = 0;}
 
     //Reinitialise la graine / Inits the seed
-    //Attention, 0 et 1 pour la graine donnent la meme suite                  
+    //Attention, 0 et 1 pour la graine donnent la meme suite
     //Beware that 0 and 1 for the seed give the same sequence
     void randomize(long thatSeed=0);
 
@@ -70,7 +70,7 @@ class Random //Autonome/Standalone
     //(min and max excluded for non integral types)
     template <typename T>
     inline T uniform(T min, T max)
-             {return static_cast<T>(min+(max+(typeIsInteger<T>()?1:0)-min)*theRandom());}
+    {return static_cast<T>(min+(max+(typeIsInteger<T>()?1:0)-min)*theRandom());}
     
     //Par defaut : uniform<double>(0,1) / default : uniform<double>(0,1)
     inline double uniform(void) {return theRandom();}
@@ -83,13 +83,13 @@ class Random //Autonome/Standalone
 
     //Exponential
     inline double exponential(double lambda)
-           {return -std::log(uniform())/lambda;}
-             
-  private://methodes "interdites" / "forbidden" methods
+    {return -std::log(uniform())/lambda;}
+
+private://methodes "interdites" / "forbidden" methods
     Random(const Random&) {};
     Random operator=(const Random&) {return *this;}
-      
-  private:
+
+private:
     //Toutes ces constantes sont definies pour l'algorithme du generateur
     //Useful consts
     static const long int IM1;
@@ -110,7 +110,7 @@ class Random //Autonome/Standalone
     static const double EPS;
     static const double RNMX;
 
-  private:
+private:
     //Ces variables sont utilisees pour les calculs du generateur
     //Useful variables
     long idum;

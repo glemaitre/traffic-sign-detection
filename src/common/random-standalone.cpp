@@ -9,10 +9,10 @@ copy or use the software.
                        (3-clause BSD License)
 
 Copyright (C) 2015, 
-	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
-	  Johan Massich (mailsik@gmail.com),
-	  Gerard Bahi (zomeck@gmail.com),
-	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
+      Guillaume Lemaitre (g.lemaitre58@gmail.com),
+      Johan Massich (mailsik@gmail.com),
+      Gerard Bahi (zomeck@gmail.com),
+      Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).
 Third party copyrights are property of their respective owners.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -69,35 +69,35 @@ const double Random::EPS = DBL_EPSILON;
 const double Random::RNMX = 1.0-Random::EPS;
 
 Random::Random(long seed)
-       :iv(0)
+    :iv(0)
 {
-  iv = new long[Random::NTAB];
-  idum   = 0;
-  idum2  = 123456789L;
-  iy     = 0;
-  randomize(seed);
+    iv = new long[Random::NTAB];
+    idum   = 0;
+    idum2  = 123456789L;
+    iy     = 0;
+    randomize(seed);
 }
 
 void Random::randomize(long seed)
 {
-  idum = (seed <= 0) ? (seed == 0 ? 1 : -seed) : seed; //be sure to prevent idum=0
+    idum = (seed <= 0) ? (seed == 0 ? 1 : -seed) : seed; //be sure to prevent idum=0
 
-  idum2 = idum;
-  if (idum2 < 0) idum2 = -idum2;
-   
-  long k = 0;
-  for(int j = NTAB+7 ; j >= 0 ; j--)
-  {
-    k = idum/IQ1;
-    idum = IA1*(idum - k*IQ1) - k*IR1;
-    if (idum < 0)
-      idum += IM1;
+    idum2 = idum;
+    if (idum2 < 0) idum2 = -idum2;
 
-    if (j < NTAB)
-      iv[j] = idum;
-  }
+    long k = 0;
+    for(int j = NTAB+7 ; j >= 0 ; j--)
+    {
+        k = idum/IQ1;
+        idum = IA1*(idum - k*IQ1) - k*IR1;
+        if (idum < 0)
+            idum += IM1;
 
-  iy = iv[0];
+        if (j < NTAB)
+            iv[j] = idum;
+    }
+
+    iy = iv[0];
 }
 //fin randomize()
 
@@ -107,27 +107,27 @@ void Random::randomize(long seed)
 //It is the algorithm of L'Ecuyer with a Bays-Durham shuffle
 double Random::theRandom(void)
 {
-  long k = idum/IQ1;
-  idum = IA1*(idum - k*IQ1) - k*IR1;
-  if (idum < 0)
-    idum +=IM1;
+    long k = idum/IQ1;
+    idum = IA1*(idum - k*IQ1) - k*IR1;
+    if (idum < 0)
+        idum +=IM1;
 
-  k = idum2/IQ2;
-  idum2 = IA2*(idum2 -k*IQ2) - k*IR2;
-  if (idum2 < 0)
-    idum2 +=IM2;
+    k = idum2/IQ2;
+    idum2 = IA2*(idum2 -k*IQ2) - k*IR2;
+    if (idum2 < 0)
+        idum2 +=IM2;
 
-  long j = iy/NDIV;
-  iy = iv[j] - idum2;
-  iv[j] = idum;
-  if (iy < 1)
-    iy += IMM1;
-      
-  double temp = AM*iy;
-  if (temp >= RNMX)
-    return RNMX;  //empeche de renvoyer 1 / prevents from returning 1
-  else
-    return temp;
+    long j = iy/NDIV;
+    iy = iv[j] - idum2;
+    iv[j] = idum;
+    if (iy < 1)
+        iy += IMM1;
+
+    double temp = AM*iy;
+    if (temp >= RNMX)
+        return RNMX;  //empeche de renvoyer 1 / prevents from returning 1
+    else
+        return temp;
 }
 //fin theRandom()
 
@@ -135,26 +135,26 @@ double Random::theRandom(void)
 //Returns a double taken on a Gaussian with specified mean and standard deviation
 double Random::gaussian(double mean, double standardDeviation)
 {
-  const int NbTirages = 12; //augmenter pour une meilleure precision. 12 est bien.
-                            //increase for better precision. 12 works fine.
-  double valeur = 0;
-  for(int i=0 ; i < NbTirages ; ++i)
-    valeur += uniform();
-   
-  //on recentre la somme / centering the sum
-  valeur -= NbTirages/2;
+    const int NbTirages = 12; //augmenter pour une meilleure precision. 12 est bien.
+    //increase for better precision. 12 works fine.
+    double valeur = 0;
+    for(int i=0 ; i < NbTirages ; ++i)
+        valeur += uniform();
 
-  //on etale suivant l'ecartype / spread with standard deviation
-  //le 12 n'a rien a voir avec NbTirages, mais explique pourquoi justement, on prend souvent
-  //NbTirages = 12
-  //the 12 is not related to NbTirages, but it explains why it is often chosen that NbTirages=12
-  valeur *= (NbTirages == 12) ? standardDeviation
-                              : sqrt(12/static_cast<double>(NbTirages))*standardDeviation;
+    //on recentre la somme / centering the sum
+    valeur -= NbTirages/2;
 
-  //on centre sur la moyenne / debias
-  valeur += mean;
+    //on etale suivant l'ecartype / spread with standard deviation
+    //le 12 n'a rien a voir avec NbTirages, mais explique pourquoi justement, on prend souvent
+    //NbTirages = 12
+    //the 12 is not related to NbTirages, but it explains why it is often chosen that NbTirages=12
+    valeur *= (NbTirages == 12) ? standardDeviation
+                                : sqrt(12/static_cast<double>(NbTirages))*standardDeviation;
 
-  return valeur;
+    //on centre sur la moyenne / debias
+    valeur += mean;
+
+    return valeur;
 }
 //fin gaussian()
 
