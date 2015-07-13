@@ -34,3 +34,6 @@
 
 #build dirs
 build-*
+
+# Ctags
+./src/tags/
