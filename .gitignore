@@ -36,4 +36,4 @@
 build-*
 
 # Ctags
-./src/tags/
+src/tags
