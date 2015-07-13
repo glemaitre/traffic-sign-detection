@@ -39,6 +39,10 @@
 # or tort (including negligence or otherwise) arising in any way out of
 # the use of this software, even if advised of the possibility of such damage.
 
-file(GLOB files "common/*.cpp")
+file(GLOB files_common "common/*.cpp")
 
-set(srcs_common_all ${files} PARENT_SCOPE)
+set(srcs_common_all ${files_common} PARENT_SCOPE)
+
+file(GLOB files_img_proc "img_processing/*.cpp")
+
+set(srcs_img_proc_all ${files_img_proc} PARENT_SCOPE)

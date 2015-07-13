@@ -47,9 +47,50 @@ include_directories(${external_includes})
 add_subdirectory(integration)
 add_subdirectory(unit)
 
+### TEST MODULE COMMON ###
+add_executable(test_common
+                tests_all.cpp
+		${srcs_common_all}
+                )
+
+target_link_libraries(test_common
+                      ${GTEST_BOTH_LIBRARIES}
+                      common
+                      ${external_libs}
+		      )
+
+
+### TEST MODULE IMG_PROC ###
+add_executable(test_img_proc
+                tests_all.cpp
+		${srcs_img_proc_all}
+                )
+
+target_link_libraries(test_img_proc
+                      ${GTEST_BOTH_LIBRARIES}
+                      img_processing
+                      ${external_libs}
+		      )
+
+### TEST MODULE INTEGRATION ###
+add_executable(test_integration
+                tests_all.cpp
+		${srcs_integration_all}
+                )
+
+target_link_libraries(test_integration
+                      ${GTEST_BOTH_LIBRARIES}
+                      common
+                      img_processing
+                      optimization
+                      ${external_libs}
+		      )
+
+### TEST INTEGRATION AND MODULES ###
 add_executable(test_all
                 tests_all.cpp
 		${srcs_common_all}
+		${srcs_img_proc_all}
                 ${srcs_integration_all}
                 )
 
@@ -59,4 +100,8 @@ target_link_libraries(test_all
                       img_processing
                       optimization
                       ${external_libs}
-)
+		      )
+
+
+
+
