@@ -51,15 +51,18 @@ namespace segmentation {
 void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_image_seg) {
     
     // Segment the image using the pre-defined threshold in the header of this file
-
     // Allocation of the original image
     log_image_seg.create(log_image[0].size(), CV_8UC1);
-    
+
+    for( size_t i = 0; i< log_image.size(); ++i){
+        assert(log_image[i].type() == CV_32F);
+    }
+
     // Make the segmentation by simple threholding
     for (int i = 0 ; i < log_image_seg.rows ; i++) {
         for (int j = 0 ; j < log_image_seg.cols ; j++) {
-            const bool condR = (log_image[0].at<double>(i, j) > MINLOGRG)&&(log_image[0].at<double>(i, j) < MAXLOGRG);
-            const bool condB = (log_image[1].at<double>(i, j) > MINLOGBG)&&(log_image[1].at<double>(i, j) < MAXLOGBG);
+            const bool condR = (log_image[0].at<float>(i, j) > MINLOGRG)&&(log_image[0].at<float>(i, j) < MAXLOGRG);
+            const bool condB = (log_image[1].at<float>(i, j) > MINLOGBG)&&(log_image[1].at<float>(i, j) < MAXLOGBG);
             /*----------- Red detection ----------*/
             log_image_seg.at<uchar>(i, j) = (condR && condB) ? 255 : 0;
             /*----------- Have to be done for blue too ------------*/
