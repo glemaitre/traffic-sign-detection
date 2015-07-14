@@ -8,7 +8,7 @@ copy or use the software.
                For Open Source Computer Vision Library
                        (3-clause BSD License)
 
-Copyright (C) 2015, 
+Copyright (C) 2015,
       Guillaume Lemaitre (g.lemaitre58@gmail.com),
       Johan Massich (mailsik@gmail.com),
       Gerard Bahi (zomeck@gmail.com),
@@ -75,17 +75,17 @@ double find_normalisation_factor(const std::vector < cv::Point2f >& contour) {
         contour_x.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].x);
         contour_y.at<float>(contour_point_idx) = std::abs(contour[contour_point_idx].y);
     }
-    
+
     double max_x, max_y;
     cv::minMaxIdx(contour_x, NULL, &max_x, NULL, NULL);
     cv::minMaxIdx(contour_y, NULL, &max_y, NULL, NULL);
-    
+
     return std::max(max_x, max_y);
 }
 
 // Function to normalize a contour
 void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, double& factor) {
-    
+
     // Find the normalisation factor
     factor = find_normalisation_factor(contour);
 
@@ -105,14 +105,14 @@ void normalise_contour(const std::vector < cv::Point2f >& contour, std::vector< 
 
 // Function to normalize a contour with a given factor
 cv::Point2f normalise_point_fixed_factor(const cv::Point2f& point, const double factor) {
-    
+
     // Denormalise
     return point * (1.0f / static_cast<float> (factor));
 }
 
 // Function to normalize a contour with a given factor
 void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
-    
+
     // Initilisation of the output
     if(!output_contour.empty()) {
         output_contour.erase(output_contour.begin(), output_contour.end());
@@ -129,7 +129,7 @@ void normalise_contour_fixed_factor(const std::vector < cv::Point2f >& contour, 
 
 // Function to normalise a vector of contours
 void normalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, std::vector< double >& factor_vector) {
-    
+
     // Allocate the output contours
     if(!output_contours.empty()) {
         output_contours.erase(output_contours.begin(), output_contours.end());
@@ -146,7 +146,7 @@ void normalise_all_contours(const std::vector< std::vector < cv::Point2f > >& co
 
 // Function to denormalize a contour
 void denormalise_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const double& factor) {
-    
+
     // Initilisation of the output
     if(!output_contour.empty()) {
         output_contour.erase(output_contour.begin(), output_contour.end());
@@ -163,7 +163,7 @@ void denormalise_contour(const std::vector < cv::Point2f >& contour, std::vector
 
 // Function to denormalise a vector of contours
 void denormalise_all_contours(const std::vector< std::vector < cv::Point2f > >& contours, std::vector< std::vector< cv::Point2f > >& output_contours, const std::vector< double >& factor_vector) {
-    
+
     // Allocate the output contours
     if(!output_contours.empty()) {
         output_contours.erase(output_contours.begin(), output_contours.end());
@@ -180,7 +180,7 @@ void denormalise_all_contours(const std::vector< std::vector < cv::Point2f > >& 
 
 // Function to estimate the radius for a contour - THE CONTOUR NEEDS TO BE DENORMALIZED
 int radius_estimation(const std::vector< cv::Point2f >& contour) {
-    
+
     double radius = 0;
     // Add the distance of each contour point
     for (unsigned int contour_point_idx = 0; contour_point_idx < contour.size(); contour_point_idx++)
@@ -249,7 +249,7 @@ void extract_min_max(const std::vector< cv::Point2f >& contour, double &min_y, d
 
 // Function to define the ROI dimension around a target by a given factor
 void roi_dimension_definition(const double& min_y, const double& min_x, const double& max_x, const double& max_y, const double& factor, cv::Rect& roi_dimension) {
-    
+
     // Create a RoI
     roi_dimension.height = (int) ceil(factor * (max_y - min_y));
     roi_dimension.width = (int)  ceil(factor * (max_x - min_x));
@@ -272,11 +272,11 @@ void rgb_to_float_gray(const cv::Mat& original_image, cv::Mat& gray_image_float)
 
 // Function which threshold the gradient image based on the magnitude image
 void gradient_thresh(cv::Mat &magnitude_image, cv::Mat &gradient_x, cv::Mat& gradient_y) {
-    
+
     // Find the maximum magnitude
     double max_magnitude;
     cv::minMaxLoc(magnitude_image, NULL, &max_magnitude);
-    
+
     for (int i = 0; i < magnitude_image.rows; i++) {
         for (int j = 0; j < magnitude_image.cols; j++) {
             if (magnitude_image.at<float>(i, j) < ((float) max_magnitude * THRESH_GRAD_RAD_DET)) {
@@ -312,7 +312,7 @@ void orientations_from_gradient(const cv::Mat& gradient_x, const cv::Mat& gradie
             gradient_vp_degree.at<float>(i, j) = fmod(gradient_vp_degree.at<float>(i, j), (float) 360.00);
         }
     }
-    
+
     // Compute the angle difference between the gradients vp and gp
     cv::Mat theta;
     cv::divide((gradient_vp_degree - gradient_gp_degree) * M_PI, cv::Mat::ones(gradient_gp_degree.size(), CV_32F) * 180.0, theta);
@@ -342,7 +342,7 @@ void orientations_from_gradient(const cv::Mat& gradient_x, const cv::Mat& gradie
 
 // Function to round a matrix
 cv::Mat round_matrix(const cv::Mat& original_matrix) {
-    
+
     // Allocate the ouput
     cv::Mat result(original_matrix.size(), CV_32F);
 
@@ -371,7 +371,7 @@ cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat&
             ptr_coord_y[j] = (float) i;
         }
     }
-    
+
     // Allocate the different image needed during the voting process
     cv::Mat pos_vote_x;
     cv::Mat pos_vote_y;
@@ -537,7 +537,7 @@ cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat&
             Br.at<float>(i, j) = 0.00;
         }
     }
-    
+
     // Allocate the image for the output
     cv::Mat Sr;
     cv::Mat S = cv::Mat::zeros(gradient_x.size(), CV_32F);
@@ -546,7 +546,7 @@ cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat&
         cv::multiply(Or, Or, Sr);
     else
         cv::multiply(Or, Br, Sr);
-    
+
     cv::divide(Sr, cv::Mat::ones(magnitude_image.size(), CV_32F) * pow(2.00 * (float) W * radius, 2.00), Sr);
 
     double sigma = 0.2 * radius;
@@ -556,12 +556,12 @@ cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat&
     // Smooth Sr
     cv::Mat Sr_blurred;
     cv::GaussianBlur(Sr, Sr_blurred, cv::Size(mask_size, mask_size), sigma, sigma, cv::BORDER_CONSTANT);
-    
+
     // Normalise Sr
     cv::Mat Sr_norm;
     cv::normalize(Sr_blurred, Sr_norm, 0.0, 1.0, cv::NORM_MINMAX);
     cv::add(S, Sr_norm, S);
-    
+
     // Find the maximum intensity value
     double max_value;
     cv::minMaxLoc(S, NULL, &max_value);
@@ -589,7 +589,7 @@ cv::Point2f mass_center_by_voting(const cv::Mat& magnitude_image, const cv::Mat&
 
 // Function to discover the mass center using the radial symmetry detector
 cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius, const int& edges_number) {
-    
+
     /*
      * Conversion to write data type
      */
@@ -622,7 +622,7 @@ cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius
     // Normalise the gradient image using the magnitude
     cv::divide(gradient_x, magnitude_image, gradient_x);
     cv::divide(gradient_y, magnitude_image, gradient_y);
-    
+
     /*
      * Gradients filtering
      */
@@ -635,7 +635,7 @@ cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius
 
     cv::Mat gradient_vp_x, gradient_vp_y, gradient_bar_x, gradient_bar_y;
     orientations_from_gradient(gradient_x, gradient_y, edges_number, gradient_vp_x, gradient_vp_y, gradient_bar_x, gradient_bar_y);
-    
+
     float radius_float = (float) radius;
     return mass_center_by_voting(magnitude_image, gradient_x, gradient_y, gradient_bar_x, gradient_bar_y, gradient_vp_x, gradient_vp_y, radius_float, edges_number);
 }
@@ -645,7 +645,7 @@ cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& 
 
     // Compute the transformation necessary to warp the original image
     cv::Mat transform_warping = translation_matrix.inv() * rotation_matrix * scaling_matrix * translation_matrix;
-    
+
     // Warp the original image
     cv::Mat warp_image;
     cv::warpPerspective(original_image, warp_image, transform_warping, original_image.size(), cv::INTER_CUBIC, cv::BORDER_REPLICATE);
@@ -656,7 +656,7 @@ cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& 
 
     // Estimate the radius given a contour
     int radius_contour = radius_estimation(denormalised_contour);
-    
+
     // We need to inverse the translation
     std::vector< cv::Point2f > denormalised_contour_no_translation;
     imageprocessing::inverse_transformation_contour(denormalised_contour, denormalised_contour_no_translation, translation_matrix);
@@ -712,7 +712,7 @@ cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& 
 
 // Function to denormalize a contour
 void contour_eucl_to_polar(const std::vector< cv::Point2f >& contour_eucl, std::vector< cv::PointPolar2f >& contour_polar) {
-    
+
     // Initilisation of the output
     if(!contour_polar.empty()) {
         contour_polar.erase(contour_polar.begin(), contour_polar.end());

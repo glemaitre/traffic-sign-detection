@@ -9,7 +9,7 @@ copy or use the software.
                For Open Source Computer Vision Library
                        (3-clause BSD License)
 
-Copyright (C) 2015, 
+Copyright (C) 2015,
       Guillaume Lemaitre (g.lemaitre58@gmail.com),
       Johan Massich (mailsik@gmail.com),
       Gerard Bahi (zomeck@gmail.com),

@@ -8,7 +8,7 @@ copy or use the software.
                For Open Source Computer Vision Library
                        (3-clause BSD License)
 
-Copyright (C) 2015, 
+Copyright (C) 2015,
       Guillaume Lemaitre (g.lemaitre58@gmail.com),
       Johan Massich (mailsik@gmail.com),
       Gerard Bahi (zomeck@gmail.com),
@@ -49,7 +49,7 @@ namespace segmentation {
    * Segmentation of logarithmic chromatic image
    */
 void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_image_seg) {
-    
+
     // Segment the image using the pre-defined threshold in the header of this file
     // Allocation of the original image
     log_image_seg.create(log_image[0].size(), CV_8UC1);
@@ -74,7 +74,7 @@ void seg_log_chromatic(const std::vector< cv::Mat >& log_image, cv::Mat& log_ima
    * Segmentation of IHLS image
    */
 void seg_norm_hue(const cv::Mat& ihls_image, cv::Mat& nhs_image, const int& colour, int hue_max, int hue_min, int sat_min) {
-    
+
     // Define the different thresholds
     if (colour == 2) {
         if (hue_max > 255 || hue_max < 0 || hue_min > 255 || hue_min < 0 || sat_min > 255 || sat_min < 0) {

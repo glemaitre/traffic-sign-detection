@@ -8,7 +8,7 @@ copy or use the software.
                For Open Source Computer Vision Library
                        (3-clause BSD License)
 
-Copyright (C) 2015, 
+Copyright (C) 2015,
       Guillaume Lemaitre (g.lemaitre58@gmail.com),
       Johan Massich (mailsik@gmail.com),
       Gerard Bahi (zomeck@gmail.com),
@@ -53,7 +53,7 @@ void filter_image(const cv::Mat& seg_image, cv::Mat& bin_image) {
 
     // Allocate the output
     bin_image = seg_image.clone();
-    
+
     // Create the structuring element for the erosion and dilation
     cv::Mat struct_elt = cv::getStructuringElement(cv::MORPH_CROSS, cv::Size(4, 4));
 
@@ -69,7 +69,7 @@ void filter_image(const cv::Mat& seg_image, cv::Mat& bin_image) {
     // Filled the objects
     cv::Scalar color(255, 255, 255);
     cv::drawContours(bin_image, contours, -1, color, CV_FILLED, 8);
-    
+
     // Apply some erosion on the destination image
     cv::erode(bin_image, bin_image, struct_elt);
 
@@ -125,7 +125,7 @@ float distance(const cv::Point& po, const cv::Point& pf, const cv::Point& pc)
 
 // Remove the inconsistent points inside each contour
 void contours_thresholding(const std::vector< std::vector< cv::Point > >& hull_contours, const std::vector< std::vector< cv::Point > >& contours, std::vector< std::vector< cv::Point > >& final_contours, const float dist_threshold) {
-    
+
     if (!final_contours.empty())
         final_contours.erase(final_contours.begin(), final_contours.end());
 
@@ -186,12 +186,12 @@ void contours_extraction(const cv::Mat& bin_image, std::vector< std::vector< cv:
 
     // Extract the convex_hull for each contours in order to make some processing to finally extract the final contours
     std::vector< std::vector< cv::Point > > hull_contours(contours.size());
-    
+
     // Find the convec hull for each contours
     auto it_hull = hull_contours.begin();
     for (auto it = contours.begin(); it != contours.end(); ++it, ++it_hull)
         cv::convexHull(cv::Mat(*it), (*it_hull), false);
-    
+
     // Extract the contours
     // DEFAULT VALUE OF 2.0 PIXELS
     contours_thresholding(hull_contours, contours, final_contours);
@@ -207,7 +207,7 @@ void forward_transformation_contour(const std::vector < cv::Point >& contour, st
         (*it).x = static_cast<float> ((*it_contour).x);
         (*it).y = static_cast<float> ((*it_contour).y);
     }
-    
+
     // Call the overloaded function for float point
     forward_transformation_contour(contour2f, output_contour, translation_matrix, rotation_matrix, scaling_matrix);
 
@@ -239,7 +239,7 @@ void forward_transformation_contour(const std::vector < cv::Point2f >& contour, 
     }
     else
         output_matrix.copyTo(output_contour);
-    
+
 }
 
 // Function to make forward transformation -- INPUT CV::POINT
@@ -278,7 +278,7 @@ void inverse_transformation_contour(const std::vector < cv::Point >& contour, st
 
 // Function to make inverse transformation -- INPUT CV::POINT2F
 void inverse_transformation_contour(const std::vector < cv::Point2f >& contour, std::vector< cv::Point2f >& output_contour, const cv::Mat& translation_matrix, const cv::Mat& rotation_matrix, const cv::Mat& scaling_matrix) {
-    
+
     // Calculate the affine transformation using the rotation, scaling and translation matrices
     cv::Mat transform_matrix;
     transform_matrix = rotation_matrix * scaling_matrix * translation_matrix;
@@ -323,7 +323,7 @@ void correction_distortion (const std::vector< std::vector < cv::Point > >& cont
             (*it_output_contour).push_back(cv::Point2f((*it_contour_point).x, (*it_contour_point).y));
         }
     }
-    
+
     // Correct the distortion for each contour
     auto it_contour = contours.begin();
     auto it_translation_matrix = translation_matrix.begin();

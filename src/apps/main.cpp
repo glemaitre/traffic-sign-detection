@@ -8,8 +8,8 @@
 //                For Open Source Computer Vision Library
 //                        (3-clause BSD License)
 
-// Copyright (C) 2015, 
-// 	  Guillaume Lemaitre (g.lemaitre58@gmail.com), 
+// Copyright (C) 2015,
+// 	  Guillaume Lemaitre (g.lemaitre58@gmail.com),
 // 	  Johan Massich (mailsik@gmail.com),
 // 	  Gerard Bahi (zomeck@gmail.com),
 // 	  Yohan Fougerolle (Yohan.Fougerolle@u-bourgogne.fr).

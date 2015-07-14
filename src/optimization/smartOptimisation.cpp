@@ -8,7 +8,7 @@ copy or use the software.
                For Open Source Computer Vision Library
                        (3-clause BSD License)
 
-Copyright (C) 2015, 
+Copyright (C) 2015,
       Guillaume Lemaitre (g.lemaitre58@gmail.com),
       Johan Massich (mailsik@gmail.com),
       Gerard Bahi (zomeck@gmail.com),
@@ -77,7 +77,7 @@ void gielis_optimisation(const std::vector< cv::Point2f >& contour, ConfigStruct
 
 // Reconstruction using the Gielis formula
 void gielis_reconstruction(const ConfigStruct2d& config_shape, std::vector< cv::Point2f >& gielis_contour, const int number_points) {
-    
+
     // Initilisation of the output
     if(!gielis_contour.empty()) {
         gielis_contour.erase(gielis_contour.begin(), gielis_contour.end());

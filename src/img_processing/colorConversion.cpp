@@ -8,7 +8,7 @@ copy or use the software.
                For Open Source Computer Vision Library
                        (3-clause BSD License)
 
-Copyright (C) 2015, 
+Copyright (C) 2015,
       Guillaume Lemaitre (g.lemaitre58@gmail.com),
       Johan Massich (mailsik@gmail.com),
       Gerard Bahi (zomeck@gmail.com),
@@ -53,7 +53,7 @@ void rgb_to_log_rb(const cv::Mat& rgbImage, std::vector< cv::Mat >& log_chromati
     cv::Mat log_chromatic_b = cv::Mat::zeros(rgbImage.size(), CV_32F);
     if (!log_chromatic_image.empty())
         log_chromatic_image.erase(log_chromatic_image.begin(), log_chromatic_image.end());
-    
+
     // Split the channels rgb
     //std::vector< cv::Mat > rgbVector;
 
@@ -101,7 +101,7 @@ void rgb_to_log_rb(const cv::Mat& rgbImage, std::vector< cv::Mat >& log_chromati
 
 // Conversion from RGB to IHLS
 void convert_rgb_to_ihls(const cv::Mat& rgb_image, cv::Mat& ihls_image) {
-    
+
     // Check the that the image has three channels
     CV_Assert(rgb_image.channels() == 3);
 
