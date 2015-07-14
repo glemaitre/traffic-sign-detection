@@ -46,3 +46,7 @@ set(srcs_common_all ${files_common} PARENT_SCOPE)
 file(GLOB files_img_proc "img_processing/*.cpp")
 
 set(srcs_img_proc_all ${files_img_proc} PARENT_SCOPE)
+
+file(GLOB files_opt "optimization/*.cpp")
+
+set(srcs_opt_all ${files_opt} PARENT_SCOPE)

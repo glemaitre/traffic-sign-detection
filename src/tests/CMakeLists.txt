@@ -72,6 +72,18 @@ target_link_libraries(test_img_proc
                       ${external_libs}
 		      )
 
+### TEST MODULE OPT ###
+add_executable(test_opt
+                tests_all.cpp
+		${srcs_opt_all}
+                )
+
+target_link_libraries(test_opt
+                      ${GTEST_BOTH_LIBRARIES}
+                      optimization
+                      ${external_libs}
+		      )
+
 ### TEST MODULE INTEGRATION ###
 add_executable(test_integration
                 tests_all.cpp
