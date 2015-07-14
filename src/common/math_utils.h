@@ -56,10 +56,16 @@ the use of this software, even if advised of the possibility of such damage.
 namespace mathutils {
 
 // Maximum between three values
-inline float get_maximum(const float& r, const float& g, const float& b) { return (r >= g) ? ((r >= b) ? r : b) : ((g >= b) ? g : b); }
+inline float get_maximum(const float& r, const float& g, const float& b) 
+{ 
+    return (r >= g) ? ((r >= b) ? r : b) : ((g >= b) ? g : b); 
+}
 
 // Minimum between three values
-inline float get_minimum(const float& r, const float& g, const float& b) { return (r <= g) ? ((r <= b) ? r : b) : ((g <= b) ? g : b); }
+inline float get_minimum(const float& r, const float& g, const float& b) 
+{ 
+    return (r <= g) ? ((r <= b) ? r : b) : ((g <= b) ? g : b); 
+}
 
 }
 
@@ -70,7 +76,7 @@ namespace cv {
     template 2D polar point class.
     The class defines a point in 2D polar space. Data type of the point coordinates is specified
     as a template parameter. There are a few shorter aliases available for user convenience.
-  */
+*/
 template<typename _Tp> class PointPolar_ {
 public:
 
@@ -111,7 +117,11 @@ public:
     // Overload of some operator
     bool operator<(const PointPolar_<_Tp> &pt) const { return theta < pt.theta; }
     bool operator>(const PointPolar_<_Tp> &pt) const { return theta > pt.theta; }
-    friend std::ostream& operator<<(std::ostream& os, const PointPolar_<_Tp>& pt) { os << "[" << pt.phi << ", " << pt.theta << "]"; return os; }
+    friend std::ostream& operator<<(std::ostream& os, const PointPolar_<_Tp>& pt) 
+    { 
+	os << "[" << pt.phi << ", " << pt.theta << "]"; 
+	return os; 
+    }
 
     _Tp phi, theta; //< the point coordinates
 };

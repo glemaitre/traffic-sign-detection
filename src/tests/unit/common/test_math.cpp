@@ -44,19 +44,21 @@ the use of this software, even if advised of the possibility of such damage.
 // our own code
 #include <common/math_utils.h>
 
-
-#include <iostream>
-
-// OpenCV library
-#include <opencv2/opencv.hpp>
-
-// Eigen library
-#include <Eigen/Core>
-
+// library for the google test
 #include <gtest/gtest.h>
 
 TEST(unit, math_utils)
 {
     GTEST_ASSERT_EQ(1, 1);
+
+    // Define the different values to compare
+    const float thrH = 10.0;
+    const float thrM = 0.0;
+    const float thrS = -10.0;
+
+    // Check if we find the maximum value
+    GTEST_ASSERT_EQ(mathutils::get_maximum(thrH, thrM, thrS), thrH);
+    // Check if we find the minimum value
+    GTEST_ASSERT_EQ(mathutils::get_minimum(thrH, thrM, thrS), thrS);
 }
 
