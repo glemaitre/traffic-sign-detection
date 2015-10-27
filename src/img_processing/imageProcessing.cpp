@@ -64,7 +64,7 @@ void filter_image(const cv::Mat& seg_image, cv::Mat& bin_image) {
 
     // Find the contours of the objects
     std::vector< std::vector< cv::Point > > contours;
-    cv::vector< cv::Vec4i > hierarchy;
+    std::vector< cv::Vec4i > hierarchy;
     cv::findContours(bin_image, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
     // Filled the objects
     cv::Scalar color(255, 255, 255);
