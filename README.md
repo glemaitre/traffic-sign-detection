@@ -36,8 +36,11 @@ The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
 However, this command only download the source that you need to compile.
 
 ```
+cd /usr/src/gtest
 sudo cmake CMakeLists.txt
 sudo make
+ 
+# copy or symlink libgtest.a and libgtest_main.a to your /usr/lib folder
 sudo cp *.a /usr/lib
 ```
 
