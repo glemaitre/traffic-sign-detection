@@ -46,7 +46,6 @@ the use of this software, even if advised of the possibility of such damage.
 #include "random-standalone.h"
 
 #include <cfloat> //DBL_EPSILON
-using namespace std;
 
 inline static double sqr(double x) {return x*x;}
 

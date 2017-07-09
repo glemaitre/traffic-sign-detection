@@ -64,7 +64,6 @@ the use of this software, even if advised of the possibility of such damage.
 //#include <GL/glut.h>
 
 
-using namespace std;
 using namespace Eigen;
 
 extern Random R1;
@@ -124,17 +123,17 @@ double RationalSuperShape2D :: radius ( const double angle ){
     //if( tmp2 != 0)
     tmp2 = pow(fabs(tmp2),Get_n3()) / Get_b();
     if( tmp1 + tmp2 !=0 ) return( pow( (tmp1 + tmp2), -1.0/Get_n1() ) );
-    else	{cout<<"ERROR RADIUS NULL"<<endl;return 0;}
+    else	{std::cout<<"ERROR RADIUS NULL"<<std::endl;return 0;}
 }
 // void RationalSuperShape2D :: Aff(){
 // for (unsigned int i=0; i<Parameters.size(); i++)
 // {
-// cout << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
+// std::cout << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
 // }
-// cout << endl;
+// std::cout << std::endl;
 // }
 //Potential fields
-double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<double> &Dffinal) {
+double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, std::vector<double> &Dffinal) {
     Dffinal.clear();
     // nothing computable, return zero values, zero partial derivatives
     // the point will have no effect on the ongoing computations
@@ -144,9 +143,9 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
         for (int i=0; i<3; i++) Dffinal.push_back(0);
         return 0;
     }
-    vector <double> f, Ddum;
+    std::vector<double> f, Ddum;
     double x(P[0]), y(P[1]), PSL(P.squaredNorm()), PL(sqrt(PSL)), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
-    vector< vector<double> > Df;
+    std::vector< std::vector<double> > Df;
     //assert angular values between [0, 2q*Pi]
     double tht (atan2(y,x)), thtbase(tht);
     if (tht<0) thtbase += 2.*M_PI;
@@ -157,7 +156,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
         R = radius(tht);
         f.push_back(R - PL); //store function
         // store partial derivatives
-        vector <double> rowi;
+        std::vector<double> rowi;
         drdth = DrDtheta(tht);
         rowi.push_back( drdth*dthtdx - cos(tht)); //df/dx
         rowi.push_back( drdth*dthtdy - sin(tht)); //df/dy
@@ -169,13 +168,13 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
         for (int j=i+1; j<Get_q(); j++)
             if (f[i]<f[j])
             {
-                //swap values of f[i] and f[j]
-                swap(f[i],f[j]);
-                //swap rows Df[i] and Df[j]
+                //std::swap values of f[i] and f[j]
+                std::swap(f[i],f[j]);
+                //std::swap rows Df[i] and Df[j]
                 Df[i].swap(Df[j]);
             }
     //Compute resulting Rfunction
-    vector<double> Df1; //vector for df/dxi
+    std::vector<double> Df1; //std::vectorfor df/dxi
     //iterative evaluation of:
     // -the resulting R-functions
     // -the associated partial derivatives
@@ -199,7 +198,7 @@ double RationalSuperShape2D :: ImplicitFunction1( const Vector2d P, vector<doubl
     //return results
     return f1;
 }
-double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <double> &Dffinal){
+double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, std::vector<double> &Dffinal){
     Dffinal.clear();
     // nothing computable, return zero values, zero partial derivatives
     // the point will have no effect on the ongoing computations
@@ -209,9 +208,9 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
         for (int i=0; i<3; i++) Dffinal.push_back(0);
         return 0;
     }
-    vector <double> f, Ddum;
+    std::vector<double> f, Ddum;
     double x(P[0]), y(P[1]), PSL(P.squaredNorm()), PL(sqrt(PSL)), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
-    vector<vector<double> > Df;
+    std::vector<std::vector<double> > Df;
     //assert angular values between [0, 2q*Pi]
     double tht (atan2(y,x)), thtbase(tht);
     if (tht<0) thtbase += 2.*M_PI;
@@ -223,7 +222,7 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
         drdth = DrDtheta(tht);
         f.push_back(1. - PL/R); //store function
         // store partial derivatives
-        vector <double> rowi;
+        std::vector<double> rowi;
         drdth = DrDtheta(tht);
         rowi.push_back( - ( x*R/PL - drdth*dthtdx*PL )/(R*R) ); //df/dx
         rowi.push_back( - ( y*R/PL - drdth*dthtdy*PL )/(R*R) ); //df/dy
@@ -235,13 +234,13 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
         for (int j=i+1; j<Get_q(); j++)
             if (f[i]<f[j])
             {
-                //swap values of f[i] and f[j]
-                swap(f[i],f[j]);
-                //swap rows Df[i] and Df[j]
+                //std::swap values of f[i] and f[j]
+                std::swap(f[i],f[j]);
+                //std::swap rows Df[i] and Df[j]
                 Df[i].swap(Df[j]);
             }
     //Compute resulting Rfunction
-    vector<double> Df1; //vector for df/dxi
+    std::vector<double> Df1; //std::vectorfor df/dxi
     //iterative evaluation of:
     // -the resulting R-functions
     // -the associated partial derivatives
@@ -265,7 +264,7 @@ double RationalSuperShape2D :: ImplicitFunction2( const Vector2d P, vector <doub
     //return results
     return f1;
 }
-double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <double> &Dffinal){
+double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, std::vector<double> &Dffinal){
     Dffinal.clear();
     // nothing computable, return zero values, zero partial derivatives
     // the point will have no effect on the ongoing computations
@@ -275,9 +274,9 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
         for (int i=0; i<3; i++) Dffinal.push_back(0);
         return 0;
     }
-    vector <double> f, Ddum;
+    std::vector<double> f, Ddum;
     double x(P[0]), y(P[1]), PSL(P.squaredNorm()), dthtdx (-y/PSL), dthtdy (x/PSL), R,drdth;
-    vector< vector<double> > Df;
+    std::vector< std::vector<double> > Df;
     //assert angular values between [0, 2q*Pi]
     double tht (atan2(y,x)), thtbase(tht);
     if (tht<0) thtbase += 2.*M_PI;
@@ -290,7 +289,7 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
         f.push_back( log( R*R / PSL)); //store function
         // store partial derivatives
         drdth = DrDtheta(tht);
-        vector <double> rowi;
+        std::vector<double> rowi;
         rowi.push_back( -2.*(x*R - PSL * drdth*dthtdx)/(R*PSL) ); //df/dx
         rowi.push_back( -2.*(y*R - PSL * drdth*dthtdy)/(R*PSL) ); //df/dy
         rowi.push_back( 2./R ); //df/dr
@@ -301,13 +300,13 @@ double RationalSuperShape2D :: ImplicitFunction3( const Vector2d P, vector <doub
         for (int j=i+1; j<Get_q(); j++)
             if (f[i]<f[j])
             {
-                //swap values of f[i] and f[j]
-                swap(f[i],f[j]);
-                //swap rows Df[i] and Df[j]
+                //std::swap values of f[i] and f[j]
+                std::swap(f[i],f[j]);
+                //std::swap rows Df[i] and Df[j]
                 Df[i].swap(Df[j]);
             }
     //Compute resulting Rfunction
-    vector<double> Df1; //vector for df/dxi
+    std::vector<double> Df1; //std::vectorfor df/dxi
     //iterative evaluation of:
     // -the resulting R-functions
     // -the associated partial derivatives
@@ -426,7 +425,7 @@ if (R>EPSILON){
 //return log ( pow ( R, -1./Get_n1()))*R;
 return log(rn1) * R /(Get_n1()*Get_n1());
 }
-//cout <<"rhaaaa"<<endl;
+//std::cout <<"rhaaaa"<<std::endl;
 return 0;
 */
     //discrete approximation
@@ -508,7 +507,7 @@ log(S)*bSn3 / Get_n1();
                 );
     return V.sum() / (12.*delta);
 }
-void RpUnion(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df)
+void RpUnion(double f1, double f2, std::vector<double> Df1, std::vector<double> Df2, double &f, std::vector<double> &Df)
 {
     assert(Df1.size() == Df2.size());
     Df.clear();
@@ -520,7 +519,7 @@ void RpUnion(double f1, double f2, vector<double> Df1, vector<double> Df2, doubl
         for(unsigned int i=0; i<Df1.size(); i++)
             Df.push_back( 0 );
 }
-void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2, double &f, vector<double> &Df)
+void RpIntersection(double f1, double f2, std::vector<double> Df1, std::vector<double> Df2, double &f, std::vector<double> &Df)
 {
     assert(Df1.size() == Df2.size());
     Df.clear();
@@ -533,14 +532,14 @@ void RpIntersection(double f1, double f2, vector<double> Df1, vector<double> Df2
             Df.push_back( 0 );
 }
 void RationalSuperShape2D :: Optimize5D(
-        string outfilename,
-        vector< Vector2d, aligned_allocator< Vector2d> > Data,
+        std::string outfilename,
+        std::vector< Vector2d, aligned_allocator< Vector2d> > Data,
         double &err ,
         int functionused
         )
 {
     double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
-    ofstream logfile;
+    std::ofstream logfile;
     logfile.open(outfilename.c_str());
     bool STOP(false);
     double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}; //dj[16];
@@ -557,7 +556,7 @@ void RationalSuperShape2D :: Optimize5D(
     // sigma = VectorXd::Zero(5);
     logfile << *this;
 
-    vector<double> Df;
+    std::vector<double> Df;
     int itnum = 0;
     for(itnum=0; itnum<1000 && STOP==false; itnum++) {
         //store oldparams
@@ -566,9 +565,9 @@ void RationalSuperShape2D :: Optimize5D(
         beta.setZero();
         alpha2.setZero();
         beta2.setZero();
-        //cout <<"TRIAL:"<<*this<<endl;
+        //std::cout <<"TRIAL:"<<*this<<std::endl;
         bool outofbounds(false);
-        //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
+        //std::cout <<"Norm on in Opt2 : "<<Normalization<<std::endl;
         ChiSquare = XiSquare5D(Data,
                                alpha,
                                beta,
@@ -646,7 +645,7 @@ void RationalSuperShape2D :: Optimize5D(
     logfile.close();
 }
 double RationalSuperShape2D :: XiSquare5D(
-        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
+        const std::vector< Vector2d, aligned_allocator< Vector2d> > Data,
         MatrixXd &alpha,
         VectorXd &beta,
         int functionused,
@@ -655,14 +654,14 @@ double RationalSuperShape2D :: XiSquare5D(
     VectorXd dj; dj = VectorXd::Zero(5);
     Matrix3d Tr,Rot;
     //functions pointer
-    double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
+    double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, std::vector<double> &Dffinal) = NULL;
     switch (functionused){
     case 1 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction1; }break;
     case 2 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction2; }break;
     case 3 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction3; }break;
     default : pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction1;
     }
-    vector<double> Df;
+    std::vector<double> Df;
     double x, y, tht, ChiSquare(1e15), f(0),
             x0(Get_xoffset()),y0(Get_yoffset()),tht0(Get_thtoffset());
     //clean memory
@@ -735,14 +734,14 @@ double RationalSuperShape2D :: XiSquare5D(
     return ChiSquare;
 }
 void RationalSuperShape2D :: Optimize7D(
-        string outfilename,
-        vector< Vector2d, aligned_allocator< Vector2d> > Data,
+        std::string outfilename,
+        std::vector< Vector2d, aligned_allocator< Vector2d> > Data,
         double &err ,
         int functionused
         )
 {
     double NewChiSquare, ChiSquare(1e15), OldChiSquare(1e15);
-    ofstream logfile;
+    std::ofstream logfile;
     logfile.open(outfilename.c_str());
     bool STOP(false);
     double oldparams[] ={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};//, dj[16];
@@ -767,9 +766,9 @@ void RationalSuperShape2D :: Optimize7D(
         beta.setZero();
         alpha2.setZero();
         beta2.setZero();
-        //cout <<"TRIAL:"<<*this<<endl;
+        //std::cout <<"TRIAL:"<<*this<<std::endl;
         bool outofbounds(false);
-        //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
+        //std::cout <<"Norm on in Opt2 : "<<Normalization<<std::endl;
         ChiSquare = XiSquare7D(Data,
                                alpha,
                                beta,
@@ -785,8 +784,8 @@ void RationalSuperShape2D :: Optimize7D(
             alpha(k,k) *= 1. + lambda; //multiplicative factor to make diagonal dominant
             alpha(k,k) += lambda; //additive factor to avoid rank deficient matrix
         }
-        //cout << alpha << endl<<endl;
-        //cout << beta << endl<<endl;
+        //std::cout << alpha << std::endl<<std::endl;
+        //std::cout << beta << std::endl<<std::endl;
         //solve system
         alpha.ldlt().solveInPlace(beta);
         //coefficients a and b in [0.01, 100]
@@ -807,8 +806,8 @@ void RationalSuperShape2D :: Optimize7D(
             Set_n3( Parameters[4] + beta[4]);
             // coefficients x0 and y0
             //truncate translation to avoid huge gaps
-            beta[5] = min(0.05, max(-0.05, beta[5]));
-            beta[6] = min(0.05, max(-0.05, beta[6]));
+            beta[5] = std::min(0.05, std::max(-0.05, beta[5]));
+            beta[6] = std::min(0.05, std::max(-0.05, beta[6]));
             Parameters[9] += beta[5];
             Parameters[10] += beta[6];
         }
@@ -853,7 +852,7 @@ void RationalSuperShape2D :: Optimize7D(
     logfile.close();
 }
 double RationalSuperShape2D :: XiSquare7D(
-        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
+        const std::vector< Vector2d, aligned_allocator< Vector2d> > Data,
         MatrixXd &alpha,
         VectorXd &beta,
         int functionused,
@@ -861,14 +860,14 @@ double RationalSuperShape2D :: XiSquare7D(
     VectorXd dj; dj = VectorXd::Zero(7);
     Matrix3d Tr,Rot, dTrdx0, dTrdy0;
     //functions pointer
-    double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
+    double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, std::vector<double> &Dffinal) = NULL;
     switch (functionused){
     case 1 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction1; }break;
     case 2 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction2; }break;
     case 3 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction3; }break;
     default : pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction1;
     }
-    vector<double> Df;
+    std::vector<double> Df;
     double x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
             ChiSquare(1e15),
             f(0),
@@ -963,7 +962,7 @@ double RationalSuperShape2D :: XiSquare7D(
     return ChiSquare;
 }
 void RationalSuperShape2D :: Optimize8D(
-        vector< Vector2d, aligned_allocator< Vector2d> > Data,
+        std::vector< Vector2d, aligned_allocator< Vector2d> > Data,
         double &err ,
         int functionused
         )
@@ -995,9 +994,9 @@ void RationalSuperShape2D :: Optimize8D(
         beta.setZero();
         alpha2.setZero();
         beta2.setZero();
-        //cout <<"TRIAL:"<<*this<<endl;
+        //std::cout <<"TRIAL:"<<*this<<std::endl;
         bool outofbounds(false);
-        //cout <<"Norm on in Opt2 : "<<Normalization<<endl;
+        //std::cout <<"Norm on in Opt2 : "<<Normalization<<std::endl;
         ChiSquare = XiSquare8D(Data,
                                alpha,
                                beta,
@@ -1031,12 +1030,12 @@ void RationalSuperShape2D :: Optimize8D(
             Set_n3( Parameters[4] + beta[4]);
             // coefficients x0 and y0
             //truncate translation to avoid huge gaps
-            beta[5] = min(0.05, max(-0.05, beta[5]));
-            beta[6] = min(0.05, max(-0.05, beta[6]));
+            beta[5] = std::min(0.05, std::max(-0.05, beta[5]));
+            beta[6] = std::min(0.05, std::max(-0.05, beta[6]));
             Parameters[9] += beta[5];
             Parameters[10] += beta[6];
             //same for rotational offset tht0
-            beta[7] = min(M_PI/50., max(-M_PI/50., beta[7]));
+            beta[7] = std::min(M_PI/50., std::max(-M_PI/50., beta[7]));
             Parameters[7] += beta[7];
         }
         //
@@ -1083,7 +1082,7 @@ void RationalSuperShape2D :: Optimize8D(
     // logfile.close();
 }
 double RationalSuperShape2D :: XiSquare8D(
-        const vector < Vector2d, aligned_allocator< Vector2d> > Data,
+        const std::vector< Vector2d, aligned_allocator< Vector2d> > Data,
         MatrixXd &alpha,
         VectorXd &beta,
         int functionused,
@@ -1091,14 +1090,14 @@ double RationalSuperShape2D :: XiSquare8D(
     VectorXd dj; dj = VectorXd::Zero(8);
     Matrix3d Tr,Rot, dTrdx0, dTrdy0, dRotdtht0;
     //functions pointer
-    double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, vector<double> &Dffinal) = NULL;
+    double (RationalSuperShape2D ::*pt2ConstMember)(const Vector2d P, std::vector<double> &Dffinal) = NULL;
     switch (functionused){
     case 1 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction1; }break;
     case 2 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction2; }break;
     case 3 :{ pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction3; }break;
     default : pt2ConstMember = &RationalSuperShape2D :: ImplicitFunction1;
     }
-    vector<double> Df;
+    std::vector<double> Df;
     double  x, y, tht, dthtdx, dthtdy,dthtdx0, dthtdy0, drdth,
             ChiSquare(1e15),
             f(0),
@@ -1228,7 +1227,7 @@ Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
         tht = tht-change;
         it++;
     }
-    // cout <<"PPoint found"<<endl;
+    // std::cout <<"PPoint found"<<std::endl;
     Vector2d H (Point(tht));
     //H = Rot.transpose()*H + Vector2d(Get_xoffset(), Get_yoffset());
     return H;
@@ -1240,10 +1239,10 @@ Vector2d RationalSuperShape2D :: ClosestPoint( Vector2d P, int itmax){
 // {
 // logfile << setiosflags(ios::fixed) << setprecision(6)<<Parameters[i] << " ";
 // }
-// logfile << endl;
+// logfile << std::endl;
 // logfile.close();
 // }
-bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< Vector2d> > Data, Vector4d &Mean, Vector4d &Var)
+bool RationalSuperShape2D :: ErrorMetric (std::vector< Vector2d, aligned_allocator< Vector2d> > Data, Vector4d &Mean, Vector4d &Var)
 {
     //Bring back data into canonical referential
     double x0(Get_xoffset()), y0(Get_yoffset()), tht0(Get_thtoffset());
@@ -1260,9 +1259,9 @@ bool RationalSuperShape2D :: ErrorMetric (vector < Vector2d, aligned_allocator< 
             -sin(tht0) , cos(tht0) , 0 ,
             0 , 0 , 1;
     //now process all the data and store the point in a local array
-    vector < Vector2d, aligned_allocator< Vector2d> > CanonicalData;
-    // use 1 array of vector 4d to reduce computational load
-    vector < Vector4d, aligned_allocator< Vector4d> > dumarray;
+    std::vector< Vector2d, aligned_allocator< Vector2d> > CanonicalData;
+    // use 1 array of std::vector4d to reduce computational load
+    std::vector< Vector4d, aligned_allocator< Vector4d> > dumarray;
     for( size_t i=0; i<Data.size(); i++ ){
         //global inverse transform is T * R
         Vector3d dum(Data[i][0], Data[i][1], 1.);
@@ -1284,7 +1283,7 @@ glEnd();
     //Init Mean and Var
     Mean = Vector4d(0,0,0,0);
     Var = Mean;
-    vector<double> Dffinal;//dummy local variable to store partial derivatives, unused in this function
+    std::vector<double> Dffinal;//dummy local variable to store partial derivatives, unused in this function
     //compute Mean
     /*
 glColor3f(1,0,0);

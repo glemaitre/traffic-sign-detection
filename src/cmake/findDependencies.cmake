@@ -40,8 +40,11 @@
 # or tort (including negligence or otherwise) arising in any way out of
 # the use of this software, even if advised of the possibility of such damage.
 
-find_package(OpenCV 2.4.8 REQUIRED core highgui imgproc features2d calib3d)
-
+SET(OPENCV_MIN_VERSION "2.4.8")
+find_package(OpenCV REQUIRED core highgui imgproc features2d calib3d)
+if(OpenCV_VERSION VERSION_LESS OPENCV_MIN_VERSION)
+  message(FATAL_ERROR "ERROR: Can't find OpenCV version > " ${OPENCV_MIN_VERSION})
+endif()
 
 find_package(PkgConfig REQUIRED)
 pkg_search_module(EIGEN REQUIRED eigen3)

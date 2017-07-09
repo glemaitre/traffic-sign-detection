@@ -44,14 +44,13 @@ the use of this software, even if advised of the possibility of such damage.
 
 #include <cmath>
 #include <limits>
-using namespace std;
 
 class Random //Autonome/Standalone
 {
 private:
     template<typename T>
     static inline bool typeIsInteger(void)
-    {return numeric_limits<T>::is_integer;}
+    {return std::numeric_limits<T>::is_integer;}
     //Si le numeric_limits<T> ne marche pas/if numeric_limits doesn't work
     //{return static_cast<T>(1)/static_cast<T>(2)==static_cast<T>(0);}
 

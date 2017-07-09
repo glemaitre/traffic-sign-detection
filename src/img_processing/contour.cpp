@@ -50,7 +50,7 @@ the use of this software, even if advised of the possibility of such damage.
 #include <vector>
 #include <algorithm>
 
-//TODO: probably this should not be static and defined here, is onlye used once in the function
+//TODO: probably this should not be static and defined here, is only used once in the function
 static float derivative_x [] = { 0.0041,    0.0104,         0,   -0.0104,   -0.0041,
                                  0.0273,    0.0689,         0,   -0.0689,   -0.0273,
                                  0.0467,    0.1180,         0,   -0.1180,   -0.0467,
@@ -605,7 +605,7 @@ cv::Point2f radial_symmetry_detector(const cv::Mat& roi_image, const int& radius
      * Gradients computation before voting
      */
 
-    // Compute the gardient image
+    // Compute the gradient image
     // Define the kernel to apply to the image
     cv::Mat kernel_x = cv::Mat(5, 5, CV_32F, derivative_x);
     cv::Mat kernel_y = cv::Mat(5, 5, CV_32F, derivative_y);
@@ -673,7 +673,7 @@ cv::Point2f mass_center_discovery(const cv::Mat& original_image, const cv::Mat& 
     cv::Mat roi_image;
     roi_extraction(warp_image, roi_dimension, roi_image);
 
-    // The main function need to know how many edges each traffic sign as
+    // The main function needs to know how many edges each traffic sign has
     int edges_number = 0;
     switch (type_traffic_sign) {
     case 0:

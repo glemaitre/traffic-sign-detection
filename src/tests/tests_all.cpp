@@ -43,8 +43,6 @@ the use of this software, even if advised of the possibility of such damage.
 
 #include <gtest/gtest.h>
 #include <iostream>
-using namespace std;
-
 
 // It's necessary if you want to debug the program
 int main(int argc, char **argv)

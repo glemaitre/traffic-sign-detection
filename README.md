@@ -9,13 +9,13 @@ System requirements:
 * CMake 2.8.12
 * Eigen 3.2.0
 * OpenCV 2.4.8
-* GTest 1.6.1
+* GTest 1.6.0
 
 ### CMake Library
 
 `sudo apt-get install cmake`
 
-The version available in Ubuntu 14.04 repositories is CMake 2.8.12
+The version available in Ubuntu 14.04 repositories is CMake 3.2.2
 
 ### Eigen Library
 
@@ -33,13 +33,15 @@ The version available in Ubuntu 14.04 repositories is OpenCV 2.4.8
 
 `sudo apt-get install libgtest-dev`
 
-However, this command only download the source that you need to compile.
+The version available in Ubuntu 14.04 repositories is GTest 1.6.0
+
+However, this command only downloads the source that you need to compile.
 
 ```
 cd /usr/src/gtest
 sudo cmake CMakeLists.txt
 sudo make
- 
+
 # copy or symlink libgtest.a and libgtest_main.a to your /usr/lib folder
 sudo cp *.a /usr/lib
 ```
@@ -58,7 +60,7 @@ The version available in Ubuntu 14.04 repositories is GTest 1.6.1
 
 * Create the `MakeFile` via cmake:
 
-`cmake ../src` 
+`cmake ../src`
 
 * Compile the code to generate the executable:
 
